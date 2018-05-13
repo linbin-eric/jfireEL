@@ -6,8 +6,10 @@ import com.jfireframework.jfireel.Expression;
 
 public abstract class PropertyNode implements CalculateNode
 {
-    protected volatile Field field;
-    protected String         propertyName;
+    protected volatile Class<?> beanType;
+    protected volatile Field    field;
+    protected String            propertyName;
+    protected boolean           recognizeEveryTime = true;
     
     @Override
     public CalculateType type()
@@ -17,37 +19,78 @@ public abstract class PropertyNode implements CalculateNode
     
     protected final Field getField(Object value)
     {
-        if (field == null)
+        if (recognizeEveryTime)
         {
-            synchronized (this)
+            if (field == null || beanType.isAssignableFrom(value.getClass()))
             {
-                if (field == null)
+                synchronized (this)
                 {
-                    Class<?> ckass = value.getClass();
-                    while (ckass != Object.class)
+                    if (field == null || beanType.isAssignableFrom(value.getClass()))
                     {
-                        try
+                        Class<?> ckass = value.getClass();
+                        while (ckass != Object.class)
                         {
-                            field = ckass.getDeclaredField(propertyName);
-                            field.setAccessible(true);
-                            break;
+                            try
+                            {
+                                field = ckass.getDeclaredField(propertyName);
+                                beanType = value.getClass();
+                                field.setAccessible(true);
+                                break;
+                            }
+                            catch (NoSuchFieldException e)
+                            {
+                                ckass = ckass.getSuperclass();
+                            }
+                            catch (SecurityException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
                         }
-                        catch (NoSuchFieldException e)
+                        if (field == null)
                         {
-                            ckass = ckass.getSuperclass();
+                            throw new NullPointerException();
                         }
-                        catch (SecurityException e)
-                        {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    if (field == null)
-                    {
-                        throw new NullPointerException();
+                        return field;
                     }
                 }
             }
+            return field;
         }
-        return field;
+        else
+        {
+            if (field == null)
+            {
+                synchronized (this)
+                {
+                    if (field == null)
+                    {
+                        Class<?> ckass = value.getClass();
+                        while (ckass != Object.class)
+                        {
+                            try
+                            {
+                                field = ckass.getDeclaredField(propertyName);
+                                field.setAccessible(true);
+                                break;
+                            }
+                            catch (NoSuchFieldException e)
+                            {
+                                ckass = ckass.getSuperclass();
+                            }
+                            catch (SecurityException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        if (field == null)
+                        {
+                            throw new NullPointerException();
+                        }
+                        return field;
+                    }
+                }
+            }
+            return field;
+        }
     }
 }
