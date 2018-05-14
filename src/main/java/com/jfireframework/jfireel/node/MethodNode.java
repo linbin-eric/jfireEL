@@ -13,7 +13,13 @@ public class MethodNode implements CalculateNode
 	private volatile Class<?>	beanType;
 	protected boolean			recognizeEveryTime	= true;
 	private CalculateNode[]		argsNodes;
+	private ConvertType[]		convertTypes;
 	private Expression			type;
+	
+	enum ConvertType
+	{
+		INT, LONG, SHORT, FLOAT, DOUBLE, BYTE, OTHER
+	}
 	
 	public MethodNode(String literals, CalculateNode beanNode)
 	{
@@ -31,17 +37,71 @@ public class MethodNode implements CalculateNode
 			return value;
 		}
 		Object[] args = new Object[argsNodes.length];
-		for (int i = 0; i < args.length; i++)
-		{
-			args[i] = argsNodes[i].calculate(variables);
-		}
 		try
 		{
-			return getMethod(value, args).invoke(value, args);
+			for (int i = 0; i < args.length; i++)
+			{
+				args[i] = argsNodes[i].calculate(variables);
+			}
+			Method invoke = getMethod(value, args);
+			convertArgs(args);
+			return invoke.invoke(value, args);
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			throw new RuntimeException(e);
+		}
+	}
+	
+	private final void convertArgs(Object[] args)
+	{
+		for (int i = 0; i < args.length; i++)
+		{
+			Object argeValue = args[i];
+			switch (convertTypes[i])
+			{
+				case INT:
+					if (argeValue instanceof Integer == false)
+					{
+						args[i] = ((Number) argeValue).intValue();
+					}
+					break;
+				case LONG:
+					if (argeValue instanceof Long == false)
+					{
+						args[i] = ((Number) argeValue).longValue();
+					}
+					break;
+				case SHORT:
+					if (argeValue instanceof Short == false)
+					{
+						args[i] = ((Number) argeValue).shortValue();
+					}
+					break;
+				case FLOAT:
+					if (argeValue instanceof Float == false)
+					{
+						args[i] = ((Number) argeValue).floatValue();
+					}
+					break;
+				case DOUBLE:
+					if (argeValue instanceof Double == false)
+					{
+						args[i] = ((Number) argeValue).doubleValue();
+					}
+					break;
+				case BYTE:
+					if (argeValue instanceof Byte == false)
+					{
+						args[i] = ((Number) argeValue).byteValue();
+					}
+					break;
+				case OTHER:
+					break;
+				default:
+					break;
+			}
 		}
 	}
 	
@@ -71,23 +131,24 @@ public class MethodNode implements CalculateNode
 								{
 									if (parameterTypes[i].isPrimitive())
 									{
-										if (args[0] == null || isWrapType(parameterTypes[i], args[0].getClass()) == false)
+										if (args[i] == null || isWrapType(parameterTypes[i], args[i].getClass()) == false)
 										{
 											continue nextmethod;
 										}
 									}
 									else
 									{
-										if (args[0] != null && parameterTypes[i].isAssignableFrom(args[0].getClass()) == false)
+										if (args[i] != null && parameterTypes[i].isAssignableFrom(args[i].getClass()) == false)
 										{
 											continue nextmethod;
 										}
 									}
 								}
+								buildConvertTypes(parameterTypes);
 								accessMethod = each;
 								accessMethod.setAccessible(true);
-								method = accessMethod;
 								beanType = value.getClass();
+								method = accessMethod;
 								return accessMethod;
 							}
 						}
@@ -113,13 +174,21 @@ public class MethodNode implements CalculateNode
 								Class<?>[] parameterTypes = each.getParameterTypes();
 								for (int i = 0; i < args.length; i++)
 								{
-									if (args[0] != null && parameterTypes[i].isAssignableFrom(args[0].getClass()) == false)
+									if (parameterTypes[i].isPrimitive())
+									{
+										if (args[i] == null || isWrapType(parameterTypes[i], args[i].getClass()) == false)
+										{
+											continue nextmethod;
+										}
+									}
+									else if (args[i] != null && parameterTypes[i].isAssignableFrom(args[i].getClass()) == false)
 									{
 										continue nextmethod;
 									}
 								}
+								buildConvertTypes(parameterTypes);
+								each.setAccessible(true);
 								method = each;
-								method.setAccessible(true);
 								return method;
 							}
 						}
@@ -128,6 +197,42 @@ public class MethodNode implements CalculateNode
 				}
 			}
 			return method;
+		}
+	}
+	
+	private void buildConvertTypes(Class<?>[] parameterTypes)
+	{
+		convertTypes = new ConvertType[parameterTypes.length];
+		for (int i = 0; i < parameterTypes.length; i++)
+		{
+			if (parameterTypes[i] == int.class || parameterTypes[i] == Integer.class)
+			{
+				convertTypes[i] = ConvertType.INT;
+			}
+			else if (parameterTypes[i] == short.class || parameterTypes[i] == short.class)
+			{
+				convertTypes[i] = ConvertType.SHORT;
+			}
+			else if (parameterTypes[i] == long.class || parameterTypes[i] == Long.class)
+			{
+				convertTypes[i] = ConvertType.LONG;
+			}
+			else if (parameterTypes[i] == float.class || parameterTypes[i] == Float.class)
+			{
+				convertTypes[i] = ConvertType.FLOAT;
+			}
+			else if (parameterTypes[i] == double.class || parameterTypes[i] == Double.class)
+			{
+				convertTypes[i] = ConvertType.DOUBLE;
+			}
+			else if (parameterTypes[i] == byte.class || parameterTypes[i] == Byte.class)
+			{
+				convertTypes[i] = ConvertType.BYTE;
+			}
+			else
+			{
+				convertTypes[i] = ConvertType.OTHER;
+			}
 		}
 	}
 	
@@ -147,15 +252,15 @@ public class MethodNode implements CalculateNode
 	{
 		if (primitiveType == int.class)
 		{
-			return arge == Integer.class;
+			return arge == Integer.class || arge == Long.class;
 		}
 		else if (primitiveType == short.class)
 		{
-			return arge == Short.class;
+			return arge == Integer.class || arge == Long.class;
 		}
 		else if (primitiveType == long.class)
 		{
-			return arge == Long.class;
+			return arge == Integer.class || arge == Long.class;
 		}
 		else if (primitiveType == boolean.class)
 		{
@@ -163,11 +268,11 @@ public class MethodNode implements CalculateNode
 		}
 		else if (primitiveType == float.class)
 		{
-			return arge == Float.class;
+			return arge == Float.class || arge == Double.class;
 		}
 		else if (primitiveType == double.class)
 		{
-			return arge == Double.class;
+			return arge == Float.class || arge == Double.class;
 		}
 		else if (primitiveType == char.class)
 		{
@@ -175,7 +280,7 @@ public class MethodNode implements CalculateNode
 		}
 		else if (primitiveType == byte.class)
 		{
-			return arge == Byte.class;
+			return arge == Integer.class || arge == Long.class;
 		}
 		else
 		{

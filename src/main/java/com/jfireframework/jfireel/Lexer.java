@@ -202,7 +202,7 @@ public class Lexer
 			{
 				argsNodes.add(processParam(list));
 			}
-			((MethodNode) pred).setArgsNodes(argsNodes.toArray(new CalculateNode[list.size()]));
+			((MethodNode) pred).setArgsNodes(argsNodes.toArray(new CalculateNode[argsNodes.size()]));
 			offset += 1;
 		}
 		else
