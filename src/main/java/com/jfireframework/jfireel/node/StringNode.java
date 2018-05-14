@@ -25,4 +25,10 @@ public class StringNode implements CalculateNode
 		return Expression.STRING;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return "StringNode [literals=" + literals + "]";
+	}
+	
 }

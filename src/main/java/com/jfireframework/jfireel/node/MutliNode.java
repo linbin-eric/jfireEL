@@ -1,9 +1,15 @@
 package com.jfireframework.jfireel.node;
 
 import java.util.Map;
+import com.jfireframework.jfireel.Operator;
 
 public class MutliNode extends OperatorResultNode
 {
+	
+	public MutliNode()
+	{
+		super(Operator.MULTI);
+	}
 	
 	@Override
 	public Object calculate(Map<String, Object> variables)

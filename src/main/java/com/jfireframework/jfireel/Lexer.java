@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import com.jfireframework.jfireel.node.CalculateNode;
+import com.jfireframework.jfireel.node.EqualNode;
 import com.jfireframework.jfireel.node.KeywordNode;
 import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.node.MutliNode;
@@ -135,7 +136,7 @@ public class Lexer
 		{
 			length += 1;
 		}
-		String characters = el.substring(offset + 1, length);
+		String characters = el.substring(offset + 1, offset + length);
 		nodes.push(new StringNode(characters));
 		offset += length + 1;
 	}
@@ -164,11 +165,11 @@ public class Lexer
 	private void scanRightParen()
 	{
 		CalculateNode pred;
-		while ((pred = nodes.pollFirst()) != null)
+		while ((pred = nodes.peek()) != null)
 		{
-			if (pred.type() != Symbol.LEFT_PAREN || pred.type() != Expression.METHOD)
+			if (pred.type() != Symbol.LEFT_PAREN && pred.type() != Expression.METHOD)
 			{
-				tmpStack.push(pred);
+				tmpStack.push(nodes.pop());
 			}
 			else
 			{
@@ -196,12 +197,17 @@ public class Lexer
 					list.add(node);
 				}
 			}
-			argsNodes.add(processParam(list));
+			if (list.isEmpty() == false)
+			{
+				argsNodes.add(processParam(list));
+			}
 			((MethodNode) pred).setArgsNodes(argsNodes.toArray(new CalculateNode[list.size()]));
 			offset += 1;
 		}
 		else
 		{
+			// 如果是括号左右包围，则弹出左括号
+			nodes.pop();
 			CalculateNode node;
 			List<CalculateNode> list = new LinkedList<CalculateNode>();
 			while ((node = tmpStack.pollFirst()) != null)
@@ -244,8 +250,8 @@ public class Lexer
 				if (type == Operator.MULTI || type == Operator.DIVISION || type == Operator.PERCENT)
 				{
 					if (i > 0 && list.size() > i + 1//
-					        && Operator.class.isAssignableFrom(list.get(i - 1).type().getClass()) == false//
-					        && Operator.class.isAssignableFrom(list.get(i + 1).type().getClass()) == false//
+					        && Operator.isOperator(list.get(i - 1).type()) == false//
+					        && Operator.isOperator(list.get(i + 1).type()) == false//
 					)
 					{
 						OperatorResultNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
@@ -268,11 +274,11 @@ public class Lexer
 			for (int i = 0; i < list.size();)
 			{
 				CalculateType type = list.get(i).type();
-				if (type == Operator.PLUS || type == Operator.SUB)
+				if (Operator.isOperator(type))
 				{
 					if (i > 0 && list.size() > i + 1//
-					        && Operator.class.isAssignableFrom(list.get(i - 1).type().getClass()) == false//
-					        && Operator.class.isAssignableFrom(list.get(i + 1).type().getClass()) == false//
+					        && Operator.isOperator(list.get(i - 1).type()) == false//
+					        && Operator.isOperator(list.get(i + 1).type()) == false//
 					)
 					{
 						OperatorResultNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
@@ -314,6 +320,10 @@ public class Lexer
 				break;
 			case MULTI:
 				resultNode = new MutliNode();
+				break;
+			case EQ:
+				resultNode = new EqualNode();
+				break;
 			default:
 				break;
 		}
@@ -393,6 +403,7 @@ public class Lexer
 	
 	private void scanDot()
 	{
+		offset += 1;
 		int length = 0;
 		char c;
 		while (CharType.isAlphabet(c = getCurrentChar(length)) || CharType.isDigital(c))

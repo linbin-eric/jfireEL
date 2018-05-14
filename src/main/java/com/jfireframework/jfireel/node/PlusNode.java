@@ -1,9 +1,15 @@
 package com.jfireframework.jfireel.node;
 
 import java.util.Map;
+import com.jfireframework.jfireel.Operator;
 
 public class PlusNode extends OperatorResultNode
 {
+	
+	public PlusNode()
+	{
+		super(Operator.PLUS);
+	}
 	
 	@Override
 	public Object calculate(Map<String, Object> variables)

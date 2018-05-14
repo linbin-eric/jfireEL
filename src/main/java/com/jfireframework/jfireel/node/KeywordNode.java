@@ -43,4 +43,10 @@ public class KeywordNode implements CalculateNode
 		return keyWord;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return "KeywordNode [keywordValue=" + keywordValue + ", keyWord=" + keyWord + "]";
+	}
+	
 }

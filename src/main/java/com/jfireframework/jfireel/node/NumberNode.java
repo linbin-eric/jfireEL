@@ -31,5 +31,11 @@ public class NumberNode implements CalculateNode
 	{
 		return Expression.NUMBER;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "NumberNode [value=" + value + "]";
+	}
 	
 }

@@ -123,4 +123,11 @@ public class PropertyNode implements CalculateNode
 			return field;
 		}
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "PropertyNode [propertyName=" + propertyName + "]";
+	}
+	
 }

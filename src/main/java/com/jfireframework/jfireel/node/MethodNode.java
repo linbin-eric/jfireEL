@@ -123,4 +123,11 @@ public class MethodNode implements CalculateNode
 	{
 		this.argsNodes = argsNodes;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "MethodNode [methodName=" + methodName + "]";
+	}
+	
 }
