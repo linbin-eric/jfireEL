@@ -14,6 +14,16 @@ public abstract class TestSupport
 		{
 			return person;
 		}
+		
+		public int personAge(Person person)
+		{
+			return person.getAge();
+		}
+		
+		public int personAge2(int age)
+		{
+			return age;
+		}
 	}
 	
 	protected class Person

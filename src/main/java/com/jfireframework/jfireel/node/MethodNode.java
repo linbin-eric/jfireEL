@@ -13,10 +13,12 @@ public class MethodNode implements CalculateNode
 	private volatile Class<?>	beanType;
 	protected boolean			recognizeEveryTime	= true;
 	private CalculateNode[]		argsNodes;
+	private Expression			type;
 	
 	public MethodNode(String literals, CalculateNode beanNode)
 	{
 		methodName = literals;
+		type = Expression.METHOD;
 		this.beanNode = beanNode;
 	}
 	
@@ -46,7 +48,7 @@ public class MethodNode implements CalculateNode
 	@Override
 	public CalculateType type()
 	{
-		return Expression.METHOD;
+		return type;
 	}
 	
 	private Method getMethod(Object value, Object[] args)
@@ -67,9 +69,19 @@ public class MethodNode implements CalculateNode
 								Class<?>[] parameterTypes = each.getParameterTypes();
 								for (int i = 0; i < args.length; i++)
 								{
-									if (args[0] != null && parameterTypes[i].isAssignableFrom(args[0].getClass()) == false)
+									if (parameterTypes[i].isPrimitive())
 									{
-										continue nextmethod;
+										if (args[0] == null || isWrapType(parameterTypes[i], args[0].getClass()) == false)
+										{
+											continue nextmethod;
+										}
+									}
+									else
+									{
+										if (args[0] != null && parameterTypes[i].isAssignableFrom(args[0].getClass()) == false)
+										{
+											continue nextmethod;
+										}
 									}
 								}
 								accessMethod = each;
@@ -122,6 +134,7 @@ public class MethodNode implements CalculateNode
 	public void setArgsNodes(CalculateNode[] argsNodes)
 	{
 		this.argsNodes = argsNodes;
+		type = Expression.METHOD_RESULT;
 	}
 	
 	@Override
@@ -130,4 +143,43 @@ public class MethodNode implements CalculateNode
 		return "MethodNode [methodName=" + methodName + "]";
 	}
 	
+	private boolean isWrapType(Class<?> primitiveType, Class<?> arge)
+	{
+		if (primitiveType == int.class)
+		{
+			return arge == Integer.class;
+		}
+		else if (primitiveType == short.class)
+		{
+			return arge == Short.class;
+		}
+		else if (primitiveType == long.class)
+		{
+			return arge == Long.class;
+		}
+		else if (primitiveType == boolean.class)
+		{
+			return arge == Boolean.class;
+		}
+		else if (primitiveType == float.class)
+		{
+			return arge == Float.class;
+		}
+		else if (primitiveType == double.class)
+		{
+			return arge == Double.class;
+		}
+		else if (primitiveType == char.class)
+		{
+			return arge == Character.class;
+		}
+		else if (primitiveType == byte.class)
+		{
+			return arge == Byte.class;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }

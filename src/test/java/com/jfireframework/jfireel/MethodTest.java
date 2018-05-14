@@ -58,4 +58,18 @@ public class MethodTest extends TestSupport
 		vars.put("value", value);
 		assertTrue((Boolean) lexer.calculate(vars));
 	}
+	
+	@Test
+	public void test8()
+	{
+		Lexer lexer = Lexer.parse("home.personAge(person)");
+		assertEquals(person.getAge(), lexer.calculate(vars));
+	}
+	
+	@Test
+	public void test9()
+	{
+		Lexer lexer = Lexer.parse("home.personAge2(person.getAge())");
+		assertEquals(person.getAge(), lexer.calculate(vars));
+	}
 }
