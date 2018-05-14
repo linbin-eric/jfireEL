@@ -19,7 +19,7 @@ public enum Operator implements CalculateType
 	COLON(":"), //
 	LT_EQ("<="), //
 	GT_EQ(">="), //
-	BANG_EQ("!="), //
+	NOT_EQ("!="), //
 	DOUBLE_AMP("&&"), //
 	DOUBLE_BAR("||"), //
 	;

@@ -10,6 +10,7 @@ import com.jfireframework.jfireel.node.EqualNode;
 import com.jfireframework.jfireel.node.KeywordNode;
 import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.node.MutliNode;
+import com.jfireframework.jfireel.node.NotEqualNode;
 import com.jfireframework.jfireel.node.NumberNode;
 import com.jfireframework.jfireel.node.OperatorNode;
 import com.jfireframework.jfireel.node.OperatorResultNode;
@@ -323,6 +324,9 @@ public class Lexer
 				break;
 			case EQ:
 				resultNode = new EqualNode();
+				break;
+			case NOT_EQ:
+				resultNode = new NotEqualNode();
 				break;
 			default:
 				break;

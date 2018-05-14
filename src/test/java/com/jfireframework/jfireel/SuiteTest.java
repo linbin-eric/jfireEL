@@ -5,7 +5,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @SuiteClasses({ PlusTest.class, PropertyTest.class, MethodTest.class })
 @RunWith(value = org.junit.runners.Suite.class)
-public class Suite
+public class SuiteTest
 {
 	
 }

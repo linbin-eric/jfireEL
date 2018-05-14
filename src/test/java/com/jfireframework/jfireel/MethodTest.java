@@ -49,4 +49,13 @@ public class MethodTest extends TestSupport
 		vars.put("value", value);
 		assertTrue((Boolean) lexer.calculate(vars));
 	}
+	
+	@Test
+	public void test7()
+	{
+		String value = person.age + 3 * 2 + "abced";
+		Lexer lexer = Lexer.parse("home.getPerson().getAge()+3*2+'abc' != value");
+		vars.put("value", value);
+		assertTrue((Boolean) lexer.calculate(vars));
+	}
 }
