@@ -6,12 +6,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import com.jfireframework.jfireel.node.CalculateNode;
-import com.jfireframework.jfireel.node.ConstantNode;
+import com.jfireframework.jfireel.node.KeywordNode;
 import com.jfireframework.jfireel.node.MethodNode;
+import com.jfireframework.jfireel.node.MutliNode;
+import com.jfireframework.jfireel.node.NumberNode;
 import com.jfireframework.jfireel.node.OperatorNode;
 import com.jfireframework.jfireel.node.OperatorResultNode;
 import com.jfireframework.jfireel.node.PlusNode;
 import com.jfireframework.jfireel.node.PropertyNode;
+import com.jfireframework.jfireel.node.StringNode;
 import com.jfireframework.jfireel.node.SymBolNode;
 import com.jfireframework.jfireel.node.VariableNode;
 
@@ -22,7 +25,12 @@ public class Lexer
 	private int						offset		= 0;
 	private String					el;
 	
-	public Lexer(String el)
+	public static Lexer parse(String el)
+	{
+		return new Lexer(el);
+	}
+	
+	private Lexer(String el)
 	{
 		this.el = el;
 		scan();
@@ -128,7 +136,7 @@ public class Lexer
 			length += 1;
 		}
 		String characters = el.substring(offset + 1, length);
-		nodes.push(new ConstantNode(characters));
+		nodes.push(new StringNode(characters));
 		offset += length + 1;
 	}
 	
@@ -233,7 +241,7 @@ public class Lexer
 			for (int i = 0; i < list.size();)
 			{
 				CalculateType type = list.get(i).type();
-				if (type == Operator.STAR || type == Operator.SLASH || type == Operator.PERCENT)
+				if (type == Operator.MULTI || type == Operator.DIVISION || type == Operator.PERCENT)
 				{
 					if (i > 0 && list.size() > i + 1//
 					        && Operator.class.isAssignableFrom(list.get(i - 1).type().getClass()) == false//
@@ -299,9 +307,15 @@ public class Lexer
 	private OperatorResultNode buildOperatorResultNode(CalculateNode leftNode, CalculateNode operatorNode, CalculateNode rightNode)
 	{
 		OperatorResultNode resultNode = null;
-		if (operatorNode.type() == Operator.PLUS)
+		switch ((Operator) operatorNode.type())
 		{
-			resultNode = new PlusNode();
+			case PLUS:
+				resultNode = new PlusNode();
+				break;
+			case MULTI:
+				resultNode = new MutliNode();
+			default:
+				break;
 		}
 		resultNode.addLeftOperand(leftNode);
 		resultNode.addRightOperand(rightNode);
@@ -348,7 +362,7 @@ public class Lexer
 		{
 			throw new IllegalArgumentException(el.substring(offset, offset + length));
 		}
-		nodes.push(new ConstantNode(el.substring(offset, offset + length)));
+		nodes.push(new NumberNode(el.substring(offset, offset + length)));
 		offset += length;
 	}
 	
@@ -416,7 +430,7 @@ public class Lexer
 		offset += length;
 		if (DefaultKeyWord.getDefaultKeyWord(literals) != null)
 		{
-			return new ConstantNode(literals);
+			return new KeywordNode(literals);
 		}
 		else
 		{

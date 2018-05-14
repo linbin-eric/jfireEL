@@ -10,6 +10,10 @@ public enum Expression implements CalculateType
 	METHOD, //
     // 字符串
 	STRING, //
+    // 数字
+	NUMBER, //
+    // 运算式结果
+	OPERATOR_RESULT, //
     // 常量
 	CONSTANT, //
 }

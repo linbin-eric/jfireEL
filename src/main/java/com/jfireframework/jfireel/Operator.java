@@ -7,8 +7,8 @@ public enum Operator implements CalculateType
 {
     PLUS("+"), //
     SUB("-"), //
-    STAR("*"), //
-    SLASH("/"), //
+    MULTI("*"), //
+    DIVISION("/"), //
     QUESTION("?"), //
     EQ("=="), //
     GT(">"), //

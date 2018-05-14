@@ -1,5 +1,8 @@
 package com.jfireframework.jfireel.node;
 
+import com.jfireframework.jfireel.CalculateType;
+import com.jfireframework.jfireel.Expression;
+
 public abstract class OperatorResultNode implements CalculateNode
 {
 	protected CalculateNode	leftOperand;
@@ -13,6 +16,12 @@ public abstract class OperatorResultNode implements CalculateNode
 	public void addRightOperand(CalculateNode node)
 	{
 		rightOperand = node;
+	}
+	
+	@Override
+	public CalculateType type()
+	{
+		return Expression.OPERATOR_RESULT;
 	}
 	
 }

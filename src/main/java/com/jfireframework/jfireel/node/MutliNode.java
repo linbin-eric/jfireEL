@@ -2,7 +2,7 @@ package com.jfireframework.jfireel.node;
 
 import java.util.Map;
 
-public class PlusNode extends OperatorResultNode
+public class MutliNode extends OperatorResultNode
 {
 	
 	@Override
@@ -18,17 +18,13 @@ public class PlusNode extends OperatorResultNode
 		{
 			return null;
 		}
-		if (leftValue instanceof String || rightValue instanceof String)
-		{
-			return String.valueOf(leftValue) + String.valueOf(rightValue);
-		}
 		if (leftValue instanceof Double || rightValue instanceof Double)
 		{
-			return ((Number) leftValue).doubleValue() + ((Number) rightValue).doubleValue();
+			return ((Number) leftValue).doubleValue() * ((Number) rightValue).doubleValue();
 		}
 		else
 		{
-			return ((Number) leftValue).longValue() + ((Number) rightValue).longValue();
+			return ((Number) leftValue).longValue() * ((Number) rightValue).longValue();
 		}
 	}
 	
