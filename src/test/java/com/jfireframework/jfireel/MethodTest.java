@@ -1,6 +1,7 @@
 package com.jfireframework.jfireel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -78,5 +79,21 @@ public class MethodTest extends TestSupport
 	{
 		Lexer lexer = Lexer.parse("home.personAge2(person.getAge()+2)");
 		assertEquals(person.getAge() + 2, lexer.calculate(vars));
+	}
+	
+	@Test
+	public void test11()
+	{
+		Lexer lexer = Lexer.parse("home.name(person.getAge() + '12')");
+		assertEquals(person.age + "12", lexer.calculate(vars));
+	}
+	
+	@Test
+	public void test12()
+	{
+		String value = person.age + "12";
+		vars.put("value", value);
+		Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)");
+		assertFalse((Boolean) lexer.calculate(vars));
 	}
 }

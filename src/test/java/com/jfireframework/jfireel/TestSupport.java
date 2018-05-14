@@ -24,6 +24,16 @@ public abstract class TestSupport
 		{
 			return age;
 		}
+		
+		public String name(String name)
+		{
+			return name;
+		}
+		
+		public boolean bool(boolean b)
+		{
+			return b;
+		}
 	}
 	
 	protected class Person
