@@ -1,7 +1,8 @@
 package com.jfireframework.jfireel;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Stack;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.node.CalculatePropertyNode;
 import com.jfireframework.jfireel.node.ConstantNode;
@@ -13,8 +14,9 @@ import com.jfireframework.jfireel.node.VariablePropertyNode;
 
 public class Lexer
 {
-    private Stack<CalculateNode>  nodes  = new Stack<CalculateNode>();
-    private int                   offset = 0;
+    private Deque<CalculateNode>  nodes    = new LinkedList<CalculateNode>();
+    private Deque<CalculateNode>  tmpStack = new LinkedList<CalculateNode>();
+    private int                   offset   = 0;
     private String                el;
     private Map<String, Class<?>> variableTypes;
     
@@ -54,19 +56,7 @@ public class Lexer
     
     private void scanIdentifier()
     {
-        CalculateNode pred = nodes.peek();
-        if (pred.type() instanceof Operator)
-        {
-            
-        }
-        else if (pred.type() == Expression.METHOD)
-        {
-            ((MethodNode) pred).addParamNode(parseIdentifier());
-        }
-        else
-        {
-            nodes.push(parseIdentifier());
-        }
+        nodes.push(parseIdentifier());
     }
     
     private boolean isRightParen()
@@ -76,16 +66,30 @@ public class Lexer
     
     private void scanRightParen()
     {
-        CalculateNode pred = nodes.pop();
-        if (nodes.peek() != null && nodes.peek().type() == Symbol.LEFT_PAREN)
+        CalculateNode pred;
+        while ((pred = nodes.peek()).type() != Symbol.LEFT_PAREN || pred.type() != Expression.METHOD)
         {
+            tmpStack.push(pred);
             nodes.pop();
-            nodes.push(pred);
+        }
+        if (pred.type() == Expression.METHOD)
+        {
+            CalculateNode paramNode;
+            while ((paramNode = tmpStack.pop()) != null)
+            {
+                ((MethodNode) pred).addParamNode(paramNode);
+            }
             offset += 1;
         }
         else
         {
-            throw new IllegalArgumentException(el.substring(0, offset + 1));
+            if (tmpStack.size() != 1)
+            {
+                throw new IllegalArgumentException(el.substring(0, offset + 1));
+            }
+            nodes.pop();
+            nodes.push(tmpStack.pop());
+            offset += 1;
         }
     }
     
