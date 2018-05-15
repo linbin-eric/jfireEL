@@ -122,19 +122,35 @@ public class Lexer
     
     private void scanOperator()
     {
-        String literals = el.substring(offset, offset + 1);
-        if (Operator.literalsOf(literals) != null)
+        if (offset + 2 < el.length())
         {
-            nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
-            offset += 1;
-            return;
+            String literals = el.substring(offset, offset + 2);
+            if (Operator.literalsOf(literals) != null)
+            {
+                nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
+                offset += 2;
+                return;
+            }
+            literals = el.substring(offset, offset + 1);
+            if (Operator.literalsOf(literals) != null)
+            {
+                nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
+                offset += 1;
+                return;
+            }
+            throw new IllegalArgumentException("无法识别的操作符:" + el.substring(offset, offset + 1));
         }
-        literals = el.substring(offset, offset + 2);
-        if (Operator.literalsOf(literals) != null)
+        else
         {
-            nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
-            offset += 2;
-            return;
+            String literals = el.substring(offset, offset + 1);
+            if (Operator.literalsOf(literals) != null)
+            {
+                nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
+                offset += 1;
+                return;
+            }
+            throw new IllegalArgumentException("无法识别的操作符:" + el.substring(offset, offset + 1));
+            
         }
     }
     
