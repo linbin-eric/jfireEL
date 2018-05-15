@@ -1,8 +1,9 @@
 package com.jfireframework.jfireel.node;
 
+import com.jfireframework.jfireel.node.impl.CompileMethodNode;
+import com.jfireframework.jfireel.node.impl.DefaultMethodNode;
 import com.jfireframework.jfireel.node.impl.EqualNode;
 import com.jfireframework.jfireel.node.impl.KeywordNode;
-import com.jfireframework.jfireel.node.impl.MethodNodeImpl;
 import com.jfireframework.jfireel.node.impl.MutliNode;
 import com.jfireframework.jfireel.node.impl.NotEqualNode;
 import com.jfireframework.jfireel.node.impl.NumberNode;
@@ -15,6 +16,7 @@ import com.jfireframework.jfireel.node.impl.SymBolNode;
 import com.jfireframework.jfireel.node.impl.VariableNode;
 import com.jfireframework.jfireel.token.Operator;
 import com.jfireframework.jfireel.token.Symbol;
+import com.jfireframework.jfireel.util.Functions;
 
 public class BuildInNodeFactory implements NodeFactory
 {
@@ -66,7 +68,14 @@ public class BuildInNodeFactory implements NodeFactory
     @Override
     public CalculateNode buildMethodNode(CalculateNode beanNode, String literals, int function)
     {
-        return new MethodNodeImpl(literals, beanNode);
+        if (Functions.isMethodInvokeByCompile(function))
+        {
+            return new CompileMethodNode(literals, beanNode);
+        }
+        else
+        {
+            return new DefaultMethodNode(literals, beanNode);
+        }
     }
     
     @Override

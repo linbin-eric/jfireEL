@@ -27,7 +27,9 @@ public class PlusNode extends OperatorResultNode
         }
         if (leftValue instanceof String || rightValue instanceof String)
         {
-            return String.valueOf(leftValue) + String.valueOf(rightValue);
+            StringBuilder builder = new StringBuilder();
+            builder.append(leftValue).append(rightValue);
+            return builder.toString();
         }
         return PlusUtil.plus((Number) leftValue, (Number) rightValue);
     }

@@ -3,8 +3,8 @@ package com.jfireframework.jfireel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Ignore;
 import org.junit.Test;
+import com.jfireframework.jfireel.util.Functional;
 
 public class MethodTest extends TestSupport
 {
@@ -99,17 +99,27 @@ public class MethodTest extends TestSupport
     }
     
     @Test
-    @Ignore
+    public void test13()
+    {
+        String value = person.age + "12";
+        vars.put("value", value);
+        Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
+        assertFalse((Boolean) lexer.calculate(vars));
+    }
+    
+    @Test
     public void perTest()
     {
         String value = person.age + "12";
         vars.put("value", value);
         Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)");
-        int preheat = 100;
-        int count = 100000000;
+        Lexer lexer2 = Lexer.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
+        int preheat = 100000;
+        int count = 10000000;
         for (int i = 0; i < preheat; i++)
         {
             lexer.calculate(vars);
+            lexer2.calculate(vars);
         }
         long t0 = System.nanoTime();
         for (int i = 0; i < count; i++)
@@ -121,7 +131,14 @@ public class MethodTest extends TestSupport
         t0 = System.nanoTime();
         for (int i = 0; i < count; i++)
         {
-            home.bool((person.getAge() + "12").equals(value));
+            lexer2.calculate(vars);
+        }
+        t1 = System.nanoTime();
+        System.out.println("计算" + (count / 10000) + "万次耗时:" + (t1 - t0) / 1000 / 1000 + "毫秒");
+        t0 = System.nanoTime();
+        for (int i = 0; i < count; i++)
+        {
+            home.bool((person.getAge() + "12").equals(value) == false);
         }
         t1 = System.nanoTime();
         System.out.println("计算" + (count / 10000) + "万次耗时:" + (t1 - t0) / 1000 / 1000 + "毫秒");
