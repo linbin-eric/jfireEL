@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel;
+package com.jfireframework.jfireel.token;
 
 public enum Expression implements CalculateType
 {

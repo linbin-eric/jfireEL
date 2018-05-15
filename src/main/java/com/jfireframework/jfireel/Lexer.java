@@ -6,19 +6,25 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import com.jfireframework.jfireel.node.CalculateNode;
-import com.jfireframework.jfireel.node.EqualNode;
-import com.jfireframework.jfireel.node.KeywordNode;
-import com.jfireframework.jfireel.node.MethodNode;
-import com.jfireframework.jfireel.node.MutliNode;
-import com.jfireframework.jfireel.node.NotEqualNode;
-import com.jfireframework.jfireel.node.NumberNode;
-import com.jfireframework.jfireel.node.OperatorNode;
-import com.jfireframework.jfireel.node.OperatorResultNode;
-import com.jfireframework.jfireel.node.PlusNode;
-import com.jfireframework.jfireel.node.PropertyNode;
-import com.jfireframework.jfireel.node.StringNode;
-import com.jfireframework.jfireel.node.SymBolNode;
-import com.jfireframework.jfireel.node.VariableNode;
+import com.jfireframework.jfireel.node.impl.EqualNode;
+import com.jfireframework.jfireel.node.impl.KeywordNode;
+import com.jfireframework.jfireel.node.impl.MethodNode;
+import com.jfireframework.jfireel.node.impl.MutliNode;
+import com.jfireframework.jfireel.node.impl.NotEqualNode;
+import com.jfireframework.jfireel.node.impl.NumberNode;
+import com.jfireframework.jfireel.node.impl.OperatorNode;
+import com.jfireframework.jfireel.node.impl.OperatorResultNode;
+import com.jfireframework.jfireel.node.impl.PlusNode;
+import com.jfireframework.jfireel.node.impl.PropertyNode;
+import com.jfireframework.jfireel.node.impl.StringNode;
+import com.jfireframework.jfireel.node.impl.SymBolNode;
+import com.jfireframework.jfireel.node.impl.VariableNode;
+import com.jfireframework.jfireel.token.CalculateType;
+import com.jfireframework.jfireel.token.CharType;
+import com.jfireframework.jfireel.token.DefaultKeyWord;
+import com.jfireframework.jfireel.token.Expression;
+import com.jfireframework.jfireel.token.Operator;
+import com.jfireframework.jfireel.token.Symbol;
 
 public class Lexer
 {

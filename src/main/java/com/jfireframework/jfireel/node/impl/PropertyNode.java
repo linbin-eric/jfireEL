@@ -1,9 +1,10 @@
-package com.jfireframework.jfireel.node;
+package com.jfireframework.jfireel.node.impl;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-import com.jfireframework.jfireel.CalculateType;
-import com.jfireframework.jfireel.Expression;
+import com.jfireframework.jfireel.node.CalculateNode;
+import com.jfireframework.jfireel.token.CalculateType;
+import com.jfireframework.jfireel.token.Expression;
 
 public class PropertyNode implements CalculateNode
 {

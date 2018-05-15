@@ -1,8 +1,9 @@
-package com.jfireframework.jfireel.node;
+package com.jfireframework.jfireel.node.impl;
 
 import java.util.Map;
-import com.jfireframework.jfireel.CalculateType;
-import com.jfireframework.jfireel.Symbol;
+import com.jfireframework.jfireel.node.CalculateNode;
+import com.jfireframework.jfireel.token.CalculateType;
+import com.jfireframework.jfireel.token.Symbol;
 
 public class SymBolNode implements CalculateNode
 {

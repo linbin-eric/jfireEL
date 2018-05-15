@@ -1,8 +1,9 @@
-package com.jfireframework.jfireel.node;
+package com.jfireframework.jfireel.node.impl;
 
-import com.jfireframework.jfireel.CalculateType;
-import com.jfireframework.jfireel.Expression;
-import com.jfireframework.jfireel.Operator;
+import com.jfireframework.jfireel.node.CalculateNode;
+import com.jfireframework.jfireel.token.CalculateType;
+import com.jfireframework.jfireel.token.Expression;
+import com.jfireframework.jfireel.token.Operator;
 
 public abstract class OperatorResultNode implements CalculateNode
 {

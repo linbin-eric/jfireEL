@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel;
+package com.jfireframework.jfireel.token;
 
 import java.util.HashMap;
 import java.util.HashSet;

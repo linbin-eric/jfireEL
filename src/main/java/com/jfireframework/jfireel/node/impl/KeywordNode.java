@@ -1,9 +1,10 @@
-package com.jfireframework.jfireel.node;
+package com.jfireframework.jfireel.node.impl;
 
 import java.util.Map;
-import com.jfireframework.jfireel.CalculateType;
-import com.jfireframework.jfireel.DefaultKeyWord;
-import com.jfireframework.jfireel.KeyWord;
+import com.jfireframework.jfireel.node.CalculateNode;
+import com.jfireframework.jfireel.token.CalculateType;
+import com.jfireframework.jfireel.token.DefaultKeyWord;
+import com.jfireframework.jfireel.token.KeyWord;
 
 public class KeywordNode implements CalculateNode
 {

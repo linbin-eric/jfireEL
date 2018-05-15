@@ -1,7 +1,7 @@
-package com.jfireframework.jfireel.node;
+package com.jfireframework.jfireel.node.impl;
 
 import java.util.Map;
-import com.jfireframework.jfireel.Operator;
+import com.jfireframework.jfireel.token.Operator;
 
 public class NotEqualNode extends OperatorResultNode
 {

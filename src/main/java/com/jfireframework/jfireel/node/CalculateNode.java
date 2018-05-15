@@ -1,7 +1,7 @@
 package com.jfireframework.jfireel.node;
 
 import java.util.Map;
-import com.jfireframework.jfireel.CalculateType;
+import com.jfireframework.jfireel.token.CalculateType;
 
 public interface CalculateNode
 {
