@@ -96,4 +96,26 @@ public class MethodTest extends TestSupport
 		Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)");
 		assertFalse((Boolean) lexer.calculate(vars));
 	}
+	
+	@Test
+	public void perTest()
+	{
+		String value = person.age + "12";
+		vars.put("value", value);
+		Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)");
+		int preheat = 100;
+		int count = 10000000;
+		for (int i = 0; i < preheat; i++)
+		{
+			lexer.calculate(vars);
+		}
+		long t0 = System.nanoTime();
+		for (int i = 0; i < count; i++)
+		{
+			lexer.calculate(vars);
+		}
+		long t1 = System.nanoTime();
+		System.out.println("计算" + (count / 10000) + "万次耗时:" + (t1 - t0) / 1000 / 1000 + "毫秒");
+		
+	}
 }
