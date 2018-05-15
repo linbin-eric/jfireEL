@@ -6,19 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import com.jfireframework.jfireel.node.CalculateNode;
-import com.jfireframework.jfireel.node.impl.EqualNode;
-import com.jfireframework.jfireel.node.impl.KeywordNode;
-import com.jfireframework.jfireel.node.impl.MethodNode;
-import com.jfireframework.jfireel.node.impl.MutliNode;
-import com.jfireframework.jfireel.node.impl.NotEqualNode;
-import com.jfireframework.jfireel.node.impl.NumberNode;
-import com.jfireframework.jfireel.node.impl.OperatorNode;
-import com.jfireframework.jfireel.node.impl.OperatorResultNode;
-import com.jfireframework.jfireel.node.impl.PlusNode;
-import com.jfireframework.jfireel.node.impl.PropertyNode;
-import com.jfireframework.jfireel.node.impl.StringNode;
-import com.jfireframework.jfireel.node.impl.SymBolNode;
-import com.jfireframework.jfireel.node.impl.VariableNode;
+import com.jfireframework.jfireel.node.MethodNode;
+import com.jfireframework.jfireel.node.BuildInNodeFactory;
+import com.jfireframework.jfireel.node.NodeFactory;
 import com.jfireframework.jfireel.token.CalculateType;
 import com.jfireframework.jfireel.token.CharType;
 import com.jfireframework.jfireel.token.DefaultKeyWord;
@@ -32,6 +22,8 @@ public class Lexer
 	private Deque<CalculateNode>	tmpStack	= new LinkedList<CalculateNode>();
 	private int						offset		= 0;
 	private String					el;
+	private NodeFactory				nodeFactory;
+	private int						function;
 	
 	public static Lexer parse(String el)
 	{
@@ -40,6 +32,8 @@ public class Lexer
 	
 	private Lexer(String el)
 	{
+		nodeFactory = new BuildInNodeFactory();
+		function = 0;
 		this.el = el;
 		scan();
 	}
@@ -118,14 +112,14 @@ public class Lexer
 		String literals = el.substring(offset, offset + 1);
 		if (Operator.literalsOf(literals) != null)
 		{
-			nodes.push(new OperatorNode(Operator.literalsOf(literals)));
+			nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
 			offset += 1;
 			return;
 		}
 		literals = el.substring(offset, offset + 2);
 		if (Operator.literalsOf(literals) != null)
 		{
-			nodes.push(new OperatorNode(Operator.literalsOf(literals)));
+			nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
 			offset += 2;
 			return;
 		}
@@ -143,8 +137,8 @@ public class Lexer
 		{
 			length += 1;
 		}
-		String characters = el.substring(offset + 1, offset + length);
-		nodes.push(new StringNode(characters));
+		String literals = el.substring(offset + 1, offset + length);
+		nodes.push(nodeFactory.buildStringNode(literals, function));
 		offset += length + 1;
 	}
 	
@@ -155,7 +149,7 @@ public class Lexer
 	
 	private void scanComma()
 	{
-		nodes.push(new SymBolNode(Symbol.COMMA));
+		nodes.push(nodeFactory.parseSymBol(Symbol.COMMA, function));
 		offset += 1;
 	}
 	
@@ -239,7 +233,7 @@ public class Lexer
 			// 第二个node是操作符
 			if (Operator.class.isAssignableFrom(list.get(1).type().getClass()))
 			{
-				return buildOperatorResultNode(list.get(0), list.get(1), list.get(2));
+				return nodeFactory.buildOperatorResultNode(list.get(0), list.get(1), list.get(2), function);
 			}
 			// 否则是非法情况
 			else
@@ -261,7 +255,7 @@ public class Lexer
 					        && Operator.isOperator(list.get(i + 1).type()) == false//
 					)
 					{
-						OperatorResultNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
+						CalculateNode resultNode = nodeFactory.buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1), function);
 						list.remove(i - 1);
 						list.remove(i - 1);
 						list.remove(i - 1);
@@ -288,7 +282,7 @@ public class Lexer
 					        && Operator.isOperator(list.get(i + 1).type()) == false//
 					)
 					{
-						OperatorResultNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
+						CalculateNode resultNode = nodeFactory.buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1), function);
 						list.remove(i - 1);
 						list.remove(i - 1);
 						list.remove(i - 1);
@@ -317,31 +311,6 @@ public class Lexer
 		}
 	}
 	
-	private OperatorResultNode buildOperatorResultNode(CalculateNode leftNode, CalculateNode operatorNode, CalculateNode rightNode)
-	{
-		OperatorResultNode resultNode = null;
-		switch ((Operator) operatorNode.type())
-		{
-			case PLUS:
-				resultNode = new PlusNode();
-				break;
-			case MULTI:
-				resultNode = new MutliNode();
-				break;
-			case EQ:
-				resultNode = new EqualNode();
-				break;
-			case NOT_EQ:
-				resultNode = new NotEqualNode();
-				break;
-			default:
-				break;
-		}
-		resultNode.addLeftOperand(leftNode);
-		resultNode.addRightOperand(rightNode);
-		return resultNode;
-	}
-	
 	private boolean isLeftParen()
 	{
 		return '(' == getCurrentChar(0);
@@ -350,7 +319,7 @@ public class Lexer
 	private void scanLeftParen()
 	{
 		offset += 1;
-		nodes.push(new SymBolNode(Symbol.LEFT_PAREN));
+		nodes.push(nodeFactory.parseSymBol(Symbol.LEFT_PAREN, function));
 	}
 	
 	private boolean isIdentifierBegin()
@@ -382,7 +351,7 @@ public class Lexer
 		{
 			throw new IllegalArgumentException(el.substring(offset, offset + length));
 		}
-		nodes.push(new NumberNode(el.substring(offset, offset + length)));
+		nodes.push(nodeFactory.buildNumberNode(el.substring(offset, offset + length), function));
 		offset += length;
 	}
 	
@@ -423,8 +392,8 @@ public class Lexer
 		if (c == '(')
 		{
 			String literals = el.substring(offset, offset + length);
-			CalculateNode pred = nodes.pop();
-			MethodNode methodNode = new MethodNode(literals, pred);
+			CalculateNode beanNode = nodes.pop();
+			CalculateNode methodNode = nodeFactory.buildMethodNode(beanNode, literals, function);
 			nodes.push(methodNode);
 			offset += length + 1;
 		}
@@ -432,8 +401,8 @@ public class Lexer
 		else
 		{
 			String literals = el.substring(offset, offset + length);
-			CalculateNode pred = nodes.pop();
-			PropertyNode current = new PropertyNode(literals, pred);
+			CalculateNode beanNode = nodes.pop();
+			CalculateNode current = nodeFactory.buildPropertyNode(beanNode, literals, function);
 			nodes.push(current);
 			offset += length;
 		}
@@ -451,11 +420,11 @@ public class Lexer
 		offset += length;
 		if (DefaultKeyWord.getDefaultKeyWord(literals) != null)
 		{
-			return new KeywordNode(literals);
+			return nodeFactory.parseKeyWord(literals, function);
 		}
 		else
 		{
-			return new VariableNode(literals);
+			return nodeFactory.parseVariable(literals, function);
 		}
 	}
 	

@@ -3,10 +3,11 @@ package com.jfireframework.jfireel.node.impl;
 import java.lang.reflect.Method;
 import java.util.Map;
 import com.jfireframework.jfireel.node.CalculateNode;
+import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.token.CalculateType;
 import com.jfireframework.jfireel.token.Expression;
 
-public class MethodNode implements CalculateNode
+public class MethodNodeImpl implements MethodNode
 {
 	private final CalculateNode	beanNode;
 	private final String		methodName;
@@ -17,12 +18,7 @@ public class MethodNode implements CalculateNode
 	private ConvertType[]		convertTypes;
 	private Expression			type;
 	
-	enum ConvertType
-	{
-		INT, LONG, SHORT, FLOAT, DOUBLE, BYTE, OTHER
-	}
-	
-	public MethodNode(String literals, CalculateNode beanNode)
+	public MethodNodeImpl(String literals, CalculateNode beanNode)
 	{
 		methodName = literals;
 		type = Expression.METHOD;
