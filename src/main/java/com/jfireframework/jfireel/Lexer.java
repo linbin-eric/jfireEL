@@ -10,11 +10,11 @@ import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.node.BuildInNodeFactory;
 import com.jfireframework.jfireel.node.NodeFactory;
 import com.jfireframework.jfireel.token.CalculateType;
-import com.jfireframework.jfireel.token.CharType;
 import com.jfireframework.jfireel.token.DefaultKeyWord;
 import com.jfireframework.jfireel.token.Expression;
 import com.jfireframework.jfireel.token.Operator;
 import com.jfireframework.jfireel.token.Symbol;
+import com.jfireframework.jfireel.util.CharType;
 
 public class Lexer
 {

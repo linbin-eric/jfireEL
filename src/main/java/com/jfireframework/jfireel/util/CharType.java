@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel.token;
+package com.jfireframework.jfireel.util;
 
 public class CharType
 {

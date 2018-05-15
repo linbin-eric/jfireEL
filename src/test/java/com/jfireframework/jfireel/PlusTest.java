@@ -1,6 +1,7 @@
 package com.jfireframework.jfireel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import org.junit.Test;
 
@@ -62,5 +63,12 @@ public class PlusTest
     {
         Lexer lexer = Lexer.parse("2*(3+2)");
         assertEquals(10, lexer.calculate(null));
+    }
+    
+    @Test
+    public void test7()
+    {
+        Lexer parse = Lexer.parse("(2+1!=2)==true");
+        assertTrue((Boolean) parse.calculate(null));
     }
 }

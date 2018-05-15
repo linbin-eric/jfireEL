@@ -2,6 +2,7 @@ package com.jfireframework.jfireel.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.token.Operator;
+import com.jfireframework.jfireel.util.number.MutliUtil;
 
 public class MutliNode extends OperatorResultNode
 {
@@ -24,106 +25,7 @@ public class MutliNode extends OperatorResultNode
         {
             return null;
         }
-        if (leftValue instanceof Integer || leftValue instanceof Short || leftValue instanceof Byte)
-        {
-            int left = ((Number) leftValue).intValue();
-            if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-            {
-                return left * ((Number) rightValue).intValue();
-            }
-            else if (rightValue instanceof Long)
-            {
-                return left * ((Number) rightValue).longValue();
-            }
-            else if (rightValue instanceof Float)
-            {
-                return left * ((Number) rightValue).floatValue();
-            }
-            else if (rightValue instanceof Double)
-            {
-                return left * ((Number) rightValue).doubleValue();
-            }
-            else
-            {
-                throw new UnsupportedOperationException(rightValue.getClass().getName());
-            }
-        }
-        else if (leftValue instanceof Long)
-        {
-            long left = ((Number) leftValue).longValue();
-            if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-            {
-                return left * ((Number) rightValue).intValue();
-            }
-            else if (rightValue instanceof Long)
-            {
-                return left * ((Number) rightValue).longValue();
-            }
-            else if (rightValue instanceof Float)
-            {
-                return left * ((Number) rightValue).floatValue();
-            }
-            else if (rightValue instanceof Double)
-            {
-                return left * ((Number) rightValue).doubleValue();
-            }
-            else
-            {
-                throw new UnsupportedOperationException(rightValue.getClass().getName());
-            }
-        }
-        else if (leftValue instanceof Float)
-        {
-            float left = ((Number) leftValue).floatValue();
-            if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-            {
-                return left * ((Number) rightValue).intValue();
-            }
-            else if (rightValue instanceof Long)
-            {
-                return left * ((Number) rightValue).longValue();
-            }
-            else if (rightValue instanceof Float)
-            {
-                return left * ((Number) rightValue).floatValue();
-            }
-            else if (rightValue instanceof Double)
-            {
-                return left * ((Number) rightValue).doubleValue();
-            }
-            else
-            {
-                throw new UnsupportedOperationException(rightValue.getClass().getName());
-            }
-        }
-        else if (leftValue instanceof Double)
-        {
-            double left = ((Number) leftValue).doubleValue();
-            if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-            {
-                return left * ((Number) rightValue).intValue();
-            }
-            else if (rightValue instanceof Long)
-            {
-                return left * ((Number) rightValue).longValue();
-            }
-            else if (rightValue instanceof Float)
-            {
-                return left * ((Number) rightValue).floatValue();
-            }
-            else if (rightValue instanceof Double)
-            {
-                return left * ((Number) rightValue).doubleValue();
-            }
-            else
-            {
-                throw new UnsupportedOperationException(rightValue.getClass().getName());
-            }
-        }
-        else
-        {
-            throw new UnsupportedOperationException(leftValue.getClass().getName());
-        }
+        return MutliUtil.mutli((Number) leftValue, (Number) rightValue);
     }
     
 }
