@@ -58,8 +58,8 @@ public class BuildInNodeFactory implements NodeFactory
 			default:
 				break;
 		}
-		resultNode.addLeftOperand(leftNode);
-		resultNode.addRightOperand(rightNode);
+		resultNode.setLeftOperand(leftNode);
+		resultNode.setRightOperand(rightNode);
 		return resultNode;
 	}
 	

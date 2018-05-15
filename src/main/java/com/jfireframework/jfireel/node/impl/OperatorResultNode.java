@@ -16,12 +16,12 @@ public abstract class OperatorResultNode implements CalculateNode
 		this.type = type;
 	}
 	
-	public void addLeftOperand(CalculateNode node)
+	public void setLeftOperand(CalculateNode node)
 	{
 		leftOperand = node;
 	}
 	
-	public void addRightOperand(CalculateNode node)
+	public void setRightOperand(CalculateNode node)
 	{
 		rightOperand = node;
 	}
