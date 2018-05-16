@@ -8,7 +8,7 @@ import java.util.Set;
 public enum Operator implements CalculateType
 {
 	PLUS("+"), //
-	SUB("-"), //
+	MINUS("-"), //
 	MULTI("*"), //
 	DIVISION("/"), //
 	QUESTION("?"), //
