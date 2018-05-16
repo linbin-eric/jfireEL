@@ -42,7 +42,6 @@ public class Lexer
         function = 0;
         this.el = el;
         scan();
-        parseNode = nodes.getFirst();
     }
     
     private Lexer(String el, int function)
@@ -120,7 +119,7 @@ public class Lexer
         {
             list.add(tmp);
         }
-        nodes.push(processParam(list));
+        parseNode = processParam(list);
     }
     
     public Object calculate(Map<String, Object> variables)
