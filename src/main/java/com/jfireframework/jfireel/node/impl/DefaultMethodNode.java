@@ -94,7 +94,10 @@ public class DefaultMethodNode implements MethodNode
 						args[i] = ((Number) argeValue).byteValue();
 					}
 					break;
+				case CHARACTER:
+				case BOOLEAN:
 				case OTHER:
+					// 以上三种不用转化
 					break;
 				default:
 					break;
