@@ -117,7 +117,7 @@ public class MethodTest extends TestSupport
         Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)");
         Lexer lexer2 = Lexer.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
         int preheat = 100000;
-        int count = 1000000;
+        int count = 10000000;
         for (int i = 0; i < preheat; i++)
         {
             lexer.calculate(vars);

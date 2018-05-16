@@ -18,6 +18,7 @@ import com.jfireframework.jfireel.util.CharType;
 
 public class Lexer
 {
+    private CalculateNode        parseNode;
     private Deque<CalculateNode> nodes    = new LinkedList<CalculateNode>();
     private Deque<CalculateNode> tmpStack = new LinkedList<CalculateNode>();
     private int                  offset   = 0;
@@ -41,6 +42,7 @@ public class Lexer
         function = 0;
         this.el = el;
         scan();
+        parseNode = nodes.getFirst();
     }
     
     private Lexer(String el, int function)
@@ -84,6 +86,17 @@ public class Lexer
             {
                 scanCharacters();
             }
+            else if (isMinusBegin())
+            {
+                if (nodes.peek() != null && nodes.peek().type() instanceof Operator == false)
+                {
+                    scanOperator();
+                }
+                else
+                {
+                    scanNumber();
+                }
+            }
             else if (isNumberBegin())
             {
                 scanNumber();
@@ -112,7 +125,12 @@ public class Lexer
     
     public Object calculate(Map<String, Object> variables)
     {
-        return nodes.getFirst().calculate(variables);
+        return parseNode.calculate(variables);
+    }
+    
+    private boolean isMinusBegin()
+    {
+        return '-' == getCurrentChar(0);
     }
     
     private boolean isOperatorBegin()
@@ -122,35 +140,19 @@ public class Lexer
     
     private void scanOperator()
     {
-        if (offset + 2 < el.length())
+        String literals = el.substring(offset, offset + 1);
+        if (Operator.literalsOf(literals) != null)
         {
-            String literals = el.substring(offset, offset + 2);
-            if (Operator.literalsOf(literals) != null)
-            {
-                nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
-                offset += 2;
-                return;
-            }
-            literals = el.substring(offset, offset + 1);
-            if (Operator.literalsOf(literals) != null)
-            {
-                nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
-                offset += 1;
-                return;
-            }
-            throw new IllegalArgumentException("无法识别的操作符:" + el.substring(offset, offset + 1));
+            nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
+            offset += 1;
+            return;
         }
-        else
+        literals = el.substring(offset, offset + 2);
+        if (Operator.literalsOf(literals) != null)
         {
-            String literals = el.substring(offset, offset + 1);
-            if (Operator.literalsOf(literals) != null)
-            {
-                nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
-                offset += 1;
-                return;
-            }
-            throw new IllegalArgumentException("无法识别的操作符:" + el.substring(offset, offset + 1));
-            
+            nodes.push(nodeFactory.buildOperatorNode(Operator.literalsOf(literals), function));
+            offset += 2;
+            return;
         }
     }
     
