@@ -44,4 +44,15 @@ public class BracketTest
 		Lexer lexer = Lexer.parse("list[1]");
 		assertEquals("13", lexer.calculate(vars));
 	}
+	
+	@Test
+	public void test4()
+	{
+		List<String> list = new ArrayList<String>();
+		list.add("1");
+		list.add("2");
+		Map<String, Object> vars = new HashMap<String, Object>();
+		vars.put("list", list);
+		assertEquals("2", Lexer.parse("list[3-2]").calculate(vars));
+	}
 }
