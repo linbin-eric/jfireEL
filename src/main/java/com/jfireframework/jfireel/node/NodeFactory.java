@@ -22,4 +22,6 @@ public interface NodeFactory
 	CalculateNode buildNumberNode(String literals, int function);
 	
 	CalculateNode buildOperatorNode(Operator operator, int function);
+	
+	CalculateNode buildBracketNode(CalculateNode beanNode, CalculateNode valueNode);
 }

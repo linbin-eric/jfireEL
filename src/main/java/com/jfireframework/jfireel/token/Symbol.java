@@ -7,6 +7,8 @@ public enum Symbol implements CalculateType
 {
 	LEFT_PAREN("("), //
 	RIGHT_PAREN(")"), //
+	LEFT_BRACKET("["), //
+	RIGHT_BRACKET("]"), //
 	COMMA(",")//
 	;
 	
