@@ -2,7 +2,7 @@ package com.jfireframework.jfireel.util.number;
 
 public class PlusUtil
 {
-    private static Object intPlus(int arg0, Number b)
+    private static Object calculate(int arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -26,7 +26,7 @@ public class PlusUtil
         }
     }
     
-    private static Object longPlus(Long arg0, Number b)
+    private static Object calculate(long arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -50,7 +50,7 @@ public class PlusUtil
         }
     }
     
-    private static Object floatPlus(float arg0, Number b)
+    private static Object calculate(float arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -74,7 +74,7 @@ public class PlusUtil
         }
     }
     
-    private static Object doublePlus(double arg0, Number b)
+    private static Object calculate(double arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -98,27 +98,27 @@ public class PlusUtil
         }
     }
     
-    public static Object plus(Number a, Number b)
+    public static Object calculate(Number a, Number b)
     {
         if (a instanceof Integer || a instanceof Short || a instanceof Byte)
         {
             int arg0 = a.intValue();
-            return intPlus(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Long)
         {
             long arg0 = a.longValue();
-            return longPlus(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Float)
         {
             float arg0 = a.floatValue();
-            return floatPlus(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Double)
         {
             double arg0 = a.doubleValue();
-            return doublePlus(arg0, b);
+            return calculate(arg0, b);
         }
         else
         {

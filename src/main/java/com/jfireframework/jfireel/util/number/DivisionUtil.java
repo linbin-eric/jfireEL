@@ -2,7 +2,7 @@ package com.jfireframework.jfireel.util.number;
 
 public class DivisionUtil
 {
-    private static Object intDivision(int arg0, Number b)
+    private static Object calculate(int arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -26,7 +26,7 @@ public class DivisionUtil
         }
     }
     
-    private static Object longDivision(Long arg0, Number b)
+    private static Object calculate(long arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -50,7 +50,7 @@ public class DivisionUtil
         }
     }
     
-    private static Object floatDivision(float arg0, Number b)
+    private static Object calculate(float arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -74,7 +74,7 @@ public class DivisionUtil
         }
     }
     
-    private static Object doubleDivision(double arg0, Number b)
+    private static Object calculate(double arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -98,27 +98,27 @@ public class DivisionUtil
         }
     }
     
-    public static Object division(Number a, Number b)
+    public static Object calculate(Number a, Number b)
     {
         if (a instanceof Integer || a instanceof Short || a instanceof Byte)
         {
             int arg0 = a.intValue();
-            return intDivision(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Long)
         {
             long arg0 = a.longValue();
-            return longDivision(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Float)
         {
             float arg0 = a.floatValue();
-            return floatDivision(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Double)
         {
             double arg0 = a.doubleValue();
-            return doubleDivision(arg0, b);
+            return calculate(arg0, b);
         }
         else
         {

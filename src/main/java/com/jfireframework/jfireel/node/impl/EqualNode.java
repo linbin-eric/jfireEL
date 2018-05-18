@@ -44,7 +44,7 @@ public class EqualNode extends OperatorResultNode
             }
             else
             {
-                return EqUtil.eq((Number) leftValue, (Number) rightValue);
+                return EqUtil.calculate((Number) leftValue, (Number) rightValue);
             }
         }
     }

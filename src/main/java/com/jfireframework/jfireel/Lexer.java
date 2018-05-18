@@ -130,9 +130,16 @@ public class Lexer
 		parseNode = aggregate(list);
 	}
 	
-	public Object calculate(Map<String, Object> variables)
+	@SuppressWarnings("unchecked")
+	public <T> T calculate(Map<String, Object> variables)
 	{
-		return parseNode.calculate(variables);
+		return (T) parseNode.calculate(variables);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T calculate()
+	{
+		return (T) parseNode.calculate(null);
 	}
 	
 	private boolean isLeftBracket()

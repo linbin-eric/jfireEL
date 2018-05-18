@@ -2,13 +2,14 @@ package com.jfireframework.jfireel.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.token.Operator;
-import com.jfireframework.jfireel.util.number.MinusUtil;
+import com.jfireframework.jfireel.util.number.LtUtil;
 
-public class MinusNode extends OperatorResultNode
+public class LtNode extends OperatorResultNode
 {
-	public MinusNode()
+	
+	public LtNode()
 	{
-		super(Operator.MINUS);
+		super(Operator.LT);
 	}
 	
 	@Override
@@ -24,7 +25,7 @@ public class MinusNode extends OperatorResultNode
 		{
 			return null;
 		}
-		return MinusUtil.calculate((Number) leftValue, (Number) rightValue);
+		return LtUtil.calculate((Number) leftValue, (Number) rightValue);
 	}
 	
 }

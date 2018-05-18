@@ -25,7 +25,7 @@ public class DivisionNode extends OperatorResultNode
         {
             return null;
         }
-        return DivisionUtil.division((Number) leftValue, (Number) rightValue);
+        return DivisionUtil.calculate((Number) leftValue, (Number) rightValue);
     }
     
 }

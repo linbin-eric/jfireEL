@@ -1,24 +1,24 @@
 package com.jfireframework.jfireel.util.number;
 
-public class MinusUtil
+public class GtUtil
 {
 	private static Object calculate(int arg0, Number b)
 	{
 		if (b instanceof Integer || b instanceof Short || b instanceof Byte)
 		{
-			return arg0 - b.intValue();
+			return arg0 > b.intValue();
 		}
 		else if (b instanceof Long)
 		{
-			return arg0 - b.longValue();
+			return arg0 > b.longValue();
 		}
 		else if (b instanceof Float)
 		{
-			return arg0 - b.floatValue();
+			return arg0 > b.floatValue();
 		}
 		else if (b instanceof Double)
 		{
-			return arg0 - b.doubleValue();
+			return arg0 > b.doubleValue();
 		}
 		else
 		{
@@ -30,19 +30,19 @@ public class MinusUtil
 	{
 		if (b instanceof Integer || b instanceof Short || b instanceof Byte)
 		{
-			return arg0 - b.intValue();
+			return arg0 > b.intValue();
 		}
 		else if (b instanceof Long)
 		{
-			return arg0 - b.longValue();
+			return arg0 > b.longValue();
 		}
 		else if (b instanceof Float)
 		{
-			return arg0 - b.floatValue();
+			return arg0 > b.floatValue();
 		}
 		else if (b instanceof Double)
 		{
-			return arg0 - b.doubleValue();
+			return arg0 > b.doubleValue();
 		}
 		else
 		{
@@ -54,19 +54,19 @@ public class MinusUtil
 	{
 		if (b instanceof Integer || b instanceof Short || b instanceof Byte)
 		{
-			return arg0 - b.intValue();
+			return arg0 > b.intValue();
 		}
 		else if (b instanceof Long)
 		{
-			return arg0 - b.longValue();
+			return arg0 > b.longValue();
 		}
 		else if (b instanceof Float)
 		{
-			return arg0 - b.floatValue();
+			return arg0 > b.floatValue();
 		}
 		else if (b instanceof Double)
 		{
-			return arg0 - b.doubleValue();
+			return arg0 > b.doubleValue();
 		}
 		else
 		{
@@ -78,19 +78,19 @@ public class MinusUtil
 	{
 		if (b instanceof Integer || b instanceof Short || b instanceof Byte)
 		{
-			return arg0 - b.intValue();
+			return arg0 > b.intValue();
 		}
 		else if (b instanceof Long)
 		{
-			return arg0 - b.longValue();
+			return arg0 > b.longValue();
 		}
 		else if (b instanceof Float)
 		{
-			return arg0 - b.floatValue();
+			return arg0 > b.floatValue();
 		}
 		else if (b instanceof Double)
 		{
-			return arg0 - b.doubleValue();
+			return arg0 > b.doubleValue();
 		}
 		else
 		{

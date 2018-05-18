@@ -5,7 +5,9 @@ import com.jfireframework.jfireel.node.impl.CompileMethodNode;
 import com.jfireframework.jfireel.node.impl.DefaultMethodNode;
 import com.jfireframework.jfireel.node.impl.DivisionNode;
 import com.jfireframework.jfireel.node.impl.EqualNode;
+import com.jfireframework.jfireel.node.impl.GtNode;
 import com.jfireframework.jfireel.node.impl.KeywordNode;
+import com.jfireframework.jfireel.node.impl.LtNode;
 import com.jfireframework.jfireel.node.impl.MinusNode;
 import com.jfireframework.jfireel.node.impl.MutliNode;
 import com.jfireframework.jfireel.node.impl.NotEqualNode;
@@ -65,6 +67,12 @@ public class BuildInNodeFactory implements NodeFactory
 				break;
 			case DIVISION:
 				resultNode = new DivisionNode();
+				break;
+			case GT:
+				resultNode = new GtNode();
+				break;
+			case LT:
+				resultNode = new LtNode();
 				break;
 			default:
 				throw new UnsupportedOperationException(((Operator) operatorNode.type()).toString());

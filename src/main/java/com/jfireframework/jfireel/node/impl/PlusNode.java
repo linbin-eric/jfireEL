@@ -31,7 +31,7 @@ public class PlusNode extends OperatorResultNode
             builder.append(leftValue).append(rightValue);
             return builder.toString();
         }
-        return PlusUtil.plus((Number) leftValue, (Number) rightValue);
+        return PlusUtil.calculate((Number) leftValue, (Number) rightValue);
     }
     
 }

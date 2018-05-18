@@ -44,7 +44,7 @@ public class NotEqualNode extends OperatorResultNode
             }
             else
             {
-                return EqUtil.eq((Number) leftValue, (Number) rightValue) == false;
+                return EqUtil.calculate((Number) leftValue, (Number) rightValue) == false;
             }
         }
     }

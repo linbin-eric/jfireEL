@@ -25,7 +25,7 @@ public class MutliNode extends OperatorResultNode
         {
             return null;
         }
-        return MutliUtil.mutli((Number) leftValue, (Number) rightValue);
+        return MutliUtil.calculate((Number) leftValue, (Number) rightValue);
     }
     
 }

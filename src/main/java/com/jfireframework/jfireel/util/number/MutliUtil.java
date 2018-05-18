@@ -2,7 +2,7 @@ package com.jfireframework.jfireel.util.number;
 
 public class MutliUtil
 {
-    private static Object intMutli(int arg0, Number b)
+    private static Object calculate(int arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -26,7 +26,7 @@ public class MutliUtil
         }
     }
     
-    private static Object longMutli(Long arg0, Number b)
+    private static Object calculate(long arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -50,7 +50,7 @@ public class MutliUtil
         }
     }
     
-    private static Object floatMutli(float arg0, Number b)
+    private static Object calculate(float arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -74,7 +74,7 @@ public class MutliUtil
         }
     }
     
-    private static Object doubleMutli(double arg0, Number b)
+    private static Object calculate(double arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
         {
@@ -98,27 +98,27 @@ public class MutliUtil
         }
     }
     
-    public static Object mutli(Number a, Number b)
+    public static Object calculate(Number a, Number b)
     {
         if (a instanceof Integer || a instanceof Short || a instanceof Byte)
         {
             int arg0 = a.intValue();
-            return intMutli(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Long)
         {
             long arg0 = a.longValue();
-            return longMutli(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Float)
         {
             float arg0 = a.floatValue();
-            return floatMutli(arg0, b);
+            return calculate(arg0, b);
         }
         else if (a instanceof Double)
         {
             double arg0 = a.doubleValue();
-            return doubleMutli(arg0, b);
+            return calculate(arg0, b);
         }
         else
         {
