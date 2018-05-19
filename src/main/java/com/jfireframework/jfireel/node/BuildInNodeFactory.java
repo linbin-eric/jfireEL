@@ -4,9 +4,13 @@ import com.jfireframework.jfireel.node.impl.BracketNode;
 import com.jfireframework.jfireel.node.impl.CompileMethodNode;
 import com.jfireframework.jfireel.node.impl.DefaultMethodNode;
 import com.jfireframework.jfireel.node.impl.DivisionNode;
+import com.jfireframework.jfireel.node.impl.DoubleAmpNode;
+import com.jfireframework.jfireel.node.impl.DoubleBarNode;
 import com.jfireframework.jfireel.node.impl.EqualNode;
+import com.jfireframework.jfireel.node.impl.GtEqNode;
 import com.jfireframework.jfireel.node.impl.GtNode;
 import com.jfireframework.jfireel.node.impl.KeywordNode;
+import com.jfireframework.jfireel.node.impl.LtEqNode;
 import com.jfireframework.jfireel.node.impl.LtNode;
 import com.jfireframework.jfireel.node.impl.MinusNode;
 import com.jfireframework.jfireel.node.impl.MutliNode;
@@ -14,6 +18,7 @@ import com.jfireframework.jfireel.node.impl.NotEqualNode;
 import com.jfireframework.jfireel.node.impl.NumberNode;
 import com.jfireframework.jfireel.node.impl.OperatorNode;
 import com.jfireframework.jfireel.node.impl.OperatorResultNode;
+import com.jfireframework.jfireel.node.impl.PercentNode;
 import com.jfireframework.jfireel.node.impl.PlusNode;
 import com.jfireframework.jfireel.node.impl.PropertyNode;
 import com.jfireframework.jfireel.node.impl.QuestionNodeImpl;
@@ -74,6 +79,21 @@ public class BuildInNodeFactory implements NodeFactory
                 break;
             case LT:
                 resultNode = new LtNode();
+                break;
+            case PERCENT:
+                resultNode = new PercentNode();
+                break;
+            case GT_EQ:
+                resultNode = new GtEqNode();
+                break;
+            case LT_EQ:
+                resultNode = new LtEqNode();
+                break;
+            case DOUBLE_AMP:
+                resultNode = new DoubleAmpNode();
+                break;
+            case DOUBLE_BAR:
+                resultNode = new DoubleBarNode();
                 break;
             default:
                 throw new UnsupportedOperationException(((Operator) operatorNode.type()).toString());

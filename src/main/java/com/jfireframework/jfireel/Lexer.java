@@ -380,10 +380,6 @@ public class Lexer
                         throw new IllegalArgumentException(StringUtil.format("?操作符前面应该有操作数,问题区间:{}", el.substring(0, offset)));
                     }
                     CalculateNode pred = list.get(i - 1);
-                    if (pred.type() != Expression.OPERATOR_RESULT)
-                    {
-                        throw new IllegalArgumentException(StringUtil.format("?操作符前面应该是一个计算解结果,问题区间:{}", el.substring(0, offset)));
-                    }
                     // 删除前置节点
                     list.remove(i - 1);
                     // 删除？节点
