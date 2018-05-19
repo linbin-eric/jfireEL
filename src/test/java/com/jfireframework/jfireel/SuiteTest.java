@@ -9,10 +9,11 @@ import org.junit.runners.Suite.SuiteClasses;
         MinusTest.class, //
         DivisionTest.class, //
         BracketTest.class, //
-        CompareTest.class
+        CompareTest.class, //
+        QuestionTest.class//
 })
 @RunWith(value = org.junit.runners.Suite.class)
 public class SuiteTest
 {
-	
+    
 }
