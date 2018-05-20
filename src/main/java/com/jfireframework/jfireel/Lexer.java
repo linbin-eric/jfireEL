@@ -21,9 +21,8 @@ import com.jfireframework.jfireel.util.CharType;
 public class Lexer
 {
     private CalculateNode        parseNode;
-    private Deque<CalculateNode> nodes    = new LinkedList<CalculateNode>();
-    private Deque<CalculateNode> tmpStack = new LinkedList<CalculateNode>();
-    private int                  offset   = 0;
+    private Deque<CalculateNode> nodes  = new LinkedList<CalculateNode>();
+    private int                  offset = 0;
     private String               el;
     private NodeFactory          nodeFactory;
     private int                  function;
@@ -115,19 +114,11 @@ public class Lexer
                 scanOperator();
             }
         }
-        if (tmpStack.isEmpty() == false)
-        {
-            throw new IllegalArgumentException(el);
-        }
+        List<CalculateNode> list = new ArrayList<CalculateNode>();
         CalculateNode tmp;
         while ((tmp = nodes.pollFirst()) != null)
         {
-            tmpStack.push(tmp);
-        }
-        List<CalculateNode> list = new ArrayList<CalculateNode>();
-        while ((tmp = tmpStack.pollFirst()) != null)
-        {
-            list.add(tmp);
+            list.add(0, tmp);
         }
         parseNode = aggregate(list);
     }
@@ -229,12 +220,13 @@ public class Lexer
     
     private void scanRightBracket()
     {
+        List<CalculateNode> list = new LinkedList<CalculateNode>();
         CalculateNode pred;
         while ((pred = nodes.pollFirst()) != null)
         {
             if (pred.type() != Symbol.LEFT_BRACKET)
             {
-                tmpStack.push(pred);
+                list.add(0, pred);
             }
             else
             {
@@ -244,12 +236,6 @@ public class Lexer
         if (pred == null)
         {
             throw new IllegalArgumentException(el.substring(0, offset));
-        }
-        List<CalculateNode> list = new LinkedList<CalculateNode>();
-        CalculateNode node;
-        while ((node = tmpStack.pollFirst()) != null)
-        {
-            list.add(node);
         }
         CalculateNode valueNode = aggregate(list);
         CalculateNode beanNode = nodes.pollFirst();
@@ -263,12 +249,13 @@ public class Lexer
     
     private void scanRightParen()
     {
+        List<CalculateNode> list = new LinkedList<CalculateNode>();
         CalculateNode pred;
-        while ((pred = nodes.peek()) != null)
+        while ((pred = nodes.pollFirst()) != null)
         {
             if (pred.type() != Symbol.LEFT_PAREN && pred.type() != Expression.METHOD)
             {
-                tmpStack.push(nodes.pop());
+                list.add(0, pred);
             }
             else
             {
@@ -281,38 +268,32 @@ public class Lexer
         }
         if (pred.type() == Expression.METHOD)
         {
-            CalculateNode node;
-            List<CalculateNode> list = new LinkedList<CalculateNode>();
+            MethodNode methodNode = (MethodNode) pred;
             List<CalculateNode> argsNodes = new LinkedList<CalculateNode>();
-            while ((node = tmpStack.pollFirst()) != null)
+            for (int i = 0; i < list.size();)
             {
-                if (node.type() == Symbol.COMMA)
+                if (list.get(i).type() == Symbol.COMMA)
                 {
-                    argsNodes.add(aggregate(list));
-                    list.clear();
+                    list.remove(i);
+                    argsNodes.add(aggregate(list.subList(0, i)));
+                    list.remove(0);
+                    i = 0;
                 }
                 else
                 {
-                    list.add(node);
+                    i++;
                 }
             }
             if (list.isEmpty() == false)
             {
                 argsNodes.add(aggregate(list));
             }
-            ((MethodNode) pred).setArgsNodes(argsNodes.toArray(new CalculateNode[argsNodes.size()]));
+            methodNode.setArgsNodes(argsNodes.toArray(new CalculateNode[argsNodes.size()]));
             offset += 1;
+            nodes.push(methodNode);
         }
         else
         {
-            // 如果是括号左右包围，则弹出左括号
-            nodes.pop();
-            CalculateNode node;
-            List<CalculateNode> list = new LinkedList<CalculateNode>();
-            while ((node = tmpStack.pollFirst()) != null)
-            {
-                list.add(node);
-            }
             nodes.push(aggregate(list));
             offset += 1;
         }
