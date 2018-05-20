@@ -34,6 +34,11 @@ public abstract class TestSupport
         {
             return b;
         }
+        
+        public int plus(int a, int b)
+        {
+            return a + b;
+        }
     }
     
     public static class Person
@@ -49,6 +54,7 @@ public abstract class TestSupport
     protected Person              person;
     protected Home                home;
     protected Map<String, Object> vars = new HashMap<String, Object>();
+    
     @Before
     public void before()
     {

@@ -109,6 +109,13 @@ public class MethodTest extends TestSupport
     }
     
     @Test
+    public void test14()
+    {
+        int result = Lexer.parse("home.plus(3,4)").calculate(vars);
+        assertEquals(7, result);
+    }
+    
+    @Test
     @Ignore
     public void perTest()
     {
@@ -144,6 +151,5 @@ public class MethodTest extends TestSupport
         }
         t1 = System.nanoTime();
         System.out.println("计算" + (count / 10000) + "万次耗时:" + (t1 - t0) / 1000 / 1000 + "毫秒");
-        
     }
 }
