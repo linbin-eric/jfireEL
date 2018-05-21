@@ -53,7 +53,7 @@ public abstract class TestSupport
     
     protected Person              person;
     protected Home                home;
-    protected Map<String, Object> vars = new HashMap<String, Object>();
+    public Map<String, Object> vars = new HashMap<String, Object>();
     
     @Before
     public void before()
