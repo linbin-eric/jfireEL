@@ -14,6 +14,7 @@ import com.jfireframework.jfireel.parse.impl.PropertyParser;
 import com.jfireframework.jfireel.parse.impl.RightBracketParser;
 import com.jfireframework.jfireel.parse.impl.RightParenParser;
 import com.jfireframework.jfireel.parse.impl.SkipIgnoredToken;
+import com.jfireframework.jfireel.parse.impl.TypeParser;
 
 public class ParseChain
 {
@@ -41,16 +42,17 @@ public class ParseChain
 	{
 		DEFALT_INSTANCE = new ParseChain(new Parser[] { //
 		        new SkipIgnoredToken(), //
-		        new IdentifierParser(), //
 		        new LeftParenParser(), //
 		        new RightParenParser(), //
 		        new LeftBracketParser(), //
+		        new TypeParser(), //
 		        new RightBracketParser(), //
 		        new PropertyParser(), //
 		        new MethodParser(), //
 		        new CommaParser(), //
 		        new ConstantStringParser(), //
 		        new NumberParser(), //
+		        new IdentifierParser(), //
 		        new OperatorParser()//
 		});
 	}
