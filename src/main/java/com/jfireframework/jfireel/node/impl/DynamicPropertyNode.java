@@ -6,7 +6,7 @@ import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.token.CalculateType;
 import com.jfireframework.jfireel.token.Expression;
 
-public class PropertyNode implements CalculateNode
+public class DynamicPropertyNode implements CalculateNode
 {
 	protected volatile Class<?>	beanType;
 	protected volatile Field	field;
@@ -19,7 +19,7 @@ public class PropertyNode implements CalculateNode
 	 * 
 	 * @param literals
 	 */
-	public PropertyNode(String literals, CalculateNode beanNode)
+	public DynamicPropertyNode(String literals, CalculateNode beanNode)
 	{
 		propertyName = literals;
 		this.beanNode = beanNode;

@@ -3,8 +3,8 @@ package com.jfireframework.jfireel.parse.impl;
 import java.util.Deque;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.node.MethodNode;
-import com.jfireframework.jfireel.node.impl.CompileDynamicMethodNode;
-import com.jfireframework.jfireel.node.impl.DefaultDynamicMethodNode;
+import com.jfireframework.jfireel.node.impl.DynamicCompileMethodNode;
+import com.jfireframework.jfireel.node.impl.DynamicDefaultMethodNode;
 import com.jfireframework.jfireel.node.impl.StaticMethodNode;
 import com.jfireframework.jfireel.parse.Parser;
 import com.jfireframework.jfireel.token.Expression;
@@ -61,11 +61,11 @@ public class MethodParser implements Parser
 			
 			if (Functions.isMethodInvokeByCompile(function))
 			{
-				methodNode = new CompileDynamicMethodNode(literals, beanNode);
+				methodNode = new DynamicCompileMethodNode(literals, beanNode);
 			}
 			else
 			{
-				methodNode = new DefaultDynamicMethodNode(literals, beanNode);
+				methodNode = new DynamicDefaultMethodNode(literals, beanNode);
 			}
 		}
 		nodes.push(methodNode);

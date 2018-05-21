@@ -12,7 +12,7 @@ import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.token.CalculateType;
 import com.jfireframework.jfireel.token.Expression;
 
-public class CompileDynamicMethodNode implements MethodNode
+public class DynamicCompileMethodNode implements MethodNode
 {
 	public static interface Invoker
 	{
@@ -28,7 +28,7 @@ public class CompileDynamicMethodNode implements MethodNode
 	private ConvertType[]		convertTypes;
 	private Expression			type;
 	
-	public CompileDynamicMethodNode(String literals, CalculateNode beanNode)
+	public DynamicCompileMethodNode(String literals, CalculateNode beanNode)
 	{
 		methodName = literals;
 		type = Expression.METHOD;

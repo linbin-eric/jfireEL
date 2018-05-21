@@ -2,8 +2,10 @@ package com.jfireframework.jfireel.parse.impl;
 
 import java.util.Deque;
 import com.jfireframework.jfireel.node.CalculateNode;
-import com.jfireframework.jfireel.node.impl.PropertyNode;
+import com.jfireframework.jfireel.node.impl.DynamicPropertyNode;
+import com.jfireframework.jfireel.node.impl.StaticPropertyNode;
 import com.jfireframework.jfireel.parse.Parser;
+import com.jfireframework.jfireel.token.Expression;
 import com.jfireframework.jfireel.util.CharType;
 
 public class PropertyParser implements Parser
@@ -46,7 +48,15 @@ public class PropertyParser implements Parser
         }
         String literals = el.substring(origin, offset);
         CalculateNode beanNode = nodes.pop();
-        CalculateNode current = new PropertyNode(literals, beanNode);
+        CalculateNode current;
+        if (beanNode.type() == Expression.TYPE)
+        {
+            current = new StaticPropertyNode(literals, beanNode);
+        }
+        else
+        {
+            current = new DynamicPropertyNode(literals, beanNode);
+        }
         nodes.push(current);
         return offset;
     }

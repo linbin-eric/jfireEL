@@ -1,8 +1,8 @@
 package com.jfireframework.jfireel.node;
 
 import com.jfireframework.jfireel.node.impl.BracketNode;
-import com.jfireframework.jfireel.node.impl.CompileDynamicMethodNode;
-import com.jfireframework.jfireel.node.impl.DefaultDynamicMethodNode;
+import com.jfireframework.jfireel.node.impl.DynamicCompileMethodNode;
+import com.jfireframework.jfireel.node.impl.DynamicDefaultMethodNode;
 import com.jfireframework.jfireel.node.impl.DivisionNode;
 import com.jfireframework.jfireel.node.impl.DoubleAmpNode;
 import com.jfireframework.jfireel.node.impl.DoubleBarNode;
@@ -20,7 +20,7 @@ import com.jfireframework.jfireel.node.impl.OperatorNode;
 import com.jfireframework.jfireel.node.impl.OperatorResultNode;
 import com.jfireframework.jfireel.node.impl.PercentNode;
 import com.jfireframework.jfireel.node.impl.PlusNode;
-import com.jfireframework.jfireel.node.impl.PropertyNode;
+import com.jfireframework.jfireel.node.impl.DynamicPropertyNode;
 import com.jfireframework.jfireel.node.impl.QuestionNodeImpl;
 import com.jfireframework.jfireel.node.impl.StringNode;
 import com.jfireframework.jfireel.node.impl.SymBolNode;
@@ -108,18 +108,18 @@ public class BuildInNodeFactory implements NodeFactory
     {
         if (Functions.isMethodInvokeByCompile(function))
         {
-            return new CompileDynamicMethodNode(literals, beanNode);
+            return new DynamicCompileMethodNode(literals, beanNode);
         }
         else
         {
-            return new DefaultDynamicMethodNode(literals, beanNode);
+            return new DynamicDefaultMethodNode(literals, beanNode);
         }
     }
     
     @Override
     public CalculateNode buildPropertyNode(CalculateNode beanNode, String literals, int function)
     {
-        return new PropertyNode(literals, beanNode);
+        return new DynamicPropertyNode(literals, beanNode);
     }
     
     @Override

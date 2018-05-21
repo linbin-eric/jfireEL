@@ -7,7 +7,7 @@ import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.token.CalculateType;
 import com.jfireframework.jfireel.token.Expression;
 
-public class DefaultDynamicMethodNode implements MethodNode
+public class DynamicDefaultMethodNode implements MethodNode
 {
 	private final CalculateNode	beanNode;
 	private final String		methodName;
@@ -18,7 +18,7 @@ public class DefaultDynamicMethodNode implements MethodNode
 	private ConvertType[]		convertTypes;
 	private Expression			type;
 	
-	public DefaultDynamicMethodNode(String literals, CalculateNode beanNode)
+	public DynamicDefaultMethodNode(String literals, CalculateNode beanNode)
 	{
 		methodName = literals;
 		type = Expression.METHOD;
