@@ -119,6 +119,14 @@ public class MethodTest extends TestSupport
 		assertEquals(7, result);
 	}
 	
+	// 测试静态方法
+	@Test
+	public void test15()
+	{
+		String result = Lexer.parse("T(java.lang.String).valueOf('ab')").calculate();
+		assertEquals("ab", result);
+	}
+	
 	@Test
 	@Ignore
 	public void perTest()

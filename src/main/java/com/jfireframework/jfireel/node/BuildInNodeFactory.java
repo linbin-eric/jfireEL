@@ -1,8 +1,8 @@
 package com.jfireframework.jfireel.node;
 
 import com.jfireframework.jfireel.node.impl.BracketNode;
-import com.jfireframework.jfireel.node.impl.CompileMethodNode;
-import com.jfireframework.jfireel.node.impl.DefaultMethodNode;
+import com.jfireframework.jfireel.node.impl.CompileDynamicMethodNode;
+import com.jfireframework.jfireel.node.impl.DefaultDynamicMethodNode;
 import com.jfireframework.jfireel.node.impl.DivisionNode;
 import com.jfireframework.jfireel.node.impl.DoubleAmpNode;
 import com.jfireframework.jfireel.node.impl.DoubleBarNode;
@@ -108,11 +108,11 @@ public class BuildInNodeFactory implements NodeFactory
     {
         if (Functions.isMethodInvokeByCompile(function))
         {
-            return new CompileMethodNode(literals, beanNode);
+            return new CompileDynamicMethodNode(literals, beanNode);
         }
         else
         {
-            return new DefaultMethodNode(literals, beanNode);
+            return new DefaultDynamicMethodNode(literals, beanNode);
         }
     }
     
