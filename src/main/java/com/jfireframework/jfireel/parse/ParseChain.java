@@ -17,7 +17,12 @@ import com.jfireframework.jfireel.parse.impl.SkipIgnoredToken;
 
 public class ParseChain
 {
-	private Parser[] parsers;
+	private final Parser[] parsers;
+	
+	public ParseChain(Parser[] parsers)
+	{
+		this.parsers = parsers;
+	}
 	
 	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
@@ -31,16 +36,10 @@ public class ParseChain
 		return offset;
 	}
 	
-	public void setParsers(Parser... parsers)
-	{
-		this.parsers = parsers;
-	}
-	
 	public static final ParseChain DEFALT_INSTANCE;
 	static
 	{
-		DEFALT_INSTANCE = new ParseChain();
-		DEFALT_INSTANCE.setParsers(//
+		DEFALT_INSTANCE = new ParseChain(new Parser[] { //
 		        new SkipIgnoredToken(), //
 		        new IdentifierParser(), //
 		        new LeftParenParser(), //
@@ -53,6 +52,6 @@ public class ParseChain
 		        new ConstantStringParser(), //
 		        new NumberParser(), //
 		        new OperatorParser()//
-		);
+		});
 	}
 }

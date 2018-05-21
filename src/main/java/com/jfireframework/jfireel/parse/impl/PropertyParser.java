@@ -37,8 +37,8 @@ public class PropertyParser implements Parser
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
     {
-        int origin = offset;
         offset += 1;
+        int origin = offset;
         char c;
         while (CharType.isAlphabet(c = CharType.getCurrentChar(offset, el)) || CharType.isDigital(c))
         {
