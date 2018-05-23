@@ -8,7 +8,7 @@ import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.parse.Parser;
 import com.jfireframework.jfireel.token.Expression;
 import com.jfireframework.jfireel.token.Symbol;
-import com.jfireframework.jfireel.util.CalculateNodeUtil;
+import com.jfireframework.jfireel.util.OperatorResultUtil;
 import com.jfireframework.jfireel.util.CharType;
 
 public class RightParenParser implements Parser
@@ -47,7 +47,7 @@ public class RightParenParser implements Parser
 				if (list.get(i).type() == Symbol.COMMA)
 				{
 					list.remove(i);
-					argsNodes.add(CalculateNodeUtil.aggregate(list.subList(0, i), function, el, offset));
+					argsNodes.add(OperatorResultUtil.aggregate(list.subList(0, i), function, el, offset));
 					list.remove(0);
 					i = 0;
 				}
@@ -58,7 +58,7 @@ public class RightParenParser implements Parser
 			}
 			if (list.isEmpty() == false)
 			{
-				argsNodes.add(CalculateNodeUtil.aggregate(list, function, el, offset));
+				argsNodes.add(OperatorResultUtil.aggregate(list, function, el, offset));
 			}
 			methodNode.setArgsNodes(argsNodes.toArray(new CalculateNode[argsNodes.size()]));
 			offset += 1;
@@ -67,7 +67,7 @@ public class RightParenParser implements Parser
 		}
 		else
 		{
-			nodes.push(CalculateNodeUtil.aggregate(list, function, el, offset));
+			nodes.push(OperatorResultUtil.aggregate(list, function, el, offset));
 			offset += 1;
 			return offset;
 		}

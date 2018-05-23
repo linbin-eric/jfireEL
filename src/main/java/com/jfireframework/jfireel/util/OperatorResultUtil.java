@@ -24,7 +24,7 @@ import com.jfireframework.jfireel.token.CalculateType;
 import com.jfireframework.jfireel.token.Expression;
 import com.jfireframework.jfireel.token.Operator;
 
-public class CalculateNodeUtil
+public class OperatorResultUtil
 {
     public static CalculateNode aggregate(List<CalculateNode> list, int function, String el, int offset)
     {

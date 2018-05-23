@@ -7,7 +7,7 @@ import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.node.impl.BracketNode;
 import com.jfireframework.jfireel.parse.Parser;
 import com.jfireframework.jfireel.token.Symbol;
-import com.jfireframework.jfireel.util.CalculateNodeUtil;
+import com.jfireframework.jfireel.util.OperatorResultUtil;
 import com.jfireframework.jfireel.util.CharType;
 
 public class RightBracketParser implements Parser
@@ -37,7 +37,7 @@ public class RightBracketParser implements Parser
 		{
 			throw new IllegalArgumentException(el.substring(0, offset));
 		}
-		CalculateNode valueNode = CalculateNodeUtil.aggregate(list, function, el, offset);
+		CalculateNode valueNode = OperatorResultUtil.aggregate(list, function, el, offset);
 		CalculateNode beanNode = nodes.pollFirst();
 		if (beanNode == null)
 		{

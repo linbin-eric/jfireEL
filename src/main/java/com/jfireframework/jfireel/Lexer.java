@@ -8,7 +8,7 @@ import java.util.Map;
 import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.parse.ParseChain;
-import com.jfireframework.jfireel.util.CalculateNodeUtil;
+import com.jfireframework.jfireel.util.OperatorResultUtil;
 
 public class Lexer
 {
@@ -63,7 +63,7 @@ public class Lexer
 		{
 			list.add(0, tmp);
 		}
-		parseNode = CalculateNodeUtil.aggregate(list, function, el, offset);
+		parseNode = OperatorResultUtil.aggregate(list, function, el, offset);
 		clear();
 	}
 	
