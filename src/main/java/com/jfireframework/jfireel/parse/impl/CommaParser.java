@@ -9,19 +9,17 @@ import com.jfireframework.jfireel.util.CharType;
 
 public class CommaParser implements Parser
 {
-    
-    @Override
-    public boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        return ',' == CharType.getCurrentChar(offset, el);
-    }
-    
-    @Override
-    public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        nodes.push(new SymBolNode(Symbol.COMMA));
-        offset += 1;
-        return offset;
-    }
-    
+	
+	@Override
+	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
+	{
+		if (',' != CharType.getCurrentChar(offset, el))
+		{
+			return offset;
+		}
+		nodes.push(new SymBolNode(Symbol.COMMA));
+		offset += 1;
+		return offset;
+	}
+	
 }

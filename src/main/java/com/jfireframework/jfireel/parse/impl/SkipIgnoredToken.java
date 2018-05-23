@@ -9,12 +9,6 @@ public class SkipIgnoredToken implements Parser
 {
     
     @Override
-    public boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        return true;
-    }
-    
-    @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
     {
         while (CharType.isWhitespace(CharType.getCurrentChar(offset, el)))

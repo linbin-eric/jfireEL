@@ -11,8 +11,7 @@ import com.jfireframework.jfireel.util.CharType;
 public class NumberParser implements Parser
 {
 	
-	@Override
-	public boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
+	private boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
 		if ('-' == CharType.getCurrentChar(offset, el))
 		{
@@ -44,6 +43,10 @@ public class NumberParser implements Parser
 	@Override
 	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
+		if (match(el, offset, nodes, function) == false)
+		{
+			return offset;
+		}
 		int origin = offset;
 		char c = CharType.getCurrentChar(offset, el);
 		if (c == '-')

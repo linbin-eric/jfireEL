@@ -9,19 +9,17 @@ import com.jfireframework.jfireel.util.CharType;
 
 public class LeftParenParser implements Parser
 {
-    
-    @Override
-    public boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        return '(' == CharType.getCurrentChar(offset, el);
-    }
-    
-    @Override
-    public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        offset += 1;
-        nodes.push(new SymBolNode(Symbol.LEFT_PAREN));
-        return offset;
-    }
-    
+	
+	@Override
+	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
+	{
+		if ('(' != CharType.getCurrentChar(offset, el))
+		{
+			return offset;
+		}
+		offset += 1;
+		nodes.push(new SymBolNode(Symbol.LEFT_PAREN));
+		return offset;
+	}
+	
 }

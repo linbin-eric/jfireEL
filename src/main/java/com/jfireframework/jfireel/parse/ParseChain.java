@@ -29,10 +29,7 @@ public class ParseChain
 	{
 		for (Parser each : parsers)
 		{
-			if (each.match(el, offset, nodes, function))
-			{
-				offset = each.parse(el, offset, nodes, function);
-			}
+			offset = each.parse(el, offset, nodes, function);
 		}
 		return offset;
 	}

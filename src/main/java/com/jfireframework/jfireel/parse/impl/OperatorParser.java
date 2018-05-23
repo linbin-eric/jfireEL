@@ -12,14 +12,12 @@ public class OperatorParser implements Parser
 {
 	
 	@Override
-	public boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
-	{
-		return CharType.isOperator(CharType.getCurrentChar(offset, el));
-	}
-	
-	@Override
 	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
+		if (CharType.isOperator(CharType.getCurrentChar(offset, el)) == false)
+		{
+			return offset;
+		}
 		String literals = new String(new char[] { CharType.getCurrentChar(offset, el), CharType.getCurrentChar(offset + 1, el) });
 		if (Operator.literalsOf(literals) != null)
 		{

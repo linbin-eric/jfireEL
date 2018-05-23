@@ -8,26 +8,24 @@ import com.jfireframework.jfireel.util.CharType;
 
 public class ConstantStringParser implements Parser
 {
-    
-    @Override
-    public boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        return '\'' == CharType.getCurrentChar(offset, el);
-    }
-    
-    @Override
-    public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        offset += 1;
-        int origin = offset;
-        while (CharType.getCurrentChar(offset, el) != '\'')
-        {
-            offset++;
-        }
-        String literals = el.substring(origin, offset);
-        nodes.push(new StringNode(literals));
-        offset += 1;
-        return offset;
-    }
-    
+	
+	@Override
+	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
+	{
+		if ('\'' != CharType.getCurrentChar(offset, el))
+		{
+			return offset;
+		}
+		offset += 1;
+		int origin = offset;
+		while (CharType.getCurrentChar(offset, el) != '\'')
+		{
+			offset++;
+		}
+		String literals = el.substring(origin, offset);
+		nodes.push(new StringNode(literals));
+		offset += 1;
+		return offset;
+	}
+	
 }

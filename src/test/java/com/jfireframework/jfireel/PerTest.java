@@ -36,7 +36,7 @@ public class PerTest extends TestSupport
 		
 		Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)");
 		Lexer lexer2 = Lexer.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
-		int preheat = 1000;
+		int preheat = 100;
 		int count = 10000000;
 		for (int i = 0; i < preheat; i++)
 		{

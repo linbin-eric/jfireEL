@@ -10,38 +10,36 @@ import com.jfireframework.jfireel.util.CharType;
 
 public class IdentifierParser implements Parser
 {
-    
-    @Override
-    public boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        return CharType.isAlphabet(CharType.getCurrentChar(offset, el));
-    }
-    
-    @Override
-    public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
-    {
-        return parseIdentifier(el, offset, nodes);
-    }
-    
-    private int parseIdentifier(String el, int offset, Deque<CalculateNode> nodes)
-    {
-        int length = 0;
-        char c;
-        while (CharType.isAlphabet(c = CharType.getCurrentChar(length + offset, el)) || CharType.isDigital(c))
-        {
-            length++;
-        }
-        String literals = el.substring(offset, offset + length);
-        offset += length;
-        if (DefaultKeyWord.getDefaultKeyWord(literals) != null)
-        {
-            nodes.push(new KeywordNode(literals));
-        }
-        else
-        {
-            nodes.push(new VariableNode(literals));
-        }
-        return offset;
-    }
-    
+	
+	@Override
+	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
+	{
+		if (CharType.isAlphabet(CharType.getCurrentChar(offset, el)) == false)
+		{
+			return offset;
+		}
+		return parseIdentifier(el, offset, nodes);
+	}
+	
+	private int parseIdentifier(String el, int offset, Deque<CalculateNode> nodes)
+	{
+		int length = 0;
+		char c;
+		while (CharType.isAlphabet(c = CharType.getCurrentChar(length + offset, el)) || CharType.isDigital(c))
+		{
+			length++;
+		}
+		String literals = el.substring(offset, offset + length);
+		offset += length;
+		if (DefaultKeyWord.getDefaultKeyWord(literals) != null)
+		{
+			nodes.push(new KeywordNode(literals));
+		}
+		else
+		{
+			nodes.push(new VariableNode(literals));
+		}
+		return offset;
+	}
+	
 }
