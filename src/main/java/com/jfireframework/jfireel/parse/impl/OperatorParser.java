@@ -1,7 +1,6 @@
 package com.jfireframework.jfireel.parse.impl;
 
 import java.util.Deque;
-import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.node.impl.OperatorNode;
 import com.jfireframework.jfireel.parse.Parser;
@@ -32,7 +31,7 @@ public class OperatorParser implements Parser
 			offset += 1;
 			return offset;
 		}
-		throw new IllegalArgumentException(StringUtil.format("无法识别:{},{}", literals, el.substring(0, offset)));
+		throw new IllegalArgumentException("无法识别:" + literals + "检查:" + el.substring(0, offset));
 	}
 	
 }

@@ -5,7 +5,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.parse.ParseChain;
 import com.jfireframework.jfireel.util.OperatorResultUtil;
@@ -54,7 +53,7 @@ public class Lexer
 			offset = parseChain.parse(el, offset, nodes, function);
 			if (pred == offset)
 			{
-				throw new IllegalArgumentException(StringUtil.format("无法识别的表达式，解析过程预见无法识别的字符:{}", el.substring(0, offset)));
+				throw new IllegalArgumentException("无法识别的表达式，解析过程预见无法识别的字符:" + el.substring(0, offset));
 			}
 		}
 		List<CalculateNode> list = new ArrayList<CalculateNode>();

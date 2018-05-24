@@ -7,23 +7,25 @@ import com.jfireframework.jfireel.token.Expression;
 
 public class TypeNode implements CalculateNode
 {
-	private Class<?> type;
+	private Class<?>	ckass;
+	private Expression	type;
 	
-	public TypeNode(Class<?> type)
+	public TypeNode(Class<?> ckass, Expression type)
 	{
+		this.ckass = ckass;
 		this.type = type;
 	}
 	
 	@Override
 	public Object calculate(Map<String, Object> variables)
 	{
-		return type;
+		return ckass;
 	}
 	
 	@Override
 	public CalculateType type()
 	{
-		return Expression.TYPE;
+		return type;
 	}
 	
 }

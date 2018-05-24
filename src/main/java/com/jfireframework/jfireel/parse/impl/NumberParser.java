@@ -1,7 +1,6 @@
 package com.jfireframework.jfireel.parse.impl;
 
 import java.util.Deque;
-import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.node.impl.NumberNode;
 import com.jfireframework.jfireel.parse.Parser;
@@ -27,7 +26,7 @@ public class NumberParser implements Parser
 			}
 			else
 			{
-				throw new IllegalArgumentException(StringUtil.format("无法识别的-符号，不是负数也不是操作符,问题区间:{}", el.substring(0, offset)));
+				throw new IllegalArgumentException("无法识别的-符号，不是负数也不是操作符,问题区间:" + el.substring(0, offset));
 			}
 		}
 		else if (CharType.isDigital(CharType.getCurrentChar(offset, el)))
@@ -64,7 +63,7 @@ public class NumberParser implements Parser
 		}
 		if (c == '.')
 		{
-			throw new IllegalArgumentException(StringUtil.format("非法的负数格式,问题区间:{}", el.substring(origin, offset)));
+			throw new IllegalArgumentException("非法的负数格式,问题区间:" + el.substring(origin, offset));
 		}
 		String literals = el.substring(origin, offset);
 		nodes.push(new NumberNode(literals));

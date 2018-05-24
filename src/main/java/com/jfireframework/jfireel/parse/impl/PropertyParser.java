@@ -16,7 +16,8 @@ public class PropertyParser implements Parser
 	@Override
 	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
-		if ('.' != CharType.getCurrentChar(offset, el))
+		// 如果是后一种情况，意味着此时应该是一个枚举值而不是属性
+		if ('.' != CharType.getCurrentChar(offset, el) || (nodes.peek() != null && nodes.peek().type() == Expression.TYPE_ENUM))
 		{
 			return offset;
 		}

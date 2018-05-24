@@ -4,6 +4,7 @@ import java.util.Deque;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.parse.impl.CommaParser;
 import com.jfireframework.jfireel.parse.impl.ConstantStringParser;
+import com.jfireframework.jfireel.parse.impl.EnumParser;
 import com.jfireframework.jfireel.parse.impl.IdentifierParser;
 import com.jfireframework.jfireel.parse.impl.LeftBracketParser;
 import com.jfireframework.jfireel.parse.impl.LeftParenParser;
@@ -45,6 +46,7 @@ public class ParseChain
 		        new TypeParser(), //
 		        new RightBracketParser(), //
 		        new PropertyParser(), //
+		        new EnumParser(), //
 		        new MethodParser(), //
 		        new CommaParser(), //
 		        new ConstantStringParser(), //

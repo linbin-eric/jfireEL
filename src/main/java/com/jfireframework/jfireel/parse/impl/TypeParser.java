@@ -1,10 +1,10 @@
 package com.jfireframework.jfireel.parse.impl;
 
 import java.util.Deque;
-import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.node.impl.TypeNode;
 import com.jfireframework.jfireel.parse.Parser;
+import com.jfireframework.jfireel.token.Expression;
 import com.jfireframework.jfireel.util.CharType;
 
 public class TypeParser implements Parser
@@ -19,7 +19,7 @@ public class TypeParser implements Parser
 			offset = ignoreWihiespace(offset, el);
 			int origin = offset;
 			char c;
-			while (CharType.isAlphabet(c = CharType.getCurrentChar(offset, el)) || '.' == c)
+			while (CharType.isAlphabet(c = CharType.getCurrentChar(offset, el)) || '.' == c || '_' == c || '$' == c)
 			{
 				offset++;
 			}
@@ -27,13 +27,20 @@ public class TypeParser implements Parser
 			offset = ignoreWihiespace(offset, el);
 			if (')' != CharType.getCurrentChar(offset, el))
 			{
-				throw new IllegalArgumentException(StringUtil.format("类型操作没有被)包围，检查:{}", el.substring(origin, offset)));
+				throw new IllegalArgumentException("类型操作没有被)包围，检查:" + el.substring(origin, offset));
 			}
 			String literals = el.substring(origin, end);
 			try
 			{
 				Class<?> type = Class.forName(literals);
-				nodes.push(new TypeNode(type));
+				if (Enum.class.isAssignableFrom(type))
+				{
+					nodes.push(new TypeNode(type, Expression.TYPE_ENUM));
+				}
+				else
+				{
+					nodes.push(new TypeNode(type, Expression.TYPE));
+				}
 			}
 			catch (Exception e)
 			{
