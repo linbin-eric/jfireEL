@@ -2,11 +2,13 @@ package com.jfireframework.jfireel.node.impl;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.baseutil.smc.SmcHelper;
 import com.jfireframework.baseutil.smc.compiler.JavaStringCompiler;
-import com.jfireframework.baseutil.smc.model.CompilerModel;
+import com.jfireframework.baseutil.smc.model.ClassModel;
 import com.jfireframework.baseutil.smc.model.MethodModel;
+import com.jfireframework.baseutil.smc.model.MethodModel.AccessLevel;
 import com.jfireframework.jfireel.node.CalculateNode;
 import com.jfireframework.jfireel.node.MethodNode;
 import com.jfireframework.jfireel.token.CalculateType;
@@ -19,14 +21,16 @@ public class DynamicCompileMethodNode implements MethodNode
 		Object invoke(Object host, Object[] params);
 	}
 	
-	private final CalculateNode	beanNode;
-	private final String		methodName;
-	private volatile Invoker	invoker;
-	private volatile Class<?>	beanType;
-	protected boolean			recognizeEveryTime	= true;
-	private CalculateNode[]		argsNodes;
-	private ConvertType[]		convertTypes;
-	private Expression			type;
+	private static final JavaStringCompiler	COMPILER			= new JavaStringCompiler();
+	private static final AtomicInteger		counter				= new AtomicInteger(0);
+	private final CalculateNode				beanNode;
+	private final String					methodName;
+	private volatile Invoker				invoker;
+	private volatile Class<?>				beanType;
+	protected boolean						recognizeEveryTime	= true;
+	private CalculateNode[]					argsNodes;
+	private ConvertType[]					convertTypes;
+	private Expression						type;
 	
 	public DynamicCompileMethodNode(String literals, CalculateNode beanNode)
 	{
@@ -161,9 +165,12 @@ public class DynamicCompileMethodNode implements MethodNode
 	{
 		try
 		{
-			CompilerModel createImplClass = SmcHelper.createImplClass(Object.class, Invoker.class);
-			Method declaredMethod = Invoker.class.getDeclaredMethod("invoke", Object.class, Object[].class);
-			MethodModel methodModel = new MethodModel(declaredMethod);
+			ClassModel classModel = new ClassModel("Invoke_" + method.getName() + "_" + counter.incrementAndGet(), Object.class, Invoker.class);
+			MethodModel methodModel = new MethodModel();
+			methodModel.setAccessLevel(AccessLevel.PUBLIC);
+			methodModel.setMethodName("invoke");
+			methodModel.setParamterTypes(Object.class, Object[].class);
+			methodModel.setReturnType(Object.class);
 			StringCache body = new StringCache("{ return ((" + SmcHelper.getTypeName(method.getDeclaringClass()) + ")$0)." + method.getName() + "(");
 			for (int i = 0; i < args.length; i++)
 			{
@@ -206,9 +213,8 @@ public class DynamicCompileMethodNode implements MethodNode
 			}
 			body.append(");}");
 			methodModel.setBody(body.toString());
-			createImplClass.putMethod(methodModel);
-			JavaStringCompiler compiler = new JavaStringCompiler();
-			Class<?> compile = compiler.compile(createImplClass);
+			classModel.putMethodModel(methodModel);
+			Class<?> compile = COMPILER.compile(classModel);
 			return (Invoker) compile.newInstance();
 		}
 		catch (Exception e)
