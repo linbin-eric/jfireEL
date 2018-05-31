@@ -1,11 +1,11 @@
-package com.jfireframework.jfireel.syntax.parser.impl;
+package com.jfireframework.jfireel.syntax.handler.impl;
 
 import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.lexer.util.CharType;
 import com.jfireframework.jfireel.syntax.Syntax;
-import com.jfireframework.jfireel.syntax.parser.Parser;
+import com.jfireframework.jfireel.syntax.handler.Handler;
 
-public class LiteralsParser implements Parser
+public class LiteralsHandler implements Handler
 {
 	
 	@Override

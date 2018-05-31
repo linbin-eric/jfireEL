@@ -1,12 +1,12 @@
-package com.jfireframework.jfireel.syntax.parser.impl;
+package com.jfireframework.jfireel.syntax.handler.impl;
 
 import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.lexer.Lexer;
 import com.jfireframework.jfireel.syntax.Syntax;
-import com.jfireframework.jfireel.syntax.parser.Execution;
-import com.jfireframework.jfireel.syntax.parser.ScanMode;
+import com.jfireframework.jfireel.syntax.handler.Execution;
+import com.jfireframework.jfireel.syntax.handler.ScanMode;
 
-public class LanguageEndParser extends AbstractParser
+public class LanguageEndHandler extends AbstractHandler
 {
 	
 	@Override

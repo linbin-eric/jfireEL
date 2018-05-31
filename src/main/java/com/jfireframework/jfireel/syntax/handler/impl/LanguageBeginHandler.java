@@ -1,10 +1,10 @@
-package com.jfireframework.jfireel.syntax.parser.impl;
+package com.jfireframework.jfireel.syntax.handler.impl;
 
 import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.syntax.Syntax;
-import com.jfireframework.jfireel.syntax.parser.ScanMode;
+import com.jfireframework.jfireel.syntax.handler.ScanMode;
 
-public class LanguageBeginParser extends AbstractParser
+public class LanguageBeginHandler extends AbstractHandler
 {
 	
 	@Override

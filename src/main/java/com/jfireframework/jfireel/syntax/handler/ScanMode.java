@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel.syntax.parser;
+package com.jfireframework.jfireel.syntax.handler;
 
 public enum ScanMode
 {

@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel.syntax.parser.impl;
+package com.jfireframework.jfireel.syntax.handler.impl;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -10,10 +10,10 @@ import com.jfireframework.jfireel.lexer.node.ElseNode;
 import com.jfireframework.jfireel.lexer.node.IfNode;
 import com.jfireframework.jfireel.lexer.token.Expression;
 import com.jfireframework.jfireel.syntax.Syntax;
-import com.jfireframework.jfireel.syntax.parser.Execution;
-import com.jfireframework.jfireel.syntax.parser.ScanMode;
+import com.jfireframework.jfireel.syntax.handler.Execution;
+import com.jfireframework.jfireel.syntax.handler.ScanMode;
 
-public class RightBraceParser extends AbstractParser
+public class RightBraceHandler extends AbstractHandler
 {
 	
 	@Override

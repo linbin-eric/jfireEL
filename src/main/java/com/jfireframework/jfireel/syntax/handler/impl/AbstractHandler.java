@@ -1,12 +1,12 @@
-package com.jfireframework.jfireel.syntax.parser.impl;
+package com.jfireframework.jfireel.syntax.handler.impl;
 
 import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.lexer.util.CharType;
 import com.jfireframework.jfireel.syntax.Syntax;
-import com.jfireframework.jfireel.syntax.parser.Execution;
-import com.jfireframework.jfireel.syntax.parser.Parser;
+import com.jfireframework.jfireel.syntax.handler.Execution;
+import com.jfireframework.jfireel.syntax.handler.Handler;
 
-public abstract class AbstractParser implements Parser
+public abstract class AbstractHandler implements Handler
 {
 	
 	protected void extractLiterals(StringCache cache, Syntax syntax)

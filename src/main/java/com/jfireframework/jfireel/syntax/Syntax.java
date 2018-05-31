@@ -4,28 +4,28 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 import com.jfireframework.baseutil.collection.StringCache;
-import com.jfireframework.jfireel.syntax.parser.Execution;
-import com.jfireframework.jfireel.syntax.parser.Parser;
-import com.jfireframework.jfireel.syntax.parser.ScanMode;
-import com.jfireframework.jfireel.syntax.parser.impl.AfterEndParser;
-import com.jfireframework.jfireel.syntax.parser.impl.ExpresstionBeginParser;
-import com.jfireframework.jfireel.syntax.parser.impl.LanguageBeginParser;
-import com.jfireframework.jfireel.syntax.parser.impl.LanguageEndParser;
-import com.jfireframework.jfireel.syntax.parser.impl.LiteralsParser;
-import com.jfireframework.jfireel.syntax.parser.impl.RightBraceParser;
+import com.jfireframework.jfireel.syntax.handler.Execution;
+import com.jfireframework.jfireel.syntax.handler.Handler;
+import com.jfireframework.jfireel.syntax.handler.ScanMode;
+import com.jfireframework.jfireel.syntax.handler.impl.AfterEndHandler;
+import com.jfireframework.jfireel.syntax.handler.impl.ExpresstionBeginHandler;
+import com.jfireframework.jfireel.syntax.handler.impl.LanguageBeginHandler;
+import com.jfireframework.jfireel.syntax.handler.impl.LanguageEndHandler;
+import com.jfireframework.jfireel.syntax.handler.impl.LiteralsHandler;
+import com.jfireframework.jfireel.syntax.handler.impl.RightBraceHandler;
 
 public class Syntax
 {
 	private Execution[]			nodes;
 	private Deque<Execution>	stack	= new LinkedList<Execution>();
 	private ScanMode			mode;
-	private Parser[]			parsers	= new Parser[] {				//
-	        new LanguageBeginParser(),									//
-	        new LanguageEndParser(),									//
-	        new ExpresstionBeginParser(),								//
-	        new RightBraceParser(),										//
-	        new AfterEndParser(),										//
-	        new LiteralsParser() };
+	private Handler[]			handlers	= new Handler[] {				//
+	        new LanguageBeginHandler(),									//
+	        new LanguageEndHandler(),									//
+	        new ExpresstionBeginHandler(),								//
+	        new RightBraceHandler(),										//
+	        new AfterEndHandler(),										//
+	        new LiteralsHandler() };
 	
 	private Syntax(String sentence)
 	{
@@ -35,9 +35,9 @@ public class Syntax
 		mode = ScanMode.LITERALS;
 		while (offset < length)
 		{
-			for (Parser parser : parsers)
+			for (Handler handler : handlers)
 			{
-				int result = parser.scan(sentence, offset, this, cache);
+				int result = handler.scan(sentence, offset, this, cache);
 				if (result != offset)
 				{
 					offset = result;

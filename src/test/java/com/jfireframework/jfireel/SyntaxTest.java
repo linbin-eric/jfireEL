@@ -59,7 +59,7 @@ public class SyntaxTest
 	@Test
 	public void test6()
 	{
-		Syntax syntax = Syntax.parse("hello,<%if(age>2){%> ${name} <%}else{%> ll<%}%>");
+		Syntax syntax = Syntax.parse("hello,<%if(age>2){%> ${name} <% } else {%> ll<%}%>");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 1);

@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel.syntax.parser;
+package com.jfireframework.jfireel.syntax.handler;
 
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.Lexer;
