@@ -2,7 +2,7 @@ package com.jfireframework.jfireel.lexer.parse.impl;
 
 import java.util.Deque;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.node.impl.ElseNodeImpl;
+import com.jfireframework.jfireel.lexer.node.impl.ElseNode;
 import com.jfireframework.jfireel.lexer.parse.Parser;
 import com.jfireframework.jfireel.lexer.util.CharType;
 
@@ -39,7 +39,7 @@ public class ElseParser implements Parser
 			throw new IllegalArgumentException("else判断没有以{结尾" + el.substring(0, offset));
 		}
 		offset = end + 1;
-		nodes.push(new ElseNodeImpl());
+		nodes.push(new ElseNode());
 		return offset;
 	}
 	

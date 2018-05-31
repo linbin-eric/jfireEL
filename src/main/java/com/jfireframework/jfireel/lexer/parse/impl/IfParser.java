@@ -3,7 +3,7 @@ package com.jfireframework.jfireel.lexer.parse.impl;
 import java.util.Deque;
 import com.jfireframework.jfireel.lexer.Lexer;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.node.impl.IfNodeImpl;
+import com.jfireframework.jfireel.lexer.node.impl.IfNode;
 import com.jfireframework.jfireel.lexer.parse.Parser;
 import com.jfireframework.jfireel.lexer.util.CharType;
 
@@ -35,7 +35,7 @@ public class IfParser implements Parser
 			throw new IllegalArgumentException("if条件判断没有以{结尾" + el.substring(0, offset));
 		}
 		Lexer lexer = Lexer.parse(el.substring(offset, end));
-		IfNodeImpl ifNode = new IfNodeImpl(lexer);
+		IfNode ifNode = new IfNode(lexer);
 		nodes.push(ifNode);
 		offset = end + 1;
 		return offset;

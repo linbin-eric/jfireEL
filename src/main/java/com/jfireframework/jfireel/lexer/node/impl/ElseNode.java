@@ -1,12 +1,12 @@
 package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.util.Map;
-import com.jfireframework.jfireel.lexer.node.ElseNode;
+import com.jfireframework.jfireel.lexer.node.AssociationNode;
 import com.jfireframework.jfireel.lexer.token.CalculateType;
 import com.jfireframework.jfireel.lexer.token.Expression;
 import com.jfireframework.jfireel.syntax.Syntax;
 
-public class ElseNodeImpl implements ElseNode
+public class ElseNode implements AssociationNode
 {
 	private Syntax associationSynTax;
 	

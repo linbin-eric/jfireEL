@@ -2,19 +2,18 @@ package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.Lexer;
-import com.jfireframework.jfireel.lexer.node.ElseNode;
-import com.jfireframework.jfireel.lexer.node.IfNode;
+import com.jfireframework.jfireel.lexer.node.AssociationNode;
 import com.jfireframework.jfireel.lexer.token.CalculateType;
 import com.jfireframework.jfireel.lexer.token.Expression;
 import com.jfireframework.jfireel.syntax.Syntax;
 
-public class IfNodeImpl implements IfNode
+public class IfNode implements AssociationNode
 {
 	private Lexer		conditionLexer;
 	private Syntax		associationSynTax;
 	private ElseNode	elseNode;
 	
-	public IfNodeImpl(Lexer conditionLexer)
+	public IfNode(Lexer conditionLexer)
 	{
 		this.conditionLexer = conditionLexer;
 	}
@@ -51,7 +50,6 @@ public class IfNodeImpl implements IfNode
 		associationSynTax = syntax;
 	}
 	
-	@Override
 	public void setElseNode(ElseNode elseNode)
 	{
 		this.elseNode = elseNode;
