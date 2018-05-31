@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
+import com.jfireframework.jfireel.lexer.Lexer;
 
 public class BracketTest
 {

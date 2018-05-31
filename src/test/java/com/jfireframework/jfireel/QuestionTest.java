@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import com.jfireframework.jfireel.lexer.Lexer;
 
 public class QuestionTest
 {

@@ -16,7 +16,8 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import com.jfireframework.jfireel.util.Functional;
+import com.jfireframework.jfireel.lexer.Lexer;
+import com.jfireframework.jfireel.lexer.util.Functional;
 
 public class MethodTest extends TestSupport
 {

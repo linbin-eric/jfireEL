@@ -2,7 +2,8 @@ package com.jfireframework.jfireel;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import com.jfireframework.jfireel.util.Functional;
+import com.jfireframework.jfireel.lexer.Lexer;
+import com.jfireframework.jfireel.lexer.util.Functional;
 
 public class PropertyTest extends TestSupport
 {

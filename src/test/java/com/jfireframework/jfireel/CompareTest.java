@@ -2,6 +2,7 @@ package com.jfireframework.jfireel;
 
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import com.jfireframework.jfireel.lexer.Lexer;
 
 public class CompareTest
 {

@@ -13,8 +13,8 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.baseutil.time.Timewatch;
-import com.jfireframework.jfireel.Lexer;
-import com.jfireframework.jfireel.util.Functional;
+import com.jfireframework.jfireel.lexer.Lexer;
+import com.jfireframework.jfireel.lexer.util.Functional;
 
 public class PerTest extends TestSupport
 {
