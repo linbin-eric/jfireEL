@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 
-public class ParserTest
+public class SyntaxTest
 {
 	@Test
 	public void test()

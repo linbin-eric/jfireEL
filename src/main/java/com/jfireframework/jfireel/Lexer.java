@@ -90,4 +90,8 @@ public class Lexer
 		return (T) parseNode.calculate(null);
 	}
 	
+	public CalculateNode parseResult()
+	{
+		return parseNode;
+	}
 }

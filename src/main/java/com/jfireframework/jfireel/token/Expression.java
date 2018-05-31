@@ -28,4 +28,6 @@ public enum Expression implements CalculateType
 	ENUM,
     // 常量
 	CONSTANT, //
+	IF, //
+	FOR,//
 }
