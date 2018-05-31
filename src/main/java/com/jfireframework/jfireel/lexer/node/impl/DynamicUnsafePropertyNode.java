@@ -183,5 +183,12 @@ public class DynamicUnsafePropertyNode implements CalculateNode
 	{
 		return "PropertyNode [propertyName=" + propertyName + "]";
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

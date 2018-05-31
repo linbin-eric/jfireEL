@@ -31,5 +31,12 @@ public class VariableNode implements CalculateNode
 	{
 		return "VariableNode [literals=" + literals + "]";
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

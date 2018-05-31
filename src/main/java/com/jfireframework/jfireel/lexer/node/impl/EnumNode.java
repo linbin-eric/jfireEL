@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel.lexer.parse.impl;
+package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
@@ -26,6 +26,13 @@ public class EnumNode implements CalculateNode
 	public CalculateType type()
 	{
 		return Expression.ENUM;
+	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -31,5 +31,12 @@ public class StringNode implements CalculateNode
 	{
 		return "StringNode [literals=" + literals + "]";
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

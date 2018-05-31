@@ -235,5 +235,12 @@ public class DynamicCompileMethodNode implements MethodNode
 	{
 		return "MethodNode [methodName=" + methodName + "]";
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -49,5 +49,12 @@ public class NumberNode implements CalculateNode
 	{
 		return "NumberNode [value=" + value + "]";
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

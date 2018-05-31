@@ -1,6 +1,8 @@
 package com.jfireframework.jfireel;
 
+import static org.junit.Assert.assertEquals;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
@@ -15,6 +17,7 @@ import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.baseutil.time.Timewatch;
 import com.jfireframework.jfireel.lexer.Lexer;
 import com.jfireframework.jfireel.lexer.util.Functional;
+import com.jfireframework.jfireel.syntax.Syntax;
 
 public class PerTest extends TestSupport
 {
@@ -101,14 +104,36 @@ public class PerTest extends TestSupport
 			lexer.calculate(vars);
 		}
 		timewatch.end();
-		System.out.println(StringUtil.format("反射模式计算:{}W次耗时:{}", count/10000, timewatch.getTotal()));
+		System.out.println(StringUtil.format("反射模式计算:{}W次耗时:{}", count / 10000, timewatch.getTotal()));
 		timewatch.start();
 		for (int i = 0; i < count; i++)
 		{
 			lexer2.calculate(vars);
 		}
 		timewatch.end();
-		System.out.println(StringUtil.format("Unsafe模式计算:{}W次耗时:{}", count/10000, timewatch.getTotal()));
-		
+		System.out.println(StringUtil.format("Unsafe模式计算:{}W次耗时:{}", count / 10000, timewatch.getTotal()));
+	}
+	
+	@Test
+	public void test3()
+	{
+		int preheat = 1000;
+		int count = 10000000;
+		Syntax syntax = Syntax.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>");
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", "ll");
+		params.put("age", 1);
+		for (int i = 0; i < preheat; i++)
+		{
+			syntax.calculate(params);
+		}
+		Timewatch timewatch = new Timewatch();
+		timewatch.start();
+		for (int i = 0; i < count; i++)
+		{
+			syntax.calculate(params);
+		}
+		timewatch.end();
+		System.out.println(StringUtil.format("计算:{}W次耗时:{}", count / 10000, timewatch.getTotal()));
 	}
 }

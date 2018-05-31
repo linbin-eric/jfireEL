@@ -26,5 +26,12 @@ public class GtEqNode extends OperatorResultNode
         }
         return (Boolean) LtUtil.calculate((Number) leftValue, (Number) rightValue) == false;
     }
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
     
 }

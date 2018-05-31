@@ -2,6 +2,7 @@ package com.jfireframework.jfireel.lexer.parse.impl;
 
 import java.util.Deque;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
+import com.jfireframework.jfireel.lexer.node.impl.EnumNode;
 import com.jfireframework.jfireel.lexer.parse.Parser;
 import com.jfireframework.jfireel.lexer.token.Expression;
 import com.jfireframework.jfireel.lexer.util.CharType;

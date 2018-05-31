@@ -131,5 +131,12 @@ public class DynamicReflectPropertyNode implements CalculateNode
 	{
 		return "PropertyNode [propertyName=" + propertyName + "]";
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

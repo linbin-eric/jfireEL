@@ -46,5 +46,12 @@ public class KeywordNode implements CalculateNode
     {
         return "KeywordNode [keywordValue=" + keywordValue + "]";
     }
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
     
 }

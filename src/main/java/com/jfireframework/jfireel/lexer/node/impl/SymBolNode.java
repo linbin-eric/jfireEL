@@ -33,5 +33,12 @@ public class SymBolNode implements CalculateNode
 	{
 		return "SymBolNode [symbol=" + symbol + "]";
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

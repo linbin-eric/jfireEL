@@ -137,5 +137,12 @@ public class BracketNode implements CalculateNode
 	{
 		return Expression.BRACKET;
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

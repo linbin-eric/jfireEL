@@ -26,5 +26,12 @@ public class PercentNode extends OperatorResultNode
         }
         return PercentUtil.calculate((Number) leftValue, (Number) rightValue);
     }
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
     
 }

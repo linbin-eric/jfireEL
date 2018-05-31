@@ -53,5 +53,12 @@ public class QuestionNodeImpl implements QuestionNode
     {
         expressionNode2 = node;
     }
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
     
 }

@@ -6,6 +6,7 @@ import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.lexer.Lexer;
 import com.jfireframework.jfireel.lexer.node.AssociationNode;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
+import com.jfireframework.jfireel.lexer.node.impl.ElseIfNode;
 import com.jfireframework.jfireel.lexer.node.impl.ElseNode;
 import com.jfireframework.jfireel.lexer.node.impl.IfNode;
 import com.jfireframework.jfireel.lexer.token.Expression;
@@ -58,6 +59,15 @@ public class RightBraceHandler extends AbstractHandler
 					}
 					((IfNode) pop.lexer().parseResult()).setElseNode((ElseNode) parseResult);
 				}
+				else if (parseResult.type() == Expression.ELSE_IF)
+				{
+					pop = syntax.getStack().pollFirst();
+					if (pop == null || pop.lexer() == null || pop.lexer().parseResult().type() != Expression.IF)
+					{
+						throw new IllegalArgumentException("else if 节点的前向节点必须是if节点");
+					}
+					((IfNode) pop.lexer().parseResult()).addElseIfNode((ElseIfNode) parseResult);
+				}
 				pop.changeTypeToLexer();
 				syntax.getStack().push(pop);
 				finish = true;
@@ -73,7 +83,7 @@ public class RightBraceHandler extends AbstractHandler
 		}
 		else if (mode == ScanMode.EXPRESSION)
 		{
-			Execution execution  = new Execution(Lexer.parse(cache.toString()), Execution.LEXER);
+			Execution execution = new Execution(Lexer.parse(cache.toString()), Execution.LEXER);
 			syntax.getStack().push(execution);
 			cache.clear();
 			offset++;

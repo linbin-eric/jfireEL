@@ -26,5 +26,12 @@ public class OperatorNode implements CalculateNode
 	{
 		return operatorType;
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

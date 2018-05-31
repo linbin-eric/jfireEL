@@ -26,5 +26,12 @@ public class MinusNode extends OperatorResultNode
 		}
 		return MinusUtil.calculate((Number) leftValue, (Number) rightValue);
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

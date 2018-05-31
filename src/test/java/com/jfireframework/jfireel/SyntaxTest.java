@@ -56,6 +56,7 @@ public class SyntaxTest
 		params.put("age", 1);
 		assertEquals("hello, ll", syntax.calculate(params));
 	}
+	
 	@Test
 	public void test6()
 	{
@@ -64,5 +65,15 @@ public class SyntaxTest
 		params.put("name", "ll");
 		params.put("age", 1);
 		assertEquals("hello, ll", syntax.calculate(params));
+	}
+	
+	@Test
+	public void test7()
+	{
+		Syntax syntax = Syntax.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>");
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", "ll");
+		params.put("age", 1);
+		assertEquals("hello, age<5", syntax.calculate(params));
 	}
 }

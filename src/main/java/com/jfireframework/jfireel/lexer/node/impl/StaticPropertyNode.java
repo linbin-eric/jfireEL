@@ -53,5 +53,12 @@ public class StaticPropertyNode implements CalculateNode
     {
         return "StaticPropertyNode [beanType=" + beanType + ", field=" + field + "]";
     }
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
     
 }

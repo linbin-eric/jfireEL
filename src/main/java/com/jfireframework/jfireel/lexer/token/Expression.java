@@ -30,5 +30,6 @@ public enum Expression implements CalculateType
 	CONSTANT, //
 	IF, //
 	ELSE, //
+	ELSE_IF, //
 	FOR,//
 }

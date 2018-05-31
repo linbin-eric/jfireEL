@@ -27,5 +27,12 @@ public class TypeNode implements CalculateNode
 	{
 		return type;
 	}
+
+	@Override
+	public void check()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
