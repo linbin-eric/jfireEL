@@ -10,7 +10,7 @@ public class ParserTest
 	@Test
 	public void test()
 	{
-		Parser parse = Parser.parse("hello ${name},my age is ${age+2}");
+		Syntax parse = Syntax.parse("hello ${name},my age is ${age+2}");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 10);
@@ -19,7 +19,7 @@ public class ParserTest
 	@Test
 	public void test2()
 	{
-		Parser parse = Parser.parse("hello ${name}");
+		Syntax parse = Syntax.parse("hello ${name}");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		assertEquals("hello ll", parse.calculate(params));

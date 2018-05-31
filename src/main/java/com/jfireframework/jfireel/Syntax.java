@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import com.jfireframework.baseutil.StringUtil;
 
-public class Parser
+public class Syntax
 {
 	private static final int	LITERALS	= 1;
 	private static final int	LEXER		= 2;
@@ -43,7 +43,7 @@ public class Parser
 	
 	private Node[] nodes;
 	
-	private Parser(String sentence)
+	private Syntax(String sentence)
 	{
 		if (sentence.contains("${") == false)
 		{
@@ -51,7 +51,7 @@ public class Parser
 		}
 		else
 		{
-			List<Node> list = new LinkedList<Parser.Node>();
+			List<Node> list = new LinkedList<Syntax.Node>();
 			int pred = 0;
 			do
 			{
@@ -90,8 +90,8 @@ public class Parser
 		return builder.toString();
 	}
 	
-	public static Parser parse(String sentence)
+	public static Syntax parse(String sentence)
 	{
-		return new Parser(sentence);
+		return new Syntax(sentence);
 	}
 }
