@@ -6,6 +6,7 @@ import com.jfireframework.jfireel.lexer.parse.impl.CommaParser;
 import com.jfireframework.jfireel.lexer.parse.impl.ConstantStringParser;
 import com.jfireframework.jfireel.lexer.parse.impl.ElseParser;
 import com.jfireframework.jfireel.lexer.parse.impl.EnumParser;
+import com.jfireframework.jfireel.lexer.parse.impl.ForEachParser;
 import com.jfireframework.jfireel.lexer.parse.impl.IdentifierParser;
 import com.jfireframework.jfireel.lexer.parse.impl.IfParser;
 import com.jfireframework.jfireel.lexer.parse.impl.LeftBracketParser;
@@ -44,6 +45,7 @@ public class ParseChain
 		        new SkipIgnoredToken(), //
 		        new IfParser(), //
 		        new ElseParser(), //
+		        new ForEachParser(), //
 		        new LeftParenParser(), //
 		        new RightParenParser(), //
 		        new LeftBracketParser(), //

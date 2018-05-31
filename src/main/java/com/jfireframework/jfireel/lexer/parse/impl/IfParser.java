@@ -4,31 +4,23 @@ import java.util.Deque;
 import com.jfireframework.jfireel.lexer.Lexer;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.impl.IfNode;
-import com.jfireframework.jfireel.lexer.parse.Parser;
-import com.jfireframework.jfireel.lexer.util.CharType;
 
-public class IfParser implements Parser
+public class IfParser extends AbstractParser
 {
 	
 	@Override
 	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
 		int origin = offset;
-		while (CharType.isWhitespace(CharType.getCurrentChar(offset, el)))
-		{
-			offset++;
-		}
-		char c1 = CharType.getCurrentChar(offset, el);
-		char c2 = CharType.getCurrentChar(offset + 1, el);
+		offset = skipWhiteSpace(offset, el);
+		char c1 = getCurrent(offset, el);
+		char c2 = getCurrent(offset + 1, el);
 		if (c1 != 'i' || c2 != 'f')
 		{
 			return origin;
 		}
 		offset += 2;
-		while (CharType.isWhitespace(CharType.getCurrentChar(offset, el)))
-		{
-			offset++;
-		}
+		offset=skipWhiteSpace(offset, el);
 		int end = el.indexOf('{', offset);
 		if (end == -1)
 		{

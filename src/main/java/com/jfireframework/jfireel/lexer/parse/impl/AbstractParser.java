@@ -19,4 +19,15 @@ public abstract class AbstractParser implements Parser
 		}
 		return offset;
 	}
+	
+	protected int getIdentifier(int offset, String el)
+	{
+		int length = 0;
+		char c;
+		while (CharType.isAlphabet(c = CharType.getCurrentChar(length + offset, el)) || CharType.isDigital(c))
+		{
+			length++;
+		}
+		return length + offset;
+	}
 }

@@ -2,6 +2,8 @@ package com.jfireframework.jfireel;
 
 import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 import com.jfireframework.jfireel.syntax.Syntax;
@@ -75,5 +77,28 @@ public class SyntaxTest
 		params.put("name", "ll");
 		params.put("age", 1);
 		assertEquals("hello, age<5", syntax.calculate(params));
+	}
+	
+	@Test
+	public void test8()
+	{
+		List<String> list = new LinkedList<String>();
+		list.add("name1");
+		list.add("name2");
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("list", list);
+		Syntax syntax = Syntax.parse("hello,<% for (name in list) {%> ${name}<%}%>");
+		assertEquals("hello, name1 name2", syntax.calculate(params));
+	}
+	@Test
+	public void test9()
+	{
+		List<String> list = new LinkedList<String>();
+		list.add("name1");
+		list.add("name2");
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("list", list);
+		Syntax syntax = Syntax.parse("hello,<% for (name in list) {%><% if(name=='name1'){%> ${name}<%}%><%}%>");
+		assertEquals("hello, name1", syntax.calculate(params));
 	}
 }
