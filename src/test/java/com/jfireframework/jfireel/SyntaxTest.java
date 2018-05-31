@@ -90,6 +90,7 @@ public class SyntaxTest
 		Syntax syntax = Syntax.parse("hello,<% for (name in list) {%> ${name}<%}%>");
 		assertEquals("hello, name1 name2", syntax.calculate(params));
 	}
+	
 	@Test
 	public void test9()
 	{
