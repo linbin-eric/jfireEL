@@ -6,7 +6,7 @@ import java.util.List;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.MethodNode;
 import com.jfireframework.jfireel.lexer.parse.Parser;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.token.Symbol;
 import com.jfireframework.jfireel.lexer.util.CharType;
 import com.jfireframework.jfireel.lexer.util.OperatorResultUtil;
@@ -25,7 +25,7 @@ public class RightParenParser implements Parser
 		CalculateNode pred;
 		while ((pred = nodes.pollFirst()) != null)
 		{
-			if (pred.type() != Symbol.LEFT_PAREN && pred.type() != Expression.METHOD)
+			if (pred.type() != Symbol.LEFT_PAREN && pred.type() != Token.METHOD)
 			{
 				list.add(0, pred);
 			}
@@ -38,7 +38,7 @@ public class RightParenParser implements Parser
 		{
 			throw new IllegalArgumentException(el.substring(0, offset));
 		}
-		if (pred.type() == Expression.METHOD)
+		if (pred.type() == Token.METHOD)
 		{
 			MethodNode methodNode = (MethodNode) pred;
 			List<CalculateNode> argsNodes = new LinkedList<CalculateNode>();

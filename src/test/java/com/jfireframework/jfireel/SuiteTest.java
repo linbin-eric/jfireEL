@@ -12,7 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
         CompareTest.class, //
         TypeTest.class, //
         EnumTest.class, //
-        SyntaxTest.class, //
+        TemplateTest.class, //
         QuestionTest.class//
 })
 @RunWith(value = org.junit.runners.Suite.class)

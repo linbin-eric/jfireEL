@@ -11,8 +11,8 @@ import com.jfireframework.baseutil.smc.model.MethodModel;
 import com.jfireframework.baseutil.smc.model.MethodModel.AccessLevel;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.MethodNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 
 public class DynamicCompileMethodNode implements MethodNode
 {
@@ -30,12 +30,12 @@ public class DynamicCompileMethodNode implements MethodNode
 	protected boolean						recognizeEveryTime	= true;
 	private CalculateNode[]					argsNodes;
 	private ConvertType[]					convertTypes;
-	private Expression						type;
+	private Token						type;
 	
 	public DynamicCompileMethodNode(String literals, CalculateNode beanNode)
 	{
 		methodName = literals;
-		type = Expression.METHOD;
+		type = Token.METHOD;
 		this.beanNode = beanNode;
 	}
 	
@@ -66,7 +66,7 @@ public class DynamicCompileMethodNode implements MethodNode
 	}
 	
 	@Override
-	public CalculateType type()
+	public TokenType type()
 	{
 		return type;
 	}
@@ -227,7 +227,7 @@ public class DynamicCompileMethodNode implements MethodNode
 	public void setArgsNodes(CalculateNode[] argsNodes)
 	{
 		this.argsNodes = argsNodes;
-		type = Expression.METHOD_RESULT;
+		type = Token.METHOD_RESULT;
 	}
 	
 	@Override

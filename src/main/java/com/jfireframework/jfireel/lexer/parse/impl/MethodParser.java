@@ -7,7 +7,7 @@ import com.jfireframework.jfireel.lexer.node.impl.DynamicCompileMethodNode;
 import com.jfireframework.jfireel.lexer.node.impl.DynamicDefaultMethodNode;
 import com.jfireframework.jfireel.lexer.node.impl.StaticMethodNode;
 import com.jfireframework.jfireel.lexer.parse.Parser;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.util.CharType;
 import com.jfireframework.jfireel.lexer.util.Functions;
 
@@ -36,7 +36,7 @@ public class MethodParser implements Parser
 		String literals = el.substring(origin + 1, offset);
 		CalculateNode beanNode = nodes.pop();
 		MethodNode methodNode;
-		if (beanNode.type() == Expression.TYPE)
+		if (beanNode.type() == Token.TYPE)
 		{
 			methodNode = new StaticMethodNode(literals, beanNode);
 		}

@@ -9,7 +9,7 @@ import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.parse.ParseChain;
 import com.jfireframework.jfireel.lexer.util.OperatorResultUtil;
 
-public class Lexer
+public class Expression
 {
 	private CalculateNode			parseNode;
 	private Deque<CalculateNode>	nodes	= new LinkedList<CalculateNode>();
@@ -18,22 +18,22 @@ public class Lexer
 	private int						function;
 	private ParseChain				parseChain;
 	
-	public static Lexer parse(String el)
+	public static Expression parse(String el)
 	{
-		return new Lexer(el, 0, ParseChain.DEFALT_INSTANCE);
+		return new Expression(el, 0, ParseChain.DEFALT_INSTANCE);
 	}
 	
-	public static Lexer parse(String el, int function)
+	public static Expression parse(String el, int function)
 	{
-		return new Lexer(el, function, ParseChain.DEFALT_INSTANCE);
+		return new Expression(el, function, ParseChain.DEFALT_INSTANCE);
 	}
 	
-	public static Lexer parse(String el, int function, ParseChain parseChain)
+	public static Expression parse(String el, int function, ParseChain parseChain)
 	{
-		return new Lexer(el, function, parseChain);
+		return new Expression(el, function, parseChain);
 	}
 	
-	private Lexer(String el, int function, ParseChain parseChain)
+	private Expression(String el, int function, ParseChain parseChain)
 	{
 		this.parseChain = parseChain;
 		this.el = el;

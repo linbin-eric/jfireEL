@@ -4,11 +4,8 @@ import java.util.Deque;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.parse.impl.CommaParser;
 import com.jfireframework.jfireel.lexer.parse.impl.ConstantStringParser;
-import com.jfireframework.jfireel.lexer.parse.impl.ElseParser;
 import com.jfireframework.jfireel.lexer.parse.impl.EnumParser;
-import com.jfireframework.jfireel.lexer.parse.impl.ForEachParser;
 import com.jfireframework.jfireel.lexer.parse.impl.IdentifierParser;
-import com.jfireframework.jfireel.lexer.parse.impl.IfParser;
 import com.jfireframework.jfireel.lexer.parse.impl.LeftBracketParser;
 import com.jfireframework.jfireel.lexer.parse.impl.LeftParenParser;
 import com.jfireframework.jfireel.lexer.parse.impl.MethodParser;
@@ -43,9 +40,6 @@ public class ParseChain
 	{
 		DEFALT_INSTANCE = new ParseChain(new Parser[] { //
 		        new SkipIgnoredToken(), //
-		        new IfParser(), //
-		        new ElseParser(), //
-		        new ForEachParser(), //
 		        new LeftParenParser(), //
 		        new RightParenParser(), //
 		        new LeftBracketParser(), //

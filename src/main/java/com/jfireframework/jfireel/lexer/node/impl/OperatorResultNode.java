@@ -1,8 +1,8 @@
 package com.jfireframework.jfireel.lexer.node.impl;
 
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.token.Operator;
 
 public abstract class OperatorResultNode implements CalculateNode
@@ -27,9 +27,9 @@ public abstract class OperatorResultNode implements CalculateNode
 	}
 	
 	@Override
-	public CalculateType type()
+	public TokenType type()
 	{
-		return Expression.OPERATOR_RESULT;
+		return Token.OPERATOR_RESULT;
 	}
 	
 	@Override

@@ -3,8 +3,8 @@ package com.jfireframework.jfireel.lexer.node.impl;
 import java.lang.reflect.Field;
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 
 public class StaticPropertyNode implements CalculateNode
 {
@@ -43,9 +43,9 @@ public class StaticPropertyNode implements CalculateNode
     }
     
     @Override
-    public CalculateType type()
+    public TokenType type()
     {
-        return Expression.PROPERTY;
+        return Token.PROPERTY;
     }
     
     @Override

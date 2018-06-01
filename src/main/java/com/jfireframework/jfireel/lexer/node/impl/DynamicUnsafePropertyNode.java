@@ -5,8 +5,8 @@ import java.util.Map;
 import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.baseutil.reflect.ReflectUtil;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")
@@ -80,9 +80,9 @@ public class DynamicUnsafePropertyNode implements CalculateNode
 	}
 	
 	@Override
-	public CalculateType type()
+	public TokenType type()
 	{
-		return Expression.PROPERTY;
+		return Token.PROPERTY;
 	}
 	
 	protected final long getAddress(Object value)

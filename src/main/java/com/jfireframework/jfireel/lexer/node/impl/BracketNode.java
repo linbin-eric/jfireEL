@@ -3,8 +3,8 @@ package com.jfireframework.jfireel.lexer.node.impl;
 import java.util.List;
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 
 public class BracketNode implements CalculateNode
 {
@@ -27,11 +27,11 @@ public class BracketNode implements CalculateNode
 	{
 		this.beanNode = beanNode;
 		this.valueNode = valueNode;
-		if (valueNode.type() == Expression.STRING)
+		if (valueNode.type() == Token.STRING)
 		{
 			type = ValueType.STRING;
 		}
-		else if (valueNode.type() == Expression.NUMBER)
+		else if (valueNode.type() == Token.NUMBER)
 		{
 			type = ValueType.NUMBER;
 		}
@@ -133,9 +133,9 @@ public class BracketNode implements CalculateNode
 	}
 	
 	@Override
-	public CalculateType type()
+	public TokenType type()
 	{
-		return Expression.BRACKET;
+		return Token.BRACKET;
 	}
 
 	@Override

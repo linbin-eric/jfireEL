@@ -5,8 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.MethodNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 
 public class StaticMethodNode implements MethodNode
 {
@@ -15,17 +15,17 @@ public class StaticMethodNode implements MethodNode
 	private String			methodName;
 	private CalculateNode[]	argsNodes;
 	private ConvertType[]	convertTypes;
-	private Expression		type;
+	private Token		type;
 	
 	public StaticMethodNode(String literals, CalculateNode beanNode)
 	{
-		if (beanNode.type() != Expression.TYPE)
+		if (beanNode.type() != Token.TYPE)
 		{
 			throw new IllegalArgumentException("静态方法的前面一个节点必须是类型节点");
 		}
 		beanType = (Class<?>) beanNode.calculate(null);
 		methodName = literals;
-		type = Expression.METHOD;
+		type = Token.METHOD;
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class StaticMethodNode implements MethodNode
 	}
 	
 	@Override
-	public CalculateType type()
+	public TokenType type()
 	{
 		return type;
 	}
@@ -98,7 +98,7 @@ public class StaticMethodNode implements MethodNode
 	public void setArgsNodes(CalculateNode[] argsNodes)
 	{
 		this.argsNodes = argsNodes;
-		type = Expression.METHOD_RESULT;
+		type = Token.METHOD_RESULT;
 	}
 	
 	@Override

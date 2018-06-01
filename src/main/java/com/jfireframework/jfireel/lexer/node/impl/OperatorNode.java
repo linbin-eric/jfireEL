@@ -2,7 +2,7 @@ package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
+import com.jfireframework.jfireel.lexer.token.TokenType;
 import com.jfireframework.jfireel.lexer.token.Operator;
 
 public class OperatorNode implements CalculateNode
@@ -22,7 +22,7 @@ public class OperatorNode implements CalculateNode
 	}
 	
 	@Override
-	public CalculateType type()
+	public TokenType type()
 	{
 		return operatorType;
 	}

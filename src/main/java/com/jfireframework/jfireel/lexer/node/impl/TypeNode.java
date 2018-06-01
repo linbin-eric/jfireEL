@@ -2,15 +2,15 @@ package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 
 public class TypeNode implements CalculateNode
 {
 	private Class<?>	ckass;
-	private Expression	type;
+	private Token	type;
 	
-	public TypeNode(Class<?> ckass, Expression type)
+	public TypeNode(Class<?> ckass, Token type)
 	{
 		this.ckass = ckass;
 		this.type = type;
@@ -23,7 +23,7 @@ public class TypeNode implements CalculateNode
 	}
 	
 	@Override
-	public CalculateType type()
+	public TokenType type()
 	{
 		return type;
 	}

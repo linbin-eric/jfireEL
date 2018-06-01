@@ -1,24 +1,24 @@
-package com.jfireframework.jfireel.syntax.handler;
+package com.jfireframework.jfireel.syntax.execution;
 
 import java.util.Map;
-import com.jfireframework.jfireel.lexer.Lexer;
+import com.jfireframework.jfireel.lexer.Expression;
 
-public class Execution
+public class ExecutionImpl
 {
 	public static final int	LITERALS	= 1;
 	public static final int	LEXER		= 2;
 	public static final int	LANGUAGE	= 3;
 	int						type;
 	String					literals;
-	Lexer					lexer;
+	Expression					lexer;
 	
-	public Execution(Lexer lexer, int type)
+	public ExecutionImpl(Expression lexer, int type)
 	{
 		this.lexer = lexer;
 		this.type = type;
 	}
 	
-	public Execution(String literals)
+	public ExecutionImpl(String literals)
 	{
 		this.literals = literals;
 		type = LITERALS;
@@ -41,7 +41,7 @@ public class Execution
 		return type;
 	}
 	
-	public Lexer lexer()
+	public Expression lexer()
 	{
 		return lexer;
 	}

@@ -20,8 +20,8 @@ import com.jfireframework.jfireel.lexer.node.impl.OperatorResultNode;
 import com.jfireframework.jfireel.lexer.node.impl.PercentNode;
 import com.jfireframework.jfireel.lexer.node.impl.PlusNode;
 import com.jfireframework.jfireel.lexer.node.impl.QuestionNodeImpl;
-import com.jfireframework.jfireel.lexer.token.CalculateType;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.TokenType;
+import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.token.Operator;
 
 public class OperatorResultUtil
@@ -53,7 +53,7 @@ public class OperatorResultUtil
             // 优先操作乘法，除法，取余
             for (int i = 0; i < list.size();)
             {
-                CalculateType type = list.get(i).type();
+                TokenType type = list.get(i).type();
                 if (type == Operator.MULTI || type == Operator.DIVISION || type == Operator.PERCENT)
                 {
                     if (i > 0 && list.size() > i + 1//
@@ -80,7 +80,7 @@ public class OperatorResultUtil
             }
             for (int i = 0; i < list.size();)
             {
-                CalculateType type = list.get(i).type();
+                TokenType type = list.get(i).type();
                 if (type == Operator.QUESTION)
                 {
                     if (i == 0)
@@ -101,7 +101,7 @@ public class OperatorResultUtil
                     List<CalculateNode> tmp = new LinkedList<CalculateNode>();
                     for (int index = i - 1; index >= 0; index--)
                     {
-                        if (list.get(index).type() != Expression.QUESTION)
+                        if (list.get(index).type() != Token.QUESTION)
                         {
                             tmp.add(0, list.get(index));
                             list.remove(index);

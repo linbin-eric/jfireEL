@@ -4,7 +4,7 @@ import java.util.Deque;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.impl.EnumNode;
 import com.jfireframework.jfireel.lexer.parse.Parser;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.util.CharType;
 
 public class EnumParser implements Parser
@@ -14,7 +14,7 @@ public class EnumParser implements Parser
 	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
 		// 如果是后一种情况，意味着此时应该是一个枚举值而不是属性
-		if ('.' != CharType.getCurrentChar(offset, el) || (nodes.peek() != null && nodes.peek().type() != Expression.TYPE_ENUM))
+		if ('.' != CharType.getCurrentChar(offset, el) || (nodes.peek() != null && nodes.peek().type() != Token.TYPE_ENUM))
 		{
 			return offset;
 		}

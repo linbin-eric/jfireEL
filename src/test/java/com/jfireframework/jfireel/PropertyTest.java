@@ -2,7 +2,7 @@ package com.jfireframework.jfireel;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import com.jfireframework.jfireel.lexer.Lexer;
+import com.jfireframework.jfireel.lexer.Expression;
 import com.jfireframework.jfireel.lexer.util.Functional;
 
 public class PropertyTest extends TestSupport
@@ -12,9 +12,9 @@ public class PropertyTest extends TestSupport
 	@Test
 	public void test()
 	{
-		Lexer lexer = Lexer.parse("home.person.age");
+		Expression lexer = Expression.parse("home.person.age");
 		assertEquals(person.age, lexer.calculate(vars));
-		lexer = Lexer.parse("home.person.age", Functional.build().setPropertyFetchByUnsafe(true).setRecognizeEveryTime(false).toFunction());
+		lexer = Expression.parse("home.person.age", Functional.build().setPropertyFetchByUnsafe(true).setRecognizeEveryTime(false).toFunction());
 		assertEquals(person.age, lexer.calculate(vars));
 	}
 	
@@ -22,7 +22,7 @@ public class PropertyTest extends TestSupport
 	@Test
 	public void test2()
 	{
-		int result = Lexer.parse("T(com.jfireframework.jfireel.PropertyTest).age").calculate();
+		int result = Expression.parse("T(com.jfireframework.jfireel.PropertyTest).age").calculate();
 		assertEquals(age, result);
 	}
 }

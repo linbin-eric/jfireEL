@@ -3,7 +3,7 @@ package com.jfireframework.jfireel.lexer.token;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Symbol implements CalculateType
+public enum Symbol implements TokenType
 {
 	LEFT_PAREN("("), //
 	RIGHT_PAREN(")"), //

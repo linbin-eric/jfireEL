@@ -1,6 +1,6 @@
 package com.jfireframework.jfireel.lexer.token;
 
-public enum Expression implements CalculateType
+public enum Token implements TokenType
 {
     // 参数变量
 	VARIABLE, //

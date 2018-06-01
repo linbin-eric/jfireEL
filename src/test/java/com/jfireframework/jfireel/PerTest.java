@@ -1,6 +1,5 @@
 package com.jfireframework.jfireel;
 
-import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,15 +8,14 @@ import org.beetl.core.GroupTemplate;
 import org.beetl.core.exception.ScriptEvalError;
 import org.beetl.core.resource.StringTemplateResourceLoader;
 import org.junit.Test;
-import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.baseutil.time.Timewatch;
-import com.jfireframework.jfireel.lexer.Lexer;
+import com.jfireframework.jfireel.lexer.Expression;
 import com.jfireframework.jfireel.lexer.util.Functional;
-import com.jfireframework.jfireel.syntax.Syntax;
+import com.jfireframework.jfireel.template.Template;
 
 public class PerTest extends TestSupport
 {
@@ -28,17 +26,17 @@ public class PerTest extends TestSupport
 		vars.put("value", value);
 		StandardEvaluationContext societyContext = new StandardEvaluationContext(this);
 		ExpressionParser parser = new SpelExpressionParser();
-		Expression exp = parser.parseExpression("vars['home'].bool(vars['person'].getAge() + '12' != vars['value'])");
+		org.springframework.expression.Expression exp = parser.parseExpression("vars['home'].bool(vars['person'].getAge() + '12' != vars['value'])");
 		Object springElResult = exp.getValue(societyContext);
 		System.out.println(springElResult);
 		StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
 		Configuration cfg = Configuration.defaultConfiguration();
 		GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
-		Map runScript = gt.runScript("return @home.bool(@person.getAge()+'12'!=value);", vars);
+		Map<?, ?> runScript = gt.runScript("return @home.bool(@person.getAge()+'12'!=value);", vars);
 		System.out.println(runScript);
 		
-		Lexer lexer = Lexer.parse("home.bool(person.getAge() + '12' != value)");
-		Lexer lexer2 = Lexer.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
+		com.jfireframework.jfireel.lexer.Expression lexer = com.jfireframework.jfireel.lexer.Expression.parse("home.bool(person.getAge() + '12' != value)");
+		com.jfireframework.jfireel.lexer.Expression lexer2 = com.jfireframework.jfireel.lexer.Expression.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
 		int preheat = 100;
 		int count = 10000000;
 		for (int i = 0; i < preheat; i++)
@@ -88,8 +86,8 @@ public class PerTest extends TestSupport
 	@Test
 	public void test2()
 	{
-		Lexer lexer = Lexer.parse("person.age");
-		Lexer lexer2 = Lexer.parse("person.age", Functional.build().setPropertyFetchByUnsafe(true).toFunction());
+		Expression lexer = Expression.parse("person.age");
+		Expression lexer2 = Expression.parse("person.age", Functional.build().setPropertyFetchByUnsafe(true).toFunction());
 		int preheat = 1000;
 		int count = 100000000;
 		for (int i = 0; i < preheat; i++)
@@ -119,7 +117,7 @@ public class PerTest extends TestSupport
 	{
 		int preheat = 1000;
 		int count = 10000000;
-		Syntax syntax = Syntax.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>");
+		Template syntax = Template.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 1);

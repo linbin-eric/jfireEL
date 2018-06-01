@@ -6,7 +6,7 @@ import com.jfireframework.jfireel.lexer.node.impl.DynamicReflectPropertyNode;
 import com.jfireframework.jfireel.lexer.node.impl.DynamicUnsafePropertyNode;
 import com.jfireframework.jfireel.lexer.node.impl.StaticPropertyNode;
 import com.jfireframework.jfireel.lexer.parse.Parser;
-import com.jfireframework.jfireel.lexer.token.Expression;
+import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.util.CharType;
 import com.jfireframework.jfireel.lexer.util.Functions;
 
@@ -17,7 +17,7 @@ public class PropertyParser implements Parser
 	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
 	{
 		// 如果是后一种情况，意味着此时应该是一个枚举值而不是属性
-		if ('.' != CharType.getCurrentChar(offset, el) || (nodes.peek() != null && nodes.peek().type() == Expression.TYPE_ENUM))
+		if ('.' != CharType.getCurrentChar(offset, el) || (nodes.peek() != null && nodes.peek().type() == Token.TYPE_ENUM))
 		{
 			return offset;
 		}
@@ -36,7 +36,7 @@ public class PropertyParser implements Parser
 		String literals = el.substring(origin + 1, offset);
 		CalculateNode beanNode = nodes.pop();
 		CalculateNode current;
-		if (beanNode.type() == Expression.TYPE)
+		if (beanNode.type() == Token.TYPE)
 		{
 			current = new StaticPropertyNode(literals, beanNode);
 		}
