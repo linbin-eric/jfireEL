@@ -116,20 +116,20 @@ public class PerTest extends TestSupport
     public void test3()
     {
         int preheat = 1000;
-        int count = 100000000;
+        int count = 10000000;
         Template syntax = Template.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>");
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "ll");
         params.put("age", 1);
         for (int i = 0; i < preheat; i++)
         {
-            syntax.calculate(params);
+            syntax.render(params);
         }
         Timewatch timewatch = new Timewatch();
         timewatch.start();
         for (int i = 0; i < count; i++)
         {
-            syntax.calculate(params);
+            syntax.render(params);
         }
         timewatch.end();
         System.out.println(StringUtil.format("计算:{}W次耗时:{}", count / 10000, timewatch.getTotal()));

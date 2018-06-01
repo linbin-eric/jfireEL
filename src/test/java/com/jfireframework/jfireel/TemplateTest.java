@@ -17,7 +17,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 10);
-		assertEquals("hello ll,my age is 12", parse.calculate(params));
+		assertEquals("hello ll,my age is 12", parse.render(params));
 	}
 	
 	@Test
@@ -26,7 +26,7 @@ public class TemplateTest
 		Template parse = Template.parse("hello ${name}");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
-		assertEquals("hello ll", parse.calculate(params));
+		assertEquals("hello ll", parse.render(params));
 	}
 	
 	@Test
@@ -36,7 +36,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 10);
-		assertEquals("hello, my name is ll  ", syntax.calculate(params));
+		assertEquals("hello, my name is ll  ", syntax.render(params));
 	}
 	
 	@Test
@@ -46,7 +46,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 10);
-		assertEquals("hello, my name is ll", syntax.calculate(params));
+		assertEquals("hello, my name is ll", syntax.render(params));
 	}
 	
 	@Test
@@ -56,7 +56,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 1);
-		assertEquals("hello, ll", syntax.calculate(params));
+		assertEquals("hello, ll", syntax.render(params));
 	}
 	
 	@Test
@@ -66,7 +66,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 1);
-		assertEquals("hello, ll", syntax.calculate(params));
+		assertEquals("hello, ll", syntax.render(params));
 	}
 	
 	@Test
@@ -76,7 +76,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", "ll");
 		params.put("age", 1);
-		assertEquals("hello, age<5", syntax.calculate(params));
+		assertEquals("hello, age<5", syntax.render(params));
 	}
 	
 	@Test
@@ -88,7 +88,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("list", list);
 		Template syntax = Template.parse("hello,<% for (name in list) {%> ${name}<%}%>");
-		assertEquals("hello, name1 name2", syntax.calculate(params));
+		assertEquals("hello, name1 name2", syntax.render(params));
 	}
 	
 	@Test
@@ -100,7 +100,7 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("list", list);
 		Template syntax = Template.parse("hello,<% for (name in list) {%><% if(name=='name1'){%> ${name}<%}%><%}%>");
-		assertEquals("hello, name1", syntax.calculate(params));
+		assertEquals("hello, name1", syntax.render(params));
 	}
 	
 	@Test
@@ -113,6 +113,6 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("list", list);
 		params.put("age", 11);
-		assertEquals(" name1  name2 ", template.calculate(params));
+		assertEquals(" name1  name2 ", template.render(params));
 	}
 }
