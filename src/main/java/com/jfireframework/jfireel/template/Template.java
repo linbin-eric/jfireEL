@@ -4,7 +4,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 import com.jfireframework.baseutil.collection.StringCache;
-import com.jfireframework.jfireel.syntax.ScanMode;
 import com.jfireframework.jfireel.template.exception.IllegalFormatException;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.impl.StringExecution;

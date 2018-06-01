@@ -113,7 +113,6 @@ public class TemplateTest
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("list", list);
 		params.put("age", 11);
-		System.out.println(template.calculate(params));
-		
+		assertEquals(" name1  name2 ", template.calculate(params));
 	}
 }

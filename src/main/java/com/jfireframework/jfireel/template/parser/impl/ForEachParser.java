@@ -4,7 +4,7 @@ import java.util.Deque;
 import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.lexer.Expression;
 import com.jfireframework.jfireel.lexer.util.CharType;
-import com.jfireframework.jfireel.syntax.ScanMode;
+import com.jfireframework.jfireel.template.ScanMode;
 import com.jfireframework.jfireel.template.Template;
 import com.jfireframework.jfireel.template.exception.IllegalFormatException;
 import com.jfireframework.jfireel.template.execution.Execution;
