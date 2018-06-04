@@ -9,17 +9,18 @@ import com.jfireframework.jfireel.template.exception.IllegalFormatException;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.impl.ElseExecution;
 import com.jfireframework.jfireel.template.execution.impl.ElseIfExecution;
+import com.jfireframework.jfireel.template.parser.Invoker;
 import com.jfireframework.jfireel.template.parser.Parser;
 
 public class ElseParser extends Parser
 {
 	
 	@Override
-	public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache)
+	public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache, Invoker next)
 	{
 		if (template.getMode() != ScanMode.EXECUTION)
 		{
-			return offset;
+			return next.scan(sentence, offset, executions, template, cache);
 		}
 		if (getChar(offset, sentence) != 'e'//
 		        || getChar(offset + 1, sentence) != 'l' //
@@ -27,7 +28,7 @@ public class ElseParser extends Parser
 		        || getChar(offset + 3, sentence) != 'e'//
 		)
 		{
-			return offset;
+			return next.scan(sentence, offset, executions, template, cache);
 		}
 		offset = skipWhiteSpace(offset + 4, sentence);
 		// 此种情况意味着是一个单纯的else

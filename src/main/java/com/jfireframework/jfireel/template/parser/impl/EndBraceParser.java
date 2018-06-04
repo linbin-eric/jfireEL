@@ -11,17 +11,18 @@ import com.jfireframework.jfireel.template.execution.WithBodyExecution;
 import com.jfireframework.jfireel.template.execution.impl.ElseExecution;
 import com.jfireframework.jfireel.template.execution.impl.ElseIfExecution;
 import com.jfireframework.jfireel.template.execution.impl.IfExecution;
+import com.jfireframework.jfireel.template.parser.Invoker;
 import com.jfireframework.jfireel.template.parser.Parser;
 
 public class EndBraceParser extends Parser
 {
 	
 	@Override
-	public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache)
+	public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache, Invoker next)
 	{
 		if (template.getMode() != ScanMode.EXECUTION || getChar(offset, sentence) != '}')
 		{
-			return offset;
+			return next.scan(sentence, offset, executions, template, cache);
 		}
 		Deque<Execution> array = new LinkedList<Execution>();
 		Execution pop;

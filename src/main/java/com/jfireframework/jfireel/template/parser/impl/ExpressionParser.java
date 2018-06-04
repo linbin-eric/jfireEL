@@ -8,21 +8,22 @@ import com.jfireframework.jfireel.template.Template;
 import com.jfireframework.jfireel.template.exception.IllegalFormatException;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.impl.ExpressionExecution;
+import com.jfireframework.jfireel.template.parser.Invoker;
 import com.jfireframework.jfireel.template.parser.Parser;
 
 public class ExpressionParser extends Parser
 {
 	
 	@Override
-	public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache)
+	public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache,Invoker next)
 	{
 		if (template.getMode() != ScanMode.LITERALS)
 		{
-			return offset;
+			return next.scan(sentence, offset, executions, template, cache);
 		}
 		if (getChar(offset, sentence) != '$' || getChar(offset + 1, sentence) != '{')
 		{
-			return offset;
+			return next.scan(sentence, offset, executions, template, cache);
 		}
 		extractLiterals(cache, executions);
 		offset += 2;

@@ -13,7 +13,7 @@ public abstract class Parser
 	
 	protected static final Execution[] emptyBody = new Execution[0];
 	
-	public abstract int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache);
+	public abstract int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache, Invoker next);
 	
 	/**
 	 * 查询{的位置，如果查询不到抛出异常。如果查询到，则返回{位置+1的结果
