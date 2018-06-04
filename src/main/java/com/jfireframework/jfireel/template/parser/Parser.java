@@ -45,12 +45,12 @@ public abstract class Parser
 	
 	protected char getChar(int offset, String sentence)
 	{
-		return CharType.getCurrentChar(offset, sentence);
+		return offset >= sentence.length() ? (char) CharType.EOI : sentence.charAt(offset);
 	}
 	
 	protected int skipWhiteSpace(int offset, String el)
 	{
-		while (CharType.isWhitespace(CharType.getCurrentChar(offset, el)))
+		while (CharType.isWhitespace(getChar(offset, el)))
 		{
 			offset++;
 		}

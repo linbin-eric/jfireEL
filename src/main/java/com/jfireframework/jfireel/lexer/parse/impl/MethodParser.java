@@ -6,32 +6,32 @@ import com.jfireframework.jfireel.lexer.node.MethodNode;
 import com.jfireframework.jfireel.lexer.node.impl.DynamicCompileMethodNode;
 import com.jfireframework.jfireel.lexer.node.impl.DynamicDefaultMethodNode;
 import com.jfireframework.jfireel.lexer.node.impl.StaticMethodNode;
-import com.jfireframework.jfireel.lexer.parse.Parser;
+import com.jfireframework.jfireel.lexer.parse.Invoker;
 import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.util.CharType;
 import com.jfireframework.jfireel.lexer.util.Functions;
 
-public class MethodParser implements Parser
+public class MethodParser extends NodeParser
 {
 	
 	@Override
-	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
+	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function,Invoker next)
 	{
-		if ('.' != CharType.getCurrentChar(offset, el))
+		if ('.' != getChar(offset, el))
 		{
-			return offset;
+			return next.parse(el, offset, nodes, function);
 		}
 		int origin = offset;
 		offset += 1;
 		char c;
-		while (CharType.isAlphabet(c = CharType.getCurrentChar(offset, el)) || CharType.isDigital(c))
+		while (CharType.isAlphabet(c = getChar(offset, el)) || CharType.isDigital(c))
 		{
 			offset++;
 		}
 		// 该情况意味着是属性
 		if (c != '(')
 		{
-			return origin;
+			return next.parse(el, offset, nodes, function);
 		}
 		String literals = el.substring(origin + 1, offset);
 		CalculateNode beanNode = nodes.pop();

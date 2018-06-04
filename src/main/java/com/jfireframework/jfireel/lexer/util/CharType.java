@@ -75,8 +75,4 @@ public class CharType
 		;
 	}
 	
-	public static final char getCurrentChar(final int offset, String el)
-	{
-		return offset >= el.length() ? (char) CharType.EOI : el.charAt(offset);
-	}
 }

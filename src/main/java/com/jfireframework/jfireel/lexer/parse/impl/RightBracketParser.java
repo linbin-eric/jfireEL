@@ -5,20 +5,19 @@ import java.util.LinkedList;
 import java.util.List;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.impl.BracketNode;
-import com.jfireframework.jfireel.lexer.parse.Parser;
+import com.jfireframework.jfireel.lexer.parse.Invoker;
 import com.jfireframework.jfireel.lexer.token.Symbol;
-import com.jfireframework.jfireel.lexer.util.CharType;
 import com.jfireframework.jfireel.lexer.util.OperatorResultUtil;
 
-public class RightBracketParser implements Parser
+public class RightBracketParser extends NodeParser
 {
 	
 	@Override
-	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
+	public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
 	{
-		if (']' != CharType.getCurrentChar(offset, el))
+		if (']' != getChar(offset, el))
 		{
-			return offset;
+			return next.parse(el, offset, nodes, function);
 		}
 		List<CalculateNode> list = new LinkedList<CalculateNode>();
 		CalculateNode pred;
