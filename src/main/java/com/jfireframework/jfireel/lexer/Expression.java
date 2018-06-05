@@ -138,4 +138,14 @@ public class Expression
 	{
 		return parseNode;
 	}
+	
+	/**
+	 * 返回解析的表达式
+	 * 
+	 * @return
+	 */
+	public String getEl()
+	{
+		return el;
+	}
 }
