@@ -11,8 +11,8 @@ import com.jfireframework.baseutil.smc.model.MethodModel;
 import com.jfireframework.baseutil.smc.model.MethodModel.AccessLevel;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.MethodNode;
-import com.jfireframework.jfireel.lexer.token.TokenType;
 import com.jfireframework.jfireel.lexer.token.Token;
+import com.jfireframework.jfireel.lexer.token.TokenType;
 
 public class DynamicCompileMethodNode implements MethodNode
 {
@@ -30,7 +30,7 @@ public class DynamicCompileMethodNode implements MethodNode
 	protected boolean						recognizeEveryTime	= true;
 	private CalculateNode[]					argsNodes;
 	private ConvertType[]					convertTypes;
-	private Token						type;
+	private Token							type;
 	
 	public DynamicCompileMethodNode(String literals, CalculateNode beanNode)
 	{
@@ -166,7 +166,7 @@ public class DynamicCompileMethodNode implements MethodNode
 		try
 		{
 			ClassModel classModel = new ClassModel("Invoke_" + method.getName() + "_" + counter.incrementAndGet(), Object.class, Invoker.class);
-			MethodModel methodModel = new MethodModel();
+			MethodModel methodModel = new MethodModel(classModel);
 			methodModel.setAccessLevel(AccessLevel.PUBLIC);
 			methodModel.setMethodName("invoke");
 			methodModel.setParamterTypes(Object.class, Object[].class);
@@ -235,7 +235,7 @@ public class DynamicCompileMethodNode implements MethodNode
 	{
 		return "MethodNode [methodName=" + methodName + "]";
 	}
-
+	
 	@Override
 	public void check()
 	{

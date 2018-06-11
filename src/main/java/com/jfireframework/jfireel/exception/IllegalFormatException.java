@@ -1,4 +1,4 @@
-package com.jfireframework.jfireel.template.exception;
+package com.jfireframework.jfireel.exception;
 
 public class IllegalFormatException extends RuntimeException
 {

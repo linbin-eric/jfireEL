@@ -5,6 +5,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import com.jfireframework.jfireel.exception.UnParsedException;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.parse.Invoker;
 import com.jfireframework.jfireel.lexer.parse.impl.CommaParser;
@@ -95,7 +96,14 @@ public class Expression
 		this.head = head;
 		this.el = el;
 		this.function = function;
-		scan();
+		try
+		{
+			scan();
+		}
+		catch (Exception e)
+		{
+			throw new UnParsedException(el, e);
+		}
 	}
 	
 	private void scan()
