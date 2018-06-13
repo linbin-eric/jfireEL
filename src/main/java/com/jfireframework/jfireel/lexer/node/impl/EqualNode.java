@@ -33,7 +33,7 @@ public class EqualNode extends OperatorResultNode
 		{
 			if (leftValue instanceof Number && rightValue instanceof Number)
 			{
-				return EqUtil.calculate((Number) leftValue, (Number) rightValue) == false;
+				return EqUtil.calculate((Number) leftValue, (Number) rightValue);
 			}
 			else
 			{
