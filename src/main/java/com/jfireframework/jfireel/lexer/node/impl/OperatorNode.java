@@ -2,8 +2,8 @@ package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.TokenType;
 import com.jfireframework.jfireel.lexer.token.Operator;
+import com.jfireframework.jfireel.lexer.token.TokenType;
 
 public class OperatorNode implements CalculateNode
 {
@@ -26,7 +26,7 @@ public class OperatorNode implements CalculateNode
 	{
 		return operatorType;
 	}
-
+	
 	@Override
 	public void check()
 	{
@@ -34,4 +34,15 @@ public class OperatorNode implements CalculateNode
 		
 	}
 	
+	@Override
+	public String literals()
+	{
+		return operatorType.getLiterals();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return literals();
+	}
 }

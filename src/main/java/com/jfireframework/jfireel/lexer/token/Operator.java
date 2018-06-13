@@ -57,7 +57,7 @@ public enum Operator implements TokenType
 		return store.contains(type);
 	}
 	
-	private String getLiterals()
+	public String getLiterals()
 	{
 		return literals;
 	}

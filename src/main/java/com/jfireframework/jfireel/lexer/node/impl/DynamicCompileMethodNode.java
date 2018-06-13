@@ -231,16 +231,35 @@ public class DynamicCompileMethodNode implements MethodNode
 	}
 	
 	@Override
-	public String toString()
-	{
-		return "MethodNode [methodName=" + methodName + "]";
-	}
-	
-	@Override
 	public void check()
 	{
 		// TODO Auto-generated method stub
 		
 	}
 	
+	@Override
+	public String literals()
+	{
+		StringCache cache = new StringCache();
+		cache.append(beanNode.literals()).append('.').append(methodName).append('(');
+		if (argsNodes != null)
+		{
+			for (CalculateNode each : argsNodes)
+			{
+				cache.append(each.literals()).appendComma();
+			}
+			if (cache.isCommaLast())
+			{
+				cache.deleteLast();
+			}
+		}
+		cache.append(')');
+		return cache.toString();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return literals();
+	}
 }

@@ -2,10 +2,11 @@ package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.node.MethodNode;
-import com.jfireframework.jfireel.lexer.token.TokenType;
 import com.jfireframework.jfireel.lexer.token.Token;
+import com.jfireframework.jfireel.lexer.token.TokenType;
 
 public class DynamicDefaultMethodNode implements MethodNode
 {
@@ -16,7 +17,7 @@ public class DynamicDefaultMethodNode implements MethodNode
 	protected boolean			recognizeEveryTime	= true;
 	private CalculateNode[]		argsNodes;
 	private ConvertType[]		convertTypes;
-	private Token			type;
+	private Token				type;
 	
 	public DynamicDefaultMethodNode(String literals, CalculateNode beanNode)
 	{
@@ -153,16 +154,34 @@ public class DynamicDefaultMethodNode implements MethodNode
 	}
 	
 	@Override
-	public String toString()
-	{
-		return "MethodNode [methodName=" + methodName + "]";
-	}
-
-	@Override
 	public void check()
 	{
-		// TODO Auto-generated method stub
 		
 	}
 	
+	@Override
+	public String literals()
+	{
+		StringCache cache = new StringCache();
+		cache.append(beanNode.literals()).append('.').append(methodName).append('(');
+		if (argsNodes != null)
+		{
+			for (CalculateNode each : argsNodes)
+			{
+				cache.append(each.literals()).appendComma();
+			}
+			if (cache.isCommaLast())
+			{
+				cache.deleteLast();
+			}
+		}
+		cache.append(')');
+		return cache.toString();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return literals();
+	}
 }

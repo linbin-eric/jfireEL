@@ -1,9 +1,9 @@
 package com.jfireframework.jfireel.lexer.node.impl;
 
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.TokenType;
-import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.token.Operator;
+import com.jfireframework.jfireel.lexer.token.Token;
+import com.jfireframework.jfireel.lexer.token.TokenType;
 
 public abstract class OperatorResultNode implements CalculateNode
 {
@@ -32,10 +32,14 @@ public abstract class OperatorResultNode implements CalculateNode
 		return Token.OPERATOR_RESULT;
 	}
 	
+	public String literals()
+	{
+		return leftOperand.literals() + type.getLiterals() + rightOperand.literals();
+	}
+	
 	@Override
 	public String toString()
 	{
-		return "OperatorResultNode [leftOperand=" + leftOperand + ", rightOperand=" + rightOperand + ", type=" + type + "]";
+		return literals();
 	}
-	
 }

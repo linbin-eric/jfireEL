@@ -14,4 +14,6 @@ public interface CalculateNode
 	 * 检查该节点是否完善
 	 */
 	void check();
+	
+	String literals();
 }

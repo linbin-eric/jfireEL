@@ -2,8 +2,8 @@ package com.jfireframework.jfireel.lexer.node.impl;
 
 import java.util.Map;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
-import com.jfireframework.jfireel.lexer.token.TokenType;
 import com.jfireframework.jfireel.lexer.token.Token;
+import com.jfireframework.jfireel.lexer.token.TokenType;
 
 public class EnumNode implements CalculateNode
 {
@@ -27,7 +27,7 @@ public class EnumNode implements CalculateNode
 	{
 		return Token.ENUM;
 	}
-
+	
 	@Override
 	public void check()
 	{
@@ -35,4 +35,15 @@ public class EnumNode implements CalculateNode
 		
 	}
 	
+	@Override
+	public String literals()
+	{
+		return value.name();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return literals();
+	}
 }

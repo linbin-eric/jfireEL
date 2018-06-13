@@ -40,7 +40,7 @@ public enum Symbol implements TokenType
 		return symbols.get(literals);
 	}
 	
-	private String getLiterals()
+	public String getLiterals()
 	{
 		return literals;
 	}
