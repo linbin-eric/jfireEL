@@ -7,7 +7,7 @@
 		<artifactId>parent</artifactId>
 		<version>1.0.1</version>
 	</parent>
-	<artifactId>jfireel</artifactId>
+	<artifactId>jfireEl</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jfireel</name>
