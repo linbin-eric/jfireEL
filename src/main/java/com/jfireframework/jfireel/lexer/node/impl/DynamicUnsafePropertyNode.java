@@ -3,16 +3,13 @@ package com.jfireframework.jfireel.lexer.node.impl;
 import java.lang.reflect.Field;
 import java.util.Map;
 import com.jfireframework.baseutil.StringUtil;
-import com.jfireframework.baseutil.reflect.ReflectUtil;
+import com.jfireframework.baseutil.reflect.UNSAFE;
 import com.jfireframework.jfireel.lexer.node.CalculateNode;
 import com.jfireframework.jfireel.lexer.token.Token;
 import com.jfireframework.jfireel.lexer.token.TokenType;
-import sun.misc.Unsafe;
 
-@SuppressWarnings("restriction")
 public class DynamicUnsafePropertyNode implements CalculateNode
 {
-	private static final Unsafe	unsafe				= ReflectUtil.getUnsafe();
 	protected Class<?>			beanType;
 	protected FieldType			fieldType;
 	protected volatile long		address				= ADDRESS_NOT_INIT;
@@ -52,23 +49,23 @@ public class DynamicUnsafePropertyNode implements CalculateNode
 			switch (fieldType)
 			{
 				case INT:
-					return unsafe.getInt(value, address);
+					return UNSAFE.getInt(value, address);
 				case LONG:
-					return unsafe.getLong(value, address);
+					return UNSAFE.getLong(value, address);
 				case SHORT:
-					return unsafe.getShort(value, address);
+					return UNSAFE.getShort(value, address);
 				case FLOAT:
-					return unsafe.getFloat(value, address);
+					return UNSAFE.getFloat(value, address);
 				case DOUBLE:
-					return unsafe.getDouble(value, address);
+					return UNSAFE.getDouble(value, address);
 				case BYTE:
-					return unsafe.getByte(value, address);
+					return UNSAFE.getByte(value, address);
 				case CHAR:
-					return unsafe.getChar(value, address);
+					return UNSAFE.getChar(value, address);
 				case BOOLEAN:
-					return unsafe.getBoolean(value, address);
+					return UNSAFE.getBoolean(value, address);
 				case OTHER:
-					return unsafe.getObject(value, address);
+					return UNSAFE.getObject(value, address);
 				default:
 					throw new UnsupportedOperationException();
 			}
@@ -113,7 +110,7 @@ public class DynamicUnsafePropertyNode implements CalculateNode
 								{
 									fieldType = FieldType.valueOf(type.getName().toUpperCase());
 								}
-								address = unsafe.objectFieldOffset(propertyField);
+								address = UNSAFE.objectFieldOffset(propertyField);
 								this.address = address;
 								return address;
 							}
@@ -157,7 +154,7 @@ public class DynamicUnsafePropertyNode implements CalculateNode
 								{
 									fieldType = FieldType.valueOf(type.getName().toUpperCase());
 								}
-								address = unsafe.objectFieldOffset(propertyField);
+								address = UNSAFE.objectFieldOffset(propertyField);
 								this.address = address;
 								return address;
 							}
