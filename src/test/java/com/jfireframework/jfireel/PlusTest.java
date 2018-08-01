@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import org.junit.Test;
-import com.jfireframework.jfireel.lexer.Expression;
+import com.jfireframework.jfireel.expression.Expression;
 
 public class PlusTest
 {

@@ -7,5 +7,5 @@ import com.jfireframework.jfireel.template.execution.Execution;
 
 public interface Invoker
 {
-	int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache);
+    int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache);
 }

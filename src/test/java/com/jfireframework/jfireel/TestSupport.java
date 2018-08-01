@@ -51,8 +51,8 @@ public abstract class TestSupport
         }
     }
     
-    protected Person              person;
-    protected Home                home;
+    protected Person           person;
+    protected Home             home;
     public Map<String, Object> vars = new HashMap<String, Object>();
     
     @Before

@@ -3,7 +3,7 @@ package com.jfireframework.jfireel.template.execution.impl;
 import java.util.Collection;
 import java.util.Map;
 import com.jfireframework.baseutil.collection.StringCache;
-import com.jfireframework.jfireel.lexer.Expression;
+import com.jfireframework.jfireel.expression.Expression;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.WithBodyExecution;
 

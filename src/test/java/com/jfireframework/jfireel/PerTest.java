@@ -13,8 +13,8 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.baseutil.time.Timewatch;
-import com.jfireframework.jfireel.lexer.Expression;
-import com.jfireframework.jfireel.lexer.util.Functional;
+import com.jfireframework.jfireel.expression.Expression;
+import com.jfireframework.jfireel.expression.util.Functional;
 import com.jfireframework.jfireel.template.Template;
 
 public class PerTest extends TestSupport
@@ -35,8 +35,8 @@ public class PerTest extends TestSupport
         Map<?, ?> runScript = gt.runScript("return @home.bool(@person.getAge()+'12'!=value);", vars);
         System.out.println(runScript);
         
-        com.jfireframework.jfireel.lexer.Expression lexer = com.jfireframework.jfireel.lexer.Expression.parse("home.bool(person.getAge() + '12' != value)");
-        com.jfireframework.jfireel.lexer.Expression lexer2 = com.jfireframework.jfireel.lexer.Expression.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
+        com.jfireframework.jfireel.expression.Expression lexer = com.jfireframework.jfireel.expression.Expression.parse("home.bool(person.getAge() + '12' != value)");
+        com.jfireframework.jfireel.expression.Expression lexer2 = com.jfireframework.jfireel.expression.Expression.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
         int preheat = 100;
         int count = 10000000;
         for (int i = 0; i < preheat; i++)
