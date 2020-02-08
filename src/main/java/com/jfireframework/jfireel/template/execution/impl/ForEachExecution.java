@@ -1,11 +1,11 @@
 package com.jfireframework.jfireel.template.execution.impl;
 
-import java.util.Collection;
-import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.expression.Expression;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.WithBodyExecution;
+
+import java.util.Collection;
+import java.util.Map;
 
 public class ForEachExecution implements WithBodyExecution
 {
@@ -20,7 +20,7 @@ public class ForEachExecution implements WithBodyExecution
     }
     
     @Override
-    public boolean execute(Map<String, Object> variables, StringCache cache)
+    public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
         Object result = collection.calculate(variables);
         if (result == null)

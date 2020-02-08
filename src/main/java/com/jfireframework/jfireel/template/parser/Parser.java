@@ -1,23 +1,23 @@
 package com.jfireframework.jfireel.template.parser;
 
-import java.util.Deque;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.exception.IllegalFormatException;
 import com.jfireframework.jfireel.expression.util.CharType;
 import com.jfireframework.jfireel.template.Template;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.impl.StringExecution;
 
+import java.util.Deque;
+
 public abstract class Parser
 {
-    
+
     protected static final Execution[] emptyBody = new Execution[0];
-    
-    public abstract int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache, Invoker next);
-    
+
+    public abstract int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache, Invoker next);
+
     /**
      * 查询{的位置，如果查询不到抛出异常。如果查询到，则返回{位置+1的结果
-     * 
+     *
      * @param sentence
      * @param offset
      * @return
@@ -32,22 +32,22 @@ public abstract class Parser
         offset++;
         return offset;
     }
-    
-    protected void extractLiterals(StringCache cache, Deque<Execution> executions)
+
+    protected void extractLiterals(StringBuilder cache, Deque<Execution> executions)
     {
-        if (cache.count() != 0)
+        if (cache.length() != 0)
         {
             Execution execution = new StringExecution(cache.toString());
-            cache.clear();
+            cache.setLength(0);
             executions.push(execution);
         }
     }
-    
+
     protected char getChar(int offset, String sentence)
     {
         return offset >= sentence.length() ? (char) CharType.EOI : sentence.charAt(offset);
     }
-    
+
     protected int skipWhiteSpace(int offset, String el)
     {
         while (CharType.isWhitespace(getChar(offset, el)))
@@ -56,7 +56,7 @@ public abstract class Parser
         }
         return offset;
     }
-    
+
     protected boolean isExecutionBegin(int offset, String sentence)
     {
         char c1 = getChar(offset, sentence);
@@ -67,19 +67,18 @@ public abstract class Parser
         }
         return true;
     }
-    
+
     /**
      * offset当前位置为'(',寻找与之配对的)结束符.返回寻找到)位置。如果找不到，则返回-1
-     * 
+     *
      * @param sentence
      * @param offset
-     * @param leftBracketIndex
      * @return
      */
     protected int findEndRightBracket(String sentence, int offset)
     {
         offset++;
-        int length = sentence.length();
+        int length              = sentence.length();
         int countForLeftBracket = 0;
         do
         {
@@ -108,10 +107,10 @@ public abstract class Parser
         }
         return offset;
     }
-    
+
     /**
      * 搜索执行语句的结尾，也就是%>所在位置。返回>的坐标。如果没有找到，返回-1
-     * 
+     *
      * @param startIndex
      * @param sentence
      * @return

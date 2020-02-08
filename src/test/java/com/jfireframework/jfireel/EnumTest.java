@@ -1,8 +1,9 @@
 package com.jfireframework.jfireel;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
 import com.jfireframework.jfireel.expression.Expression;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class EnumTest
 {
@@ -10,7 +11,7 @@ public class EnumTest
     {
         dd;
     }
-    
+
     @Test
     public void test()
     {

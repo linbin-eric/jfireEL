@@ -1,16 +1,16 @@
 package com.jfireframework.jfireel.template.execution.impl;
 
-import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.WithBodyExecution;
+
+import java.util.Map;
 
 public class ElseExecution implements WithBodyExecution
 {
     private Execution[] body;
     
     @Override
-    public boolean execute(Map<String, Object> variables, StringCache cache)
+    public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
         for (Execution each : body)
         {

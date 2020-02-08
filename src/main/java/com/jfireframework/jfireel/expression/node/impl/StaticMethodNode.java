@@ -1,23 +1,23 @@
 package com.jfireframework.jfireel.expression.node.impl;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
 import com.jfireframework.jfireel.expression.node.MethodNode;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.token.TokenType;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+
 public class StaticMethodNode implements MethodNode
 {
-    private final Class<?>  beanType;
-    private volatile Method method;
-    private String          methodName;
-    private CalculateNode[] argsNodes;
-    private ConvertType[]   convertTypes;
-    private Token           type;
-    
+    private final    Class<?>        beanType;
+    private volatile Method          method;
+    private          String          methodName;
+    private          CalculateNode[] argsNodes;
+    private          ConvertType[]   convertTypes;
+    private          Token           type;
+
     public StaticMethodNode(String literals, CalculateNode beanNode)
     {
         if (beanNode.type() != Token.TYPE)
@@ -28,7 +28,7 @@ public class StaticMethodNode implements MethodNode
         methodName = literals;
         type = Token.METHOD;
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -49,13 +49,13 @@ public class StaticMethodNode implements MethodNode
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public TokenType type()
     {
         return type;
     }
-    
+
     private Method getMethod(Object[] args)
     {
         if (method == null)
@@ -64,7 +64,8 @@ public class StaticMethodNode implements MethodNode
             {
                 if (method == null)
                 {
-                    nextmethod: for (Method each : beanType.getMethods())
+                    nextmethod:
+                    for (Method each : beanType.getMethods())
                     {
                         if (Modifier.isStatic(each.getModifiers()) && each.getName().equals(methodName) && each.getParameterTypes().length == args.length)
                         {
@@ -95,39 +96,38 @@ public class StaticMethodNode implements MethodNode
         }
         return method;
     }
-    
+
     public void setArgsNodes(CalculateNode[] argsNodes)
     {
         this.argsNodes = argsNodes;
         type = Token.METHOD_RESULT;
     }
-    
+
     @Override
     public void check()
     {
-        
     }
-    
+
     @Override
     public String literals()
     {
-        StringCache cache = new StringCache();
+        StringBuilder cache = new StringBuilder();
         cache.append(beanType.getName()).append('.').append(methodName).append('(');
         if (argsNodes != null)
         {
             for (CalculateNode each : argsNodes)
             {
-                cache.append(each.literals()).appendComma();
+                cache.append(each.literals()).append(',');
             }
-            if (cache.isCommaLast())
+            if (cache.charAt(cache.length() - 1) == ',')
             {
-                cache.deleteLast();
+                cache.setLength(cache.length() - 1);
             }
         }
         cache.append(')');
         return cache.toString();
     }
-    
+
     @Override
     public String toString()
     {

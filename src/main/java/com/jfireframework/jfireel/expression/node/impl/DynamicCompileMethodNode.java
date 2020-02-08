@@ -1,11 +1,7 @@
 package com.jfireframework.jfireel.expression.node.impl;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.baseutil.smc.SmcHelper;
-import com.jfireframework.baseutil.smc.compiler.JavaStringCompiler;
+import com.jfireframework.baseutil.smc.compiler.CompileHelper;
 import com.jfireframework.baseutil.smc.model.ClassModel;
 import com.jfireframework.baseutil.smc.model.MethodModel;
 import com.jfireframework.baseutil.smc.model.MethodModel.AccessLevel;
@@ -14,31 +10,35 @@ import com.jfireframework.jfireel.expression.node.MethodNode;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.token.TokenType;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class DynamicCompileMethodNode implements MethodNode
 {
     public static interface Invoker
     {
         Object invoke(Object host, Object[] params);
     }
-    
-    private static final JavaStringCompiler COMPILER           = new JavaStringCompiler();
-    private static final AtomicInteger      counter            = new AtomicInteger(0);
-    private final CalculateNode             beanNode;
-    private final String                    methodName;
-    private volatile Invoker                invoker;
-    private volatile Class<?>               beanType;
-    protected boolean                       recognizeEveryTime = true;
-    private CalculateNode[]                 argsNodes;
-    private ConvertType[]                   convertTypes;
-    private Token                           type;
-    
+
+    private static final CompileHelper   COMPILER           = new CompileHelper();
+    private static final AtomicInteger   counter            = new AtomicInteger(0);
+    private final        CalculateNode   beanNode;
+    private final        String          methodName;
+    private volatile     Invoker         invoker;
+    private volatile     Class<?>        beanType;
+    protected            boolean         recognizeEveryTime = true;
+    private              CalculateNode[] argsNodes;
+    private              ConvertType[]   convertTypes;
+    private              Token           type;
+
     public DynamicCompileMethodNode(String literals, CalculateNode beanNode)
     {
         methodName = literals;
         type = Token.METHOD;
         this.beanNode = beanNode;
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -64,13 +64,13 @@ public class DynamicCompileMethodNode implements MethodNode
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public TokenType type()
     {
         return type;
     }
-    
+
     private Invoker getMethod(Object value, Object[] args)
     {
         if (recognizeEveryTime)
@@ -82,7 +82,8 @@ public class DynamicCompileMethodNode implements MethodNode
                 {
                     if ((invoker = this.invoker) == null || beanType.isAssignableFrom(value.getClass()) == false)
                     {
-                        nextmethod: //
+                        nextmethod:
+                        //
                         for (Method each : value.getClass().getMethods())
                         {
                             if (each.getName().equals(methodName) && each.getParameterTypes().length == args.length)
@@ -127,7 +128,8 @@ public class DynamicCompileMethodNode implements MethodNode
                     if (invoker == null)
                     {
                         Class<?> ckass = value.getClass();
-                        nextmethod: //
+                        nextmethod:
+                        //
                         for (Method each : ckass.getMethods())
                         {
                             if (each.getName().equals(methodName) && each.getParameterTypes().length == args.length)
@@ -160,56 +162,56 @@ public class DynamicCompileMethodNode implements MethodNode
             return invoker;
         }
     }
-    
+
     private Invoker buildInvoker(Object[] args, Method method, Class<?>[] parameterTypes)
     {
         try
         {
-            ClassModel classModel = new ClassModel("Invoke_" + method.getName() + "_" + counter.incrementAndGet(), Object.class, Invoker.class);
+            ClassModel  classModel  = new ClassModel("Invoke_" + method.getName() + "_" + counter.incrementAndGet(), Object.class, Invoker.class);
             MethodModel methodModel = new MethodModel(classModel);
             methodModel.setAccessLevel(AccessLevel.PUBLIC);
             methodModel.setMethodName("invoke");
             methodModel.setParamterTypes(Object.class, Object[].class);
             methodModel.setReturnType(Object.class);
-            StringCache body = new StringCache("{ return ((" + SmcHelper.getTypeName(method.getDeclaringClass()) + ")$0)." + method.getName() + "(");
+            StringBuilder body = new StringBuilder("{ return ((" + SmcHelper.getReferenceName(method.getDeclaringClass(), classModel) + ")$0)." + method.getName() + "(");
             for (int i = 0; i < args.length; i++)
             {
                 switch (convertTypes[i])
                 {
                     case INT:
-                        body.append("(java.lang.Integer)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Integer)$1[").append(i).append(']').append(',');
                         break;
                     case LONG:
-                        body.append("(java.lang.Long)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Long)$1[").append(i).append(']').append(',');
                         break;
                     case SHORT:
-                        body.append("(java.lang.Short)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Short)$1[").append(i).append(']').append(',');
                         break;
                     case FLOAT:
-                        body.append("(java.lang.Float)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Float)$1[").append(i).append(']').append(',');
                         break;
                     case DOUBLE:
-                        body.append("(java.lang.Double)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Double)$1[").append(i).append(']').append(',');
                         break;
                     case BYTE:
-                        body.append("(java.lang.Byte)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Byte)$1[").append(i).append(']').append(',');
                         break;
                     case BOOLEAN:
-                        body.append("(java.lang.Boolean)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Boolean)$1[").append(i).append(']').append(',');
                         break;
                     case CHARACTER:
-                        body.append("(java.lang.Character)$1[").append(i).append(']').appendComma();
+                        body.append("(java.lang.Character)$1[").append(i).append(']').append(',');
                         break;
                     case OTHER:
-                        body.append('(').append(SmcHelper.getTypeName(parameterTypes[i])).append(')').append("$1[").append(i).append(']').appendComma();
+                        body.append('(').append(SmcHelper.getReferenceName(parameterTypes[i], classModel)).append(')').append("$1[").append(i).append(']').append(',');
                         break;
                     default:
                         break;
                 }
             }
-            if (body.isCommaLast())
+            if (body.charAt(body.length() - 1) == ',')
             {
-                body.deleteLast();
+                body.setLength(body.length() - 1);
             }
             body.append(");}");
             methodModel.setBody(body.toString());
@@ -222,41 +224,40 @@ public class DynamicCompileMethodNode implements MethodNode
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public void setArgsNodes(CalculateNode[] argsNodes)
     {
         this.argsNodes = argsNodes;
         type = Token.METHOD_RESULT;
     }
-    
+
     @Override
     public void check()
     {
         // TODO Auto-generated method stub
-        
     }
-    
+
     @Override
     public String literals()
     {
-        StringCache cache = new StringCache();
+        StringBuilder cache = new StringBuilder();
         cache.append(beanNode.literals()).append('.').append(methodName).append('(');
         if (argsNodes != null)
         {
             for (CalculateNode each : argsNodes)
             {
-                cache.append(each.literals()).appendComma();
+                cache.append(each.literals()).append(',');
             }
-            if (cache.isCommaLast())
+            if (cache.charAt(cache.length() - 1) == ',')
             {
-                cache.deleteLast();
+                cache.setLength(cache.length() - 1);
             }
         }
         cache.append(')');
         return cache.toString();
     }
-    
+
     @Override
     public String toString()
     {

@@ -3,7 +3,6 @@ package com.jfireframework.jfireel.template;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.exception.IllegalFormatException;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.impl.StringExecution;
@@ -20,11 +19,11 @@ import com.jfireframework.jfireel.template.parser.impl.LiteralsParser;
 
 public class Template
 {
-    private static final ThreadLocal<StringCache> LOCAL      = new ThreadLocal<StringCache>() {
+    private static final ThreadLocal<StringBuilder> LOCAL      = new ThreadLocal<StringBuilder>() {
                                                                  @Override
-                                                                 protected StringCache initialValue()
+                                                                 protected StringBuilder initialValue()
                                                                  {
-                                                                     return new StringCache();
+                                                                     return new StringBuilder();
                                                                  };
                                                              };
     private Deque<Execution>                      executions = new LinkedList<Execution>();
@@ -48,7 +47,7 @@ public class Template
         Invoker pred = new Invoker() {
             
             @Override
-            public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache)
+            public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache)
             {
                 return offset;
             }
@@ -60,7 +59,7 @@ public class Template
             Invoker invoker = new Invoker() {
                 
                 @Override
-                public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache)
+                public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache)
                 {
                     return parser.parse(sentence, offset, executions, template, cache, next);
                 }
@@ -82,7 +81,7 @@ public class Template
     
     private Template(String sentence)
     {
-        StringCache cache = new StringCache();
+        StringBuilder cache = new StringBuilder();
         int offset = 0;
         int length = sentence.length();
         mode = ScanMode.LITERALS;
@@ -95,7 +94,7 @@ public class Template
             }
             offset = result;
         }
-        if (cache.count() != 0)
+        if (cache.length() != 0)
         {
             Execution execution = new StringExecution(cache.toString());
             executions.push(execution);
@@ -112,13 +111,13 @@ public class Template
     
     public String render(Map<String, Object> variables)
     {
-        StringCache cache = LOCAL.get();
+        StringBuilder cache = LOCAL.get();
         for (Execution execution : runtimeExecutions)
         {
             execution.execute(variables, cache);
         }
         String result = cache.toString();
-        cache.clear();
+        cache.setLength(0);
         return result;
     }
     

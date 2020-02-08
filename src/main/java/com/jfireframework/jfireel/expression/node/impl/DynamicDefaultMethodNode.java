@@ -1,31 +1,31 @@
 package com.jfireframework.jfireel.expression.node.impl;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
 import com.jfireframework.jfireel.expression.node.MethodNode;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.token.TokenType;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+
 public class DynamicDefaultMethodNode implements MethodNode
 {
-    private final CalculateNode beanNode;
-    private final String        methodName;
-    private volatile Method     method;
-    private volatile Class<?>   beanType;
-    protected boolean           recognizeEveryTime = true;
-    private CalculateNode[]     argsNodes;
-    private ConvertType[]       convertTypes;
-    private Token               type;
-    
+    private final    CalculateNode   beanNode;
+    private final    String          methodName;
+    private volatile Method          method;
+    private volatile Class<?>        beanType;
+    protected        boolean         recognizeEveryTime = true;
+    private          CalculateNode[] argsNodes;
+    private          ConvertType[]   convertTypes;
+    private          Token           type;
+
     public DynamicDefaultMethodNode(String literals, CalculateNode beanNode)
     {
         methodName = literals;
         type = Token.METHOD;
         this.beanNode = beanNode;
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -51,13 +51,13 @@ public class DynamicDefaultMethodNode implements MethodNode
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public TokenType type()
     {
         return type;
     }
-    
+
     private Method getMethod(Object value, Object[] args)
     {
         if (recognizeEveryTime)
@@ -69,7 +69,8 @@ public class DynamicDefaultMethodNode implements MethodNode
                 {
                     if ((accessMethod = method) == null || beanType.isAssignableFrom(value.getClass()) == false)
                     {
-                        nextmethod: for (Method each : value.getClass().getMethods())
+                        nextmethod:
+                        for (Method each : value.getClass().getMethods())
                         {
                             if (each.getName().equals(methodName) && each.getParameterTypes().length == args.length)
                             {
@@ -114,7 +115,8 @@ public class DynamicDefaultMethodNode implements MethodNode
                     if (method == null)
                     {
                         Class<?> ckass = value.getClass();
-                        nextmethod: for (Method each : ckass.getMethods())
+                        nextmethod:
+                        for (Method each : ckass.getMethods())
                         {
                             if (each.getName().equals(methodName) && each.getParameterTypes().length == args.length)
                             {
@@ -146,39 +148,38 @@ public class DynamicDefaultMethodNode implements MethodNode
             return method;
         }
     }
-    
+
     public void setArgsNodes(CalculateNode[] argsNodes)
     {
         this.argsNodes = argsNodes;
         type = Token.METHOD_RESULT;
     }
-    
+
     @Override
     public void check()
     {
-        
     }
-    
+
     @Override
     public String literals()
     {
-        StringCache cache = new StringCache();
+        StringBuilder cache = new StringBuilder();
         cache.append(beanNode.literals()).append('.').append(methodName).append('(');
         if (argsNodes != null)
         {
             for (CalculateNode each : argsNodes)
             {
-                cache.append(each.literals()).appendComma();
+                cache.append(each.literals()).append(',');
             }
-            if (cache.isCommaLast())
+            if (cache.charAt(cache.length() - 1) == ',')
             {
-                cache.deleteLast();
+                cache.setLength(cache.length() - 1);
             }
         }
         cache.append(')');
         return cache.toString();
     }
-    
+
     @Override
     public String toString()
     {

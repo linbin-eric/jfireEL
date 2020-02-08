@@ -1,9 +1,9 @@
 package com.jfireframework.jfireel.template.execution.impl;
 
-import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.expression.Expression;
 import com.jfireframework.jfireel.template.execution.Execution;
+
+import java.util.Map;
 
 public class ExpressionExecution implements Execution
 {
@@ -15,7 +15,7 @@ public class ExpressionExecution implements Execution
     }
     
     @Override
-    public boolean execute(Map<String, Object> variables, StringCache cache)
+    public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
         Object result = expression.calculate(variables);
         if (result != null)

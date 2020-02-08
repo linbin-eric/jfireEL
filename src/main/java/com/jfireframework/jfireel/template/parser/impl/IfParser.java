@@ -1,7 +1,6 @@
 package com.jfireframework.jfireel.template.parser.impl;
 
 import java.util.Deque;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.exception.IllegalFormatException;
 import com.jfireframework.jfireel.expression.Expression;
 import com.jfireframework.jfireel.template.ScanMode;
@@ -15,7 +14,7 @@ public class IfParser extends Parser
 {
     
     @Override
-    public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringCache cache, Invoker next)
+    public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache, Invoker next)
     {
         if (template.getMode() != ScanMode.EXECUTION)
         {

@@ -1,8 +1,8 @@
 package com.jfireframework.jfireel.template.execution.impl;
 
-import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.template.execution.Execution;
+
+import java.util.Map;
 
 public class StringExecution implements Execution
 {
@@ -14,7 +14,7 @@ public class StringExecution implements Execution
     }
     
     @Override
-    public boolean execute(Map<String, Object> variables, StringCache cache)
+    public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
         cache.append(literals);
         return true;

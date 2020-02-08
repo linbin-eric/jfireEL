@@ -1,12 +1,12 @@
 package com.jfireframework.jfireel.template.execution.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import com.jfireframework.baseutil.collection.StringCache;
 import com.jfireframework.jfireel.expression.Expression;
 import com.jfireframework.jfireel.template.execution.Execution;
 import com.jfireframework.jfireel.template.execution.WithBodyExecution;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class IfExecution implements WithBodyExecution
 {
@@ -22,7 +22,7 @@ public class IfExecution implements WithBodyExecution
     }
     
     @Override
-    public boolean execute(Map<String, Object> variables, StringCache cache)
+    public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
         Object result = conditionLexer.calculate(variables);
         if (result == null)
