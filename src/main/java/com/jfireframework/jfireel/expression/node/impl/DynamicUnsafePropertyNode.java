@@ -2,11 +2,11 @@ package com.jfireframework.jfireel.expression.node.impl;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-import com.jfireframework.baseutil.StringUtil;
-import com.jfireframework.baseutil.reflect.UNSAFE;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.token.TokenType;
+import com.jfirer.baseutil.StringUtil;
+import com.jfirer.baseutil.reflect.UNSAFE;
 
 public class DynamicUnsafePropertyNode implements CalculateNode
 {

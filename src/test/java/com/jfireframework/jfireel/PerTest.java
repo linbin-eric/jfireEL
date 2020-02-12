@@ -3,6 +3,9 @@ package com.jfireframework.jfireel;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.jfirer.baseutil.StringUtil;
+import com.jfirer.baseutil.time.Timewatch;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.exception.ScriptEvalError;
@@ -11,8 +14,6 @@ import org.junit.Test;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import com.jfireframework.baseutil.StringUtil;
-import com.jfireframework.baseutil.time.Timewatch;
 import com.jfireframework.jfireel.expression.Expression;
 import com.jfireframework.jfireel.expression.util.Functional;
 import com.jfireframework.jfireel.template.Template;
@@ -24,9 +25,10 @@ public class PerTest extends TestSupport
     {
         String value = person.age + "12";
         vars.put("value", value);
-        StandardEvaluationContext societyContext = new StandardEvaluationContext(this);
+        StandardEvaluationContext societyContext = new StandardEvaluationContext();
+        societyContext.setVariable("vars",vars);
         ExpressionParser parser = new SpelExpressionParser();
-        org.springframework.expression.Expression exp = parser.parseExpression("vars['home'].bool(vars['person'].getAge() + '12' != vars['value'])");
+        org.springframework.expression.Expression exp = parser.parseExpression("#vars['home'].bool(#vars['person'].getAge() + '12' != #vars['value'])");
         Object springElResult = exp.getValue(societyContext);
         System.out.println(springElResult);
         StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();

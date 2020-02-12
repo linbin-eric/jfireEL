@@ -2,7 +2,6 @@ package com.jfireframework.jfireel.expression.util;
 
 import java.util.LinkedList;
 import java.util.List;
-import com.jfireframework.baseutil.StringUtil;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
 import com.jfireframework.jfireel.expression.node.QuestionNode;
 import com.jfireframework.jfireel.expression.node.impl.DivisionNode;
@@ -23,6 +22,7 @@ import com.jfireframework.jfireel.expression.node.impl.QuestionNodeImpl;
 import com.jfireframework.jfireel.expression.token.Operator;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.token.TokenType;
+import com.jfirer.baseutil.StringUtil;
 
 public class OperatorResultUtil
 {

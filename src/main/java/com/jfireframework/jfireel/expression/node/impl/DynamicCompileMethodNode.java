@@ -1,14 +1,14 @@
 package com.jfireframework.jfireel.expression.node.impl;
 
-import com.jfireframework.baseutil.smc.SmcHelper;
-import com.jfireframework.baseutil.smc.compiler.CompileHelper;
-import com.jfireframework.baseutil.smc.model.ClassModel;
-import com.jfireframework.baseutil.smc.model.MethodModel;
-import com.jfireframework.baseutil.smc.model.MethodModel.AccessLevel;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
 import com.jfireframework.jfireel.expression.node.MethodNode;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.token.TokenType;
+import com.jfirer.baseutil.reflect.ReflectUtil;
+import com.jfirer.baseutil.smc.SmcHelper;
+import com.jfirer.baseutil.smc.compiler.CompileHelper;
+import com.jfirer.baseutil.smc.model.ClassModel;
+import com.jfirer.baseutil.smc.model.MethodModel;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class DynamicCompileMethodNode implements MethodNode
     private final        String          methodName;
     private volatile     Invoker         invoker;
     private volatile     Class<?>        beanType;
-    protected            boolean         recognizeEveryTime = true;
+    protected            boolean         recognizeEveryTime = false;
     private              CalculateNode[] argsNodes;
     private              ConvertType[]   convertTypes;
     private              Token           type;
@@ -169,51 +169,53 @@ public class DynamicCompileMethodNode implements MethodNode
         {
             ClassModel  classModel  = new ClassModel("Invoke_" + method.getName() + "_" + counter.incrementAndGet(), Object.class, Invoker.class);
             MethodModel methodModel = new MethodModel(classModel);
-            methodModel.setAccessLevel(AccessLevel.PUBLIC);
+            methodModel.setAccessLevel(MethodModel.AccessLevel.PUBLIC);
             methodModel.setMethodName("invoke");
             methodModel.setParamterTypes(Object.class, Object[].class);
             methodModel.setReturnType(Object.class);
-            StringBuilder body = new StringBuilder("{ return ((" + SmcHelper.getReferenceName(method.getDeclaringClass(), classModel) + ")$0)." + method.getName() + "(");
-            for (int i = 0; i < args.length; i++)
+            StringBuilder body   = new StringBuilder(" return ((" + SmcHelper.getReferenceName(method.getDeclaringClass(), classModel) + ")$0)." + method.getName() + "(");
+            int           length = body.length();
+            for (int i = 0; i < parameterTypes.length; i++)
             {
-                switch (convertTypes[i])
+                Class<?> parameterType = parameterTypes[i];
+                if (parameterTypes[i] == int.class || parameterTypes[i] == Integer.class)
                 {
-                    case INT:
-                        body.append("(java.lang.Integer)$1[").append(i).append(']').append(',');
-                        break;
-                    case LONG:
-                        body.append("(java.lang.Long)$1[").append(i).append(']').append(',');
-                        break;
-                    case SHORT:
-                        body.append("(java.lang.Short)$1[").append(i).append(']').append(',');
-                        break;
-                    case FLOAT:
-                        body.append("(java.lang.Float)$1[").append(i).append(']').append(',');
-                        break;
-                    case DOUBLE:
-                        body.append("(java.lang.Double)$1[").append(i).append(']').append(',');
-                        break;
-                    case BYTE:
-                        body.append("(java.lang.Byte)$1[").append(i).append(']').append(',');
-                        break;
-                    case BOOLEAN:
-                        body.append("(java.lang.Boolean)$1[").append(i).append(']').append(',');
-                        break;
-                    case CHARACTER:
-                        body.append("(java.lang.Character)$1[").append(i).append(']').append(',');
-                        break;
-                    case OTHER:
-                        body.append('(').append(SmcHelper.getReferenceName(parameterTypes[i], classModel)).append(')').append("$1[").append(i).append(']').append(',');
-                        break;
-                    default:
-                        break;
+                    body.append("((java.lang.Number)$1[").append(i).append("]).intValue(),");
+                }
+                else if (parameterTypes[i] == short.class || parameterTypes[i] == short.class)
+                {
+                    body.append("((java.lang.Number)$1[").append(i).append("]).shortValue(),");
+                }
+                else if (parameterTypes[i] == long.class || parameterTypes[i] == Long.class)
+                {
+                    body.append("((java.lang.Number)$1[").append(i).append("]).longValue(),");
+                }
+                else if (parameterTypes[i] == float.class || parameterTypes[i] == Float.class)
+                {
+                    body.append("((java.lang.Number)$1[").append(i).append("]).floatValue(),");
+                }
+                else if (parameterTypes[i] == double.class || parameterTypes[i] == Double.class)
+                {
+                    body.append("((java.lang.Number)$1[").append(i).append("]).doubleValue(),");
+                }
+                else if (parameterTypes[i] == byte.class || parameterTypes[i] == Byte.class)
+                {
+                    body.append("((java.lang.Number)$1[").append(i).append("]).byteValue(),");
+                }
+                else if (parameterTypes[i] == boolean.class || parameterTypes[i] == Boolean.class)
+                {
+                    body.append("((java.lang.Boolean)$1[").append(i).append("]).booleanValue(),");
+                }
+                else
+                {
+                    body.append("((" + SmcHelper.getReferenceName(parameterTypes[i], classModel) + ")$1[").append(i).append("]),");
                 }
             }
-            if (body.charAt(body.length() - 1) == ',')
+            if (body.length() != length)
             {
                 body.setLength(body.length() - 1);
             }
-            body.append(");}");
+            body.append(");");
             methodModel.setBody(body.toString());
             classModel.putMethodModel(methodModel);
             Class<?> compile = COMPILER.compile(classModel);
@@ -221,7 +223,8 @@ public class DynamicCompileMethodNode implements MethodNode
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+            ReflectUtil.throwException(e);
+            return null;
         }
     }
 

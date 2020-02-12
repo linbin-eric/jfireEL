@@ -14,7 +14,7 @@ public class DynamicDefaultMethodNode implements MethodNode
     private final    String          methodName;
     private volatile Method          method;
     private volatile Class<?>        beanType;
-    protected        boolean         recognizeEveryTime = true;
+    protected        boolean         recognizeEveryTime = false;
     private          CalculateNode[] argsNodes;
     private          ConvertType[]   convertTypes;
     private          Token           type;
