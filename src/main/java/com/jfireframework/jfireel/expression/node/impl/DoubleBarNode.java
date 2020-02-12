@@ -30,14 +30,7 @@ public class DoubleBarNode extends OperatorResultNode
         }
         return (rightValue);
     }
-    
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
+
     @Override
     public String toString()
     {

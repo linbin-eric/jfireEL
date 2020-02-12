@@ -28,13 +28,7 @@ public class DivisionNode extends OperatorResultNode
         return DivisionUtil.calculate((Number) leftValue, (Number) rightValue);
     }
     
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
+
     @Override
     public String literals()
     {

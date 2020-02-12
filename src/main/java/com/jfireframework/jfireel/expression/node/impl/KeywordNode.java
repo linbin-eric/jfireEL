@@ -48,13 +48,6 @@ public class KeywordNode implements CalculateNode
     }
     
     @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    @Override
     public String literals()
     {
         if (keywordValue != null)

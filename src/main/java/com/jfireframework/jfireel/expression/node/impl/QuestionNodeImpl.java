@@ -55,13 +55,6 @@ public class QuestionNodeImpl implements QuestionNode
     }
     
     @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    @Override
     public String literals()
     {
         return conditionNode.literals() + "?" + expressionNode1.literals() + ":" + expressionNode2.literals();

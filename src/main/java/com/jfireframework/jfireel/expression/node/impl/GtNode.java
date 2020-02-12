@@ -27,11 +27,4 @@ public class GtNode extends OperatorResultNode
         return GtUtil.calculate((Number) leftValue, (Number) rightValue);
     }
     
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
 }

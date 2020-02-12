@@ -155,10 +155,6 @@ public class DynamicDefaultMethodNode implements MethodNode
         type = Token.METHOD_RESULT;
     }
 
-    @Override
-    public void check()
-    {
-    }
 
     @Override
     public String literals()

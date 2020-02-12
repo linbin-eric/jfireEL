@@ -28,11 +28,4 @@ public class MutliNode extends OperatorResultNode
         return MutliUtil.calculate((Number) leftValue, (Number) rightValue);
     }
     
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
 }

@@ -3,12 +3,12 @@ package com.jfireframework.jfireel.expression.util;
 public final class Functional
 {
     private int function = 0;
-    
+
     public static Functional build()
     {
         return new Functional();
     }
-    
+
     public Functional setMethodInvokeByCompile(boolean flag)
     {
         if (flag)
@@ -21,21 +21,7 @@ public final class Functional
         }
         return this;
     }
-    
-    public Functional setPropertyFetchByUnsafe(boolean flag)
-    {
-        if (flag)
-        {
-            function |= Functions.PROPERTY_FETCH_BY_UNSAFE;
-        }
-        else
-        {
-            function &= ~Functions.PROPERTY_FETCH_BY_UNSAFE;
-        }
-        return this;
-        
-    }
-    
+
     public Functional setRecognizeEveryTime(boolean flag)
     {
         if (flag)
@@ -48,7 +34,7 @@ public final class Functional
         }
         return this;
     }
-    
+
     public int toFunction()
     {
         return function;

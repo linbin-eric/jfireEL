@@ -138,12 +138,7 @@ public class BracketNode implements CalculateNode
         return Token.BRACKET;
     }
     
-    @Override
-    public void check()
-    {
-        
-    }
-    
+
     @Override
     public String literals()
     {

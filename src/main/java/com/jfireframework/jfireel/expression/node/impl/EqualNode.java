@@ -42,11 +42,5 @@ public class EqualNode extends OperatorResultNode
         }
     }
     
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
+
 }

@@ -104,11 +104,6 @@ public class StaticMethodNode implements MethodNode
     }
 
     @Override
-    public void check()
-    {
-    }
-
-    @Override
     public String literals()
     {
         StringBuilder cache = new StringBuilder();

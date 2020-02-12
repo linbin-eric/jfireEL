@@ -27,14 +27,7 @@ public class EnumNode implements CalculateNode
     {
         return Token.ENUM;
     }
-    
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
+
     @Override
     public String literals()
     {

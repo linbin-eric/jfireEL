@@ -28,11 +28,4 @@ public class LtNode extends OperatorResultNode
         return LtUtil.calculate((Number) leftValue, (Number) rightValue);
     }
     
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
 }

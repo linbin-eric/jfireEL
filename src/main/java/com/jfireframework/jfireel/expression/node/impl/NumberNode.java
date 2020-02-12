@@ -44,12 +44,7 @@ public class NumberNode implements CalculateNode
         return Token.NUMBER;
     }
     
-    @Override
-    public void check()
-    {
-        
-    }
-    
+
     @Override
     public String literals()
     {

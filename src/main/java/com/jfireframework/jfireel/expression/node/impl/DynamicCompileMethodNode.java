@@ -235,11 +235,6 @@ public class DynamicCompileMethodNode implements MethodNode
         type = Token.METHOD_RESULT;
     }
 
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public String literals()

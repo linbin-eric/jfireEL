@@ -89,7 +89,7 @@ public class PerTest extends TestSupport
     public void test2()
     {
         Expression lexer = Expression.parse("person.age");
-        Expression lexer2 = Expression.parse("person.age", Functional.build().setPropertyFetchByUnsafe(true).toFunction());
+        Expression lexer2 = Expression.parse("person.age");
         int preheat = 1000;
         int count = 100000000;
         for (int i = 0; i < preheat; i++)

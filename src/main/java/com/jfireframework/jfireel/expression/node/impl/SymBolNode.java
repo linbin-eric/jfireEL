@@ -33,14 +33,7 @@ public class SymBolNode implements CalculateNode
     {
         return literals();
     }
-    
-    @Override
-    public void check()
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
+
     @Override
     public String literals()
     {

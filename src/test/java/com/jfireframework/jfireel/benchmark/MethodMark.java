@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
-public class JfireElBenchMark
+public class MethodMark
 {
 
     public Expression lexer         = Expression.parse("home.bool(person.getAge() + '12' != value)");
@@ -96,7 +96,7 @@ public class JfireElBenchMark
 
     public static void main(String[] args) throws RunnerException
     {
-        Options opt = new OptionsBuilder().include(JfireElBenchMark.class.getSimpleName()).warmupIterations(2)//
+        Options opt = new OptionsBuilder().include(MethodMark.class.getSimpleName()).warmupIterations(2)//
                 .warmupTime(TimeValue.seconds(2))
                 .jvmArgs("-server")
                 .forks(2)//

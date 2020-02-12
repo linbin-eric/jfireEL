@@ -27,12 +27,6 @@ public class StringNode implements CalculateNode
     }
     
     @Override
-    public void check()
-    {
-        
-    }
-    
-    @Override
     public String literals()
     {
         return '\'' + literals + "'";

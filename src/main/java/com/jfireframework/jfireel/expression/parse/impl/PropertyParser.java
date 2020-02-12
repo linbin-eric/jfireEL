@@ -1,18 +1,18 @@
 package com.jfireframework.jfireel.expression.parse.impl;
 
-import java.util.Deque;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
-import com.jfireframework.jfireel.expression.node.impl.DynamicReflectPropertyNode;
-import com.jfireframework.jfireel.expression.node.impl.DynamicUnsafePropertyNode;
-import com.jfireframework.jfireel.expression.node.impl.StaticPropertyNode;
+import com.jfireframework.jfireel.expression.node.impl.ObjectPropertyNode;
+import com.jfireframework.jfireel.expression.node.impl.ClassPropertyNode;
 import com.jfireframework.jfireel.expression.parse.Invoker;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.util.CharType;
 import com.jfireframework.jfireel.expression.util.Functions;
 
+import java.util.Deque;
+
 public class PropertyParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -34,30 +34,18 @@ public class PropertyParser extends NodeParser
         {
             return next.parse(el, origin, nodes, function);
         }
-        String literals = el.substring(origin + 1, offset);
+        String        literals = el.substring(origin + 1, offset);
         CalculateNode beanNode = nodes.pop();
         CalculateNode current;
         if (beanNode.type() == Token.TYPE)
         {
-            current = new StaticPropertyNode(literals, beanNode);
+            current = new ClassPropertyNode(literals, beanNode);
         }
         else
         {
-            if (Functions.isPropertyFetchByUnsafe(function))
-            {
-                current = new DynamicUnsafePropertyNode(literals, beanNode, Functions.isRecognizeEveryTime(function));
-            }
-            else if (Functions.isPropertyFetchByReflect(function))
-            {
-                current = new DynamicReflectPropertyNode(literals, beanNode, Functions.isRecognizeEveryTime(function));
-            }
-            else
-            {
-                current = new DynamicReflectPropertyNode(literals, beanNode, Functions.isRecognizeEveryTime(function));
-            }
+            current = new ObjectPropertyNode(literals, beanNode, Functions.isRecognizeEveryTime(function));
         }
         nodes.push(current);
         return offset;
     }
-    
 }

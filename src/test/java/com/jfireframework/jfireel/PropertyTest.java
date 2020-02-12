@@ -15,7 +15,7 @@ public class PropertyTest extends TestSupport
         Expression lexer = Expression.parse("home.person.age");
         //home 是一个对象，包含一个对象属性 person，age是person中的一个数字属性
         assertEquals(person.age, lexer.calculate(vars));
-        lexer = Expression.parse("home.person.age", Functional.build().setPropertyFetchByUnsafe(true).setRecognizeEveryTime(false).toFunction());
+        lexer = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
         assertEquals(person.age, lexer.calculate(vars));
     }
     
