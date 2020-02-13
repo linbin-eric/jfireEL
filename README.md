@@ -1,13 +1,12 @@
 # 高性能EL表达式解析框架 jfireEL
 
-[TOC]
-
 ## 使用场景
 
 EL 表达式解析，在一些涉及到动态规则配置的场合使用较多。比如工作流引擎中的外部规则注入，比如 Spring 框架中的 SpEL 解析等等。jfireEL 框架支持常见的 EL 表达式，诸如四则运算，数组元素获取，链表元素获取，Map 键值对获取，属性获取，方法调用，级联调用，支持获取类定义，枚举定义，支持获取对象等等。
 
 相比于 SpringEL，jfireEL 在表达上更为简洁，比如对于 SpringEL，一个变量属性级联对比的表达式可以写为`vars['home'].bool(vars['person'].getAge() + '12' != vars['value'])`，而jfireEL 的写法直接为`home.bool(person.getAge() + '12' != value)`。显然 jfireEL 的可读性更高。
 
+欢迎加入技术交流群186233599讨论交流，也欢迎关注笔者公众号：风火说。
 ## 性能测试
 
 使用 EL 表达式`vars['home'].bool(vars['person'].getAge() + '12' != vars['value'])`对jfireEL，BeetlEL，SpringEL 三款框架进行性能对比验证。在进入测试之前均预热相同次数确保初始化完毕。三款框架性能对比如下
@@ -20,9 +19,9 @@ EL 表达式解析，在一些涉及到动态规则配置的场合使用较多�
 
 ```xml
 <dependency>
-    <groupId>com.jfireframework</groupId>
+    <groupId>com.jfirer</groupId>
     <artifactId>jfireEl</artifactId>
-    <version>aegean-1.0</version>
+    <version>1.0</version>
 </dependency>
 ```
 
