@@ -126,8 +126,8 @@ public class PropertyTest extends TestSupport
     @Test
     public void test2()
     {
-        //com.jfireframework.jfireel.PropertyTest 就是测试类本身，使用T()包围表明这是一个类的全限定名
-        int result = Expression.parse("T(com.jfireframework.jfireel.PropertyTest).age").calculate();
+        //PropertyTest 就是测试类本身，使用T()包围表明这是一个类的全限定名
+        int result = Expression.parse("T(PropertyTest).age").calculate();
         assertEquals(age, result);
     }
 }
@@ -178,7 +178,7 @@ public class EnumTest
     @Test
     public void test()
     {
-        Expression lexer = Expression.parse("T(com.jfireframework.jfireel.EnumTest$Name).dd");
+        Expression lexer = Expression.parse("T(EnumTest$Name).dd");
         assertEquals(Name.dd, lexer.calculate());
     }
 }

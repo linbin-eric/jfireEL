@@ -20,7 +20,7 @@
     <scm>
         <connection>scm:git:https://gitee.com/eric_ds/jfireEL.git</connection>
         <developerConnection>scm:git:http://git.oschina.net/eric_ds</developerConnection>
-        <url>https://eric_ds.gitee.io/</url>
+        <url>http://jfirer.com/</url>
     </scm>
     <developers>
         <developer>
