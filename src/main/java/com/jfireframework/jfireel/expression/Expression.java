@@ -1,41 +1,26 @@
 package com.jfireframework.jfireel.expression;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import com.jfireframework.jfireel.exception.UnParsedException;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
 import com.jfireframework.jfireel.expression.parse.Invoker;
-import com.jfireframework.jfireel.expression.parse.impl.CommaParser;
-import com.jfireframework.jfireel.expression.parse.impl.ConstantStringParser;
-import com.jfireframework.jfireel.expression.parse.impl.EnumParser;
-import com.jfireframework.jfireel.expression.parse.impl.IdentifierParser;
-import com.jfireframework.jfireel.expression.parse.impl.LeftBracketParser;
-import com.jfireframework.jfireel.expression.parse.impl.LeftParenParser;
-import com.jfireframework.jfireel.expression.parse.impl.MethodParser;
-import com.jfireframework.jfireel.expression.parse.impl.NodeParser;
-import com.jfireframework.jfireel.expression.parse.impl.NumberParser;
-import com.jfireframework.jfireel.expression.parse.impl.OperatorParser;
-import com.jfireframework.jfireel.expression.parse.impl.PropertyParser;
-import com.jfireframework.jfireel.expression.parse.impl.RightBracketParser;
-import com.jfireframework.jfireel.expression.parse.impl.RightParenParser;
-import com.jfireframework.jfireel.expression.parse.impl.SkipIgnoredToken;
-import com.jfireframework.jfireel.expression.parse.impl.TypeParser;
+import com.jfireframework.jfireel.expression.parse.impl.*;
+import com.jfireframework.jfireel.expression.util.Functional;
 import com.jfireframework.jfireel.expression.util.OperatorResultUtil;
+
+import java.util.*;
 
 public class Expression
 {
-    private CalculateNode        parseNode;
-    private Deque<CalculateNode> nodes = new LinkedList<CalculateNode>();
-    private String               el;
-    private int                  function;
-    private Invoker              head;
-    private static final Invoker DEFAULT_HEAD;
+    private              CalculateNode        parseNode;
+    private              Deque<CalculateNode> nodes = new LinkedList<CalculateNode>();
+    private              String               el;
+    private              int                  function;
+    private              Invoker              head;
+    private static final Invoker              DEFAULT_HEAD;
+
     static
     {
-        NodeParser[] parsers = new NodeParser[] { //
+        NodeParser[] parsers = new NodeParser[]{ //
                 new SkipIgnoredToken(), //
                 new LeftParenParser(), //
                 new RightParenParser(), //
@@ -51,8 +36,9 @@ public class Expression
                 new IdentifierParser(), //
                 new OperatorParser()//
         };
-        Invoker pred = new Invoker() {
-            
+        Invoker pred = new Invoker()
+        {
+
             @Override
             public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
             {
@@ -62,9 +48,10 @@ public class Expression
         for (int i = parsers.length - 1; i > -1; i--)
         {
             final NodeParser parser = parsers[i];
-            final Invoker next = pred;
-            Invoker invoker = new Invoker() {
-                
+            final Invoker    next   = pred;
+            Invoker invoker = new Invoker()
+            {
+
                 @Override
                 public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
                 {
@@ -75,22 +62,22 @@ public class Expression
         }
         DEFAULT_HEAD = pred;
     }
-    
+
     public static Expression parse(String el)
     {
-        return new Expression(el, 0, DEFAULT_HEAD);
+        return new Expression(el, Functional.build().setMethodInvokeByCompile(true).toFunction(), DEFAULT_HEAD);
     }
-    
+
     public static Expression parse(String el, int function)
     {
         return new Expression(el, function, DEFAULT_HEAD);
     }
-    
+
     public static Expression parse(String el, int function, Invoker head)
     {
         return new Expression(el, function, head);
     }
-    
+
     private Expression(String el, int function, Invoker head)
     {
         this.head = head;
@@ -105,7 +92,7 @@ public class Expression
             throw new UnParsedException(el, e);
         }
     }
-    
+
     private void scan()
     {
         int offset = 0;
@@ -120,7 +107,7 @@ public class Expression
             offset = result;
         }
         List<CalculateNode> list = new ArrayList<CalculateNode>();
-        CalculateNode tmp;
+        CalculateNode       tmp;
         while ((tmp = nodes.pollFirst()) != null)
         {
             list.add(0, tmp);
@@ -129,27 +116,27 @@ public class Expression
         nodes = null;
         el = null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T> T calculate(Map<String, Object> variables)
     {
         return (T) parseNode.calculate(variables);
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T> T calculate()
     {
         return (T) parseNode.calculate(null);
     }
-    
+
     public CalculateNode parseResult()
     {
         return parseNode;
     }
-    
+
     /**
      * 返回解析的表达式
-     * 
+     *
      * @return
      */
     public String getEl()

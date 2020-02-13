@@ -98,7 +98,6 @@ public class MethodMark
     {
         Options opt = new OptionsBuilder().include(MethodMark.class.getSimpleName()).warmupIterations(2)//
                 .warmupTime(TimeValue.seconds(2))
-                .jvmArgs("-server")
                 .forks(2)//
                 .measurementIterations(3)//
                 .measurementTime(TimeValue.seconds(2))//

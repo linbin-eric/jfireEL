@@ -1,19 +1,20 @@
 package com.jfireframework.jfireel.expression.parse.impl;
 
-import java.util.Deque;
 import com.jfireframework.jfireel.expression.node.CalculateNode;
 import com.jfireframework.jfireel.expression.node.MethodNode;
-import com.jfireframework.jfireel.expression.node.impl.DynamicCompileMethodNode;
-import com.jfireframework.jfireel.expression.node.impl.DynamicDefaultMethodNode;
-import com.jfireframework.jfireel.expression.node.impl.StaticMethodNode;
+import com.jfireframework.jfireel.expression.node.impl.CompileObjectMethodNode;
+import com.jfireframework.jfireel.expression.node.impl.ReflectMethodNode;
+import com.jfireframework.jfireel.expression.node.impl.StaticObjectMethodNode;
 import com.jfireframework.jfireel.expression.parse.Invoker;
 import com.jfireframework.jfireel.expression.token.Token;
 import com.jfireframework.jfireel.expression.util.CharType;
 import com.jfireframework.jfireel.expression.util.Functions;
 
+import java.util.Deque;
+
 public class MethodParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -33,22 +34,22 @@ public class MethodParser extends NodeParser
         {
             return next.parse(el, offset, nodes, function);
         }
-        String literals = el.substring(origin + 1, offset);
+        String        literals = el.substring(origin + 1, offset);
         CalculateNode beanNode = nodes.pop();
-        MethodNode methodNode;
+        MethodNode    methodNode;
         if (beanNode.type() == Token.TYPE)
         {
-            methodNode = new StaticMethodNode(literals, beanNode);
+            methodNode = new StaticObjectMethodNode(literals, beanNode);
         }
         else
         {
             if (Functions.isMethodInvokeByCompile(function))
             {
-                methodNode = new DynamicCompileMethodNode(literals, beanNode);
+                methodNode = new CompileObjectMethodNode(literals, beanNode, Functions.isRecognizeEveryTime(function));
             }
             else
             {
-                methodNode = new DynamicDefaultMethodNode(literals, beanNode);
+                methodNode = new ReflectMethodNode(literals, beanNode, Functions.isRecognizeEveryTime(function));
             }
         }
         nodes.push(methodNode);
@@ -56,5 +57,4 @@ public class MethodParser extends NodeParser
         offset += 1;
         return offset;
     }
-    
 }

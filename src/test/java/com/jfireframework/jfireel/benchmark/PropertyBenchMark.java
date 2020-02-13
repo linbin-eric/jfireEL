@@ -48,7 +48,7 @@ public class PropertyBenchMark
     public static void main(String[] args) throws RunnerException
     {
         Options opt = new OptionsBuilder().include(PropertyBenchMark.class.getSimpleName()).warmupIterations(2)//
-                .warmupTime(TimeValue.seconds(5)).forks(2)//
+                .warmupTime(TimeValue.seconds(3)).forks(2)//
                 .measurementIterations(5)//
                 .measurementTime(TimeValue.seconds(2))//
                 .timeUnit(TimeUnit.SECONDS).build();
