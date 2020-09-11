@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.util.number;
 
 public class MutliUtil
 {
+
     private static Object calculate(int arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)

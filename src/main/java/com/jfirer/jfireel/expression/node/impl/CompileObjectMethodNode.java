@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CompileObjectMethodNode implements MethodNode
 {
-    public static interface Invoker
+    public interface Invoker
     {
         Object invoke(Object host, Object[] params);
     }
