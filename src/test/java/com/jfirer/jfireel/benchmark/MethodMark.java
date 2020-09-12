@@ -26,15 +26,25 @@ import java.util.concurrent.TimeUnit;
 public class MethodMark
 {
 
-    public Expression lexer         = Expression.parse("home.bool(person.getAge() + '12' != value)");
-    public Expression lexer_compile = Expression.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
+    public Expression          lexer         = Expression.parse("home.bool(person.getAge() + '12' != value)");
+    public Expression          lexer_compile = Expression.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
+    public Map<String, Object> vars          = new HashMap<String, Object>();
+    public TestSupport.Person  person;
+    public TestSupport.Home    home;
     org.springframework.expression.Expression exp;
     StandardEvaluationContext                 societyContext;
     GroupTemplate                             gt;
     String                                    key = "return @home.bool(@person.getAge()+'12'!=value);";
-    public Map<String, Object> vars = new HashMap<String, Object>();
-    public TestSupport.Person  person;
-    public TestSupport.Home    home;
+
+    public static void main(String[] args) throws RunnerException
+    {
+        Options opt = new OptionsBuilder().include(MethodMark.class.getSimpleName()).warmupIterations(2)//
+                .warmupTime(TimeValue.seconds(2)).forks(2)//
+                .measurementIterations(3)//
+                .measurementTime(TimeValue.seconds(2))//
+                .timeUnit(TimeUnit.SECONDS).build();
+        new Runner(opt).run();
+    }
 
     @Setup(Level.Trial)
     public void before()
@@ -75,13 +85,13 @@ public class MethodMark
         lexer_compile.calculate(vars);
     }
 
-//    @Benchmark
+    @Benchmark
     public void testSpringEl()
     {
         exp.getValue(societyContext);
     }
 
-//    @Benchmark
+    @Benchmark
     public void testBeetlEl()
     {
         try
@@ -92,16 +102,5 @@ public class MethodMark
         {
             scriptEvalError.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) throws RunnerException
-    {
-        Options opt = new OptionsBuilder().include(MethodMark.class.getSimpleName()).warmupIterations(2)//
-                .warmupTime(TimeValue.seconds(2))
-                .forks(2)//
-                .measurementIterations(3)//
-                .measurementTime(TimeValue.seconds(2))//
-                .timeUnit(TimeUnit.SECONDS).build();
-        new Runner(opt).run();
     }
 }

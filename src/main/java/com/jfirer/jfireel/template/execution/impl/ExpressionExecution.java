@@ -7,13 +7,13 @@ import java.util.Map;
 
 public class ExpressionExecution implements Execution
 {
-    private Expression expression;
-    
+    private final Expression expression;
+
     public ExpressionExecution(Expression expression)
     {
         this.expression = expression;
     }
-    
+
     @Override
     public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
@@ -24,12 +24,10 @@ public class ExpressionExecution implements Execution
         }
         return true;
     }
-    
+
     @Override
     public void check()
     {
         // TODO Auto-generated method stub
-        
     }
-    
 }

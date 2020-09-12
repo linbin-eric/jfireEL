@@ -8,7 +8,7 @@ import java.util.Map;
 public class ElseExecution implements WithBodyExecution
 {
     private Execution[] body;
-    
+
     @Override
     public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
@@ -18,20 +18,19 @@ public class ElseExecution implements WithBodyExecution
         }
         return true;
     }
-    
+
     @Override
     public void check()
     {
         // TODO Auto-generated method stub
-        
     }
-    
+
     @Override
     public void setBody(Execution... executions)
     {
         body = executions;
     }
-    
+
     @Override
     public boolean isBodyNotSet()
     {

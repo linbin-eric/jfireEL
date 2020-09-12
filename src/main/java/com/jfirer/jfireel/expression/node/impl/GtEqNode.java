@@ -1,8 +1,9 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.number.LtUtil;
+
+import java.util.Map;
 
 public class GtEqNode extends OperatorResultNode
 {
@@ -10,7 +11,7 @@ public class GtEqNode extends OperatorResultNode
     {
         super(Operator.GT_EQ);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {

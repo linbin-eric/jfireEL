@@ -3,19 +3,14 @@ package com.jfirer.jfireel.expression;
 import com.jfirer.jfireel.exception.UnParsedException;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
+import com.jfirer.jfireel.expression.parse.impl.*;
 import com.jfirer.jfireel.expression.util.Functional;
 import com.jfirer.jfireel.expression.util.OperatorResultUtil;
-import com.jfirer.jfireel.expression.parse.impl.*;
 
 import java.util.*;
 
 public class Expression
 {
-    private              CalculateNode        parseNode;
-    private              Deque<CalculateNode> nodes = new LinkedList<CalculateNode>();
-    private              String               el;
-    private              int                  function;
-    private              Invoker              head;
     private static final Invoker              DEFAULT_HEAD;
 
     static
@@ -63,20 +58,11 @@ public class Expression
         DEFAULT_HEAD = pred;
     }
 
-    public static Expression parse(String el)
-    {
-        return new Expression(el, Functional.build().setMethodInvokeByCompile(true).toFunction(), DEFAULT_HEAD);
-    }
-
-    public static Expression parse(String el, int function)
-    {
-        return new Expression(el, function, DEFAULT_HEAD);
-    }
-
-    public static Expression parse(String el, int function, Invoker head)
-    {
-        return new Expression(el, function, head);
-    }
+    private              CalculateNode        parseNode;
+    private              Deque<CalculateNode> nodes = new LinkedList<CalculateNode>();
+    private       String  el;
+    private final int     function;
+    private final Invoker head;
 
     private Expression(String el, int function, Invoker head)
     {
@@ -91,6 +77,21 @@ public class Expression
         {
             throw new UnParsedException(el, e);
         }
+    }
+
+    public static Expression parse(String el)
+    {
+        return new Expression(el, Functional.build().setMethodInvokeByCompile(true).toFunction(), DEFAULT_HEAD);
+    }
+
+    public static Expression parse(String el, int function)
+    {
+        return new Expression(el, function, DEFAULT_HEAD);
+    }
+
+    public static Expression parse(String el, int function, Invoker head)
+    {
+        return new Expression(el, function, head);
     }
 
     private void scan()

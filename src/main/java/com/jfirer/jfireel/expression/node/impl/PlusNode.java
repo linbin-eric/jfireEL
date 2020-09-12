@@ -13,8 +13,6 @@ public class PlusNode extends OperatorResultNode
         {
             return new StringBuilder();
         }
-
-        ;
     };
 
     public PlusNode()

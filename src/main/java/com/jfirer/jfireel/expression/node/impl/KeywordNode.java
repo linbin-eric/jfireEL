@@ -1,15 +1,16 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
+import java.util.Map;
+
 public class KeywordNode implements CalculateNode
 {
-    private Object keywordValue;
-    
+    private final Object keywordValue;
+
     public KeywordNode(String literals)
     {
         if (literals.equalsIgnoreCase("true"))
@@ -29,13 +30,13 @@ public class KeywordNode implements CalculateNode
             throw new IllegalArgumentException();
         }
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
         return keywordValue;
     }
-    
+
     @Override
     public TokenType type()
     {
@@ -53,7 +54,7 @@ public class KeywordNode implements CalculateNode
     {
         return "KeywordNode [keywordValue=" + keywordValue + "]";
     }
-    
+
     @Override
     public String literals()
     {
@@ -66,5 +67,4 @@ public class KeywordNode implements CalculateNode
             return "NULL";
         }
     }
-    
 }

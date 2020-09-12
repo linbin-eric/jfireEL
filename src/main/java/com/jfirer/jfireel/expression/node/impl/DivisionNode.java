@@ -1,17 +1,18 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.number.DivisionUtil;
 
+import java.util.Map;
+
 public class DivisionNode extends OperatorResultNode
 {
-    
+
     public DivisionNode()
     {
         super(Operator.DIVISION);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -27,14 +28,13 @@ public class DivisionNode extends OperatorResultNode
         }
         return DivisionUtil.calculate((Number) leftValue, (Number) rightValue);
     }
-    
 
     @Override
     public String literals()
     {
         return "/";
     }
-    
+
     @Override
     public String toString()
     {

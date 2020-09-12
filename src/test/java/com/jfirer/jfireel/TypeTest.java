@@ -1,8 +1,9 @@
 package com.jfirer.jfireel;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
 import com.jfirer.jfireel.expression.Expression;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class TypeTest
 {

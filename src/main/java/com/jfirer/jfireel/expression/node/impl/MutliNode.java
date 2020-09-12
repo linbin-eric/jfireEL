@@ -1,17 +1,18 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.number.MutliUtil;
 
+import java.util.Map;
+
 public class MutliNode extends OperatorResultNode
 {
-    
+
     public MutliNode()
     {
         super(Operator.MULTI);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -27,5 +28,4 @@ public class MutliNode extends OperatorResultNode
         }
         return MutliUtil.calculate((Number) leftValue, (Number) rightValue);
     }
-    
 }

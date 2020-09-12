@@ -1,21 +1,22 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.number.EqUtil;
 
+import java.util.Map;
+
 public class EqualNode extends OperatorResultNode
 {
-    
+
     public EqualNode()
     {
         super(Operator.EQ);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
-        Object leftValue = leftOperand.calculate(variables);
+        Object leftValue  = leftOperand.calculate(variables);
         Object rightValue = rightOperand.calculate(variables);
         if (leftValue == null && rightValue == null)
         {
@@ -41,6 +42,4 @@ public class EqualNode extends OperatorResultNode
             }
         }
     }
-    
-
 }

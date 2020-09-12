@@ -1,16 +1,16 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
-
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Symbol;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
 
+import java.util.Map;
+
 public class SymBolNode implements CalculateNode
 {
 
-    private Symbol symbol;
+    private final Symbol symbol;
 
     public SymBolNode(Symbol symbol)
     {

@@ -2,14 +2,14 @@ package com.jfirer.jfireel.expression.node;
 
 public interface MethodNode extends CalculateNode
 {
+    void setArgsNodes(CalculateNode[] argsNodes);
+
     enum ConvertType
     {
         INT, LONG, SHORT, FLOAT, DOUBLE, BYTE, BOOLEAN, CHARACTER, OTHER
     }
-    
-    void setArgsNodes(CalculateNode[] argsNodes);
-    
-    public static class MethodNodeUtil
+
+    class MethodNodeUtil
     {
         public static final void convertArgs(Object[] args, ConvertType[] convertTypes)
         {
@@ -64,7 +64,7 @@ public interface MethodNode extends CalculateNode
                 }
             }
         }
-        
+
         public static final ConvertType[] buildConvertTypes(Class<?>[] parameterTypes)
         {
             ConvertType[] convertTypes = new ConvertType[parameterTypes.length];
@@ -105,7 +105,7 @@ public interface MethodNode extends CalculateNode
             }
             return convertTypes;
         }
-        
+
         public static final boolean isWrapType(Class<?> primitiveType, Class<?> arge)
         {
             if (primitiveType == int.class)

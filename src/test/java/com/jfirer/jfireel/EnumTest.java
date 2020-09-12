@@ -7,15 +7,15 @@ import static org.junit.Assert.assertEquals;
 
 public class EnumTest
 {
-    enum Name
-    {
-        dd;
-    }
-
     @Test
     public void test()
     {
         Expression lexer = Expression.parse("T(com.jfirer.jfireel.EnumTest$Name).dd");
         assertEquals(Name.dd, lexer.calculate());
+    }
+
+    enum Name
+    {
+        dd
     }
 }

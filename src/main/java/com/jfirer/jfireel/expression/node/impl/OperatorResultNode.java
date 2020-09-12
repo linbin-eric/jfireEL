@@ -11,26 +11,26 @@ public abstract class OperatorResultNode implements CalculateNode
     protected CalculateNode leftOperand;
     protected CalculateNode rightOperand;
     protected Operator      type;
-    
+
     protected OperatorResultNode(Operator type)
     {
         this.type = type;
     }
-    
+
     public void setLeftOperand(CalculateNode node)
     {
         leftOperand = node;
     }
-    
+
     public void setRightOperand(CalculateNode node)
     {
         rightOperand = node;
     }
-    
+
     @Override
     public TokenType type()
     {
-        return TokenType.OPERATOR_RESULT;
+        return TokenType.RESULT;
     }
 
     @Override
@@ -43,7 +43,7 @@ public abstract class OperatorResultNode implements CalculateNode
     {
         return leftOperand.literals() + type.getLiterals() + rightOperand.literals();
     }
-    
+
     @Override
     public String toString()
     {

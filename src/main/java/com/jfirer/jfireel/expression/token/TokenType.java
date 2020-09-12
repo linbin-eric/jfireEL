@@ -6,10 +6,8 @@ public enum TokenType
     VARIABLE, //
     // 属性访问
     PROPERTY, //
-    // 方法访问，该节点尚未完全，需要填充参数。其本身不能作为参数值
+    // 方法访问
     METHOD, //
-    // 已经获取完毕参数的方法访问，该种节点可以作为参数值
-    METHOD_RESULT, //
     // 字符串
     STRING, //
     // 数字
@@ -18,12 +16,9 @@ public enum TokenType
     SYMBOL,//
     // 运算符
     OPERATOR,//
-    // 运算式结果
-    OPERATOR_RESULT, //
     // 三元表达式
     QUESTION, //
     // []运算符
-    BRACKET, //
     // Class类型
     TYPE, //
     // 是一个枚举类型的class
@@ -31,7 +26,8 @@ public enum TokenType
     // 是一个枚举值
     ENUM, // 常量
     CONSTANT, //
-    IF, //
+    //结果标记，意味着该token已经处理完毕，不需要其他处理了
+    RESULT, IF, //
     ELSE, //
     ELSE_IF, //
     FOR,//

@@ -1,11 +1,11 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.baseutil.StringUtil;
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.baseutil.reflect.ValueAccessor;
+import com.jfirer.jfireel.expression.node.CalculateNode;
+import com.jfirer.jfireel.expression.token.Token;
+import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Field;
@@ -16,7 +16,7 @@ public class ObjectPropertyNode implements CalculateNode
     protected        Class<?>      beanType;
     protected        String        propertyName;
     protected        boolean       recognizeEveryTime = true;
-    private          CalculateNode beanNode;
+    private final    CalculateNode beanNode;
     private volatile ValueAccessor valueAccessor;
 
     /**

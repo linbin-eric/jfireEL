@@ -1,15 +1,16 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.TypeNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.CharType;
 
+import java.util.Deque;
+
 public class TypeParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -19,7 +20,7 @@ public class TypeParser extends NodeParser
         }
         offset += 2;
         offset = skipWhiteSpace(offset, el);
-        int origin = offset;
+        int  origin = offset;
         char c;
         while (CharType.isAlphabet(c = getChar(offset, el)) || '.' == c || '_' == c || '$' == c)
         {
@@ -51,5 +52,4 @@ public class TypeParser extends NodeParser
         offset += 1;
         return offset;
     }
-    
 }

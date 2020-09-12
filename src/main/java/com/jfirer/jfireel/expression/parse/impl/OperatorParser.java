@@ -1,15 +1,16 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.OperatorNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.CharType;
 
+import java.util.Deque;
+
 public class OperatorParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -17,7 +18,7 @@ public class OperatorParser extends NodeParser
         {
             return next.parse(el, offset, nodes, function);
         }
-        String literals = new String(new char[] { getChar(offset, el), getChar(offset + 1, el) });
+        String literals = new String(new char[]{getChar(offset, el), getChar(offset + 1, el)});
         if (Operator.literalsOf(literals) != null)
         {
             nodes.push(new OperatorNode(Operator.literalsOf(literals)));
@@ -33,5 +34,4 @@ public class OperatorParser extends NodeParser
         }
         throw new IllegalArgumentException("无法识别:" + literals + "检查:" + el.substring(0, offset));
     }
-    
 }

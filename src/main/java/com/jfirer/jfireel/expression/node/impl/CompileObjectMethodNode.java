@@ -1,41 +1,31 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.node.MethodNode;
-import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.baseutil.smc.SmcHelper;
 import com.jfirer.baseutil.smc.compiler.CompileHelper;
 import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
+import com.jfirer.jfireel.expression.node.CalculateNode;
+import com.jfirer.jfireel.expression.token.Token;
+import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CompileObjectMethodNode implements MethodNode
+public class CompileObjectMethodNode extends AbstractMethodNode
 {
-    public interface Invoker
-    {
-        Object invoke(Object host, Object[] params);
-    }
-
-    private static final CompileHelper   COMPILER = new CompileHelper();
-    private static final AtomicInteger   counter  = new AtomicInteger(0);
-    private final        CalculateNode   beanNode;
-    private final        String          methodName;
-    private volatile     Invoker         invoker;
-    private volatile     Class<?>        beanType;
-    protected final      boolean         recognizeEveryTime;
-    private              CalculateNode[] argsNodes;
-    private              TokenType       type;
-
+    private static final CompileHelper COMPILER = new CompileHelper();
+    private static final AtomicInteger counter  = new AtomicInteger(0);
+    protected final      boolean       recognizeEveryTime;
+    private final        CalculateNode beanNode;
+    private final        String        methodName;
+    private volatile     Invoker       invoker;
+    private volatile     Class<?>      beanType;
     public CompileObjectMethodNode(String literals, CalculateNode beanNode, boolean recognizeEveryTime)
     {
         methodName = literals;
-        type = TokenType.METHOD;
         this.beanNode = beanNode;
         this.recognizeEveryTime = recognizeEveryTime;
     }
@@ -253,13 +243,6 @@ public class CompileObjectMethodNode implements MethodNode
     }
 
     @Override
-    public void setArgsNodes(CalculateNode[] argsNodes)
-    {
-        this.argsNodes = argsNodes;
-        type = TokenType.METHOD_RESULT;
-    }
-
-    @Override
     public String literals()
     {
         StringBuilder cache = new StringBuilder();
@@ -283,5 +266,10 @@ public class CompileObjectMethodNode implements MethodNode
     public String toString()
     {
         return literals();
+    }
+
+    public interface Invoker
+    {
+        Object invoke(Object host, Object[] params);
     }
 }

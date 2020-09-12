@@ -1,11 +1,10 @@
 package com.jfirer.jfireel;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.jfirer.baseutil.StringUtil;
 import com.jfirer.baseutil.time.Timewatch;
+import com.jfirer.jfireel.expression.Expression;
+import com.jfirer.jfireel.expression.util.Functional;
+import com.jfirer.jfireel.template.Template;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.exception.ScriptEvalError;
@@ -14,9 +13,10 @@ import org.junit.Test;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import com.jfirer.jfireel.expression.Expression;
-import com.jfirer.jfireel.expression.util.Functional;
-import com.jfirer.jfireel.template.Template;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PerTest extends TestSupport
 {
@@ -26,21 +26,20 @@ public class PerTest extends TestSupport
         String value = person.age + "12";
         vars.put("value", value);
         StandardEvaluationContext societyContext = new StandardEvaluationContext();
-        societyContext.setVariable("vars",vars);
-        ExpressionParser parser = new SpelExpressionParser();
-        org.springframework.expression.Expression exp = parser.parseExpression("#vars['home'].bool(#vars['person'].getAge() + '12' != #vars['value'])");
-        Object springElResult = exp.getValue(societyContext);
+        societyContext.setVariable("vars", vars);
+        ExpressionParser                          parser         = new SpelExpressionParser();
+        org.springframework.expression.Expression exp            = parser.parseExpression("#vars['home'].bool(#vars['person'].getAge() + '12' != #vars['value'])");
+        Object                                    springElResult = exp.getValue(societyContext);
         System.out.println(springElResult);
         StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
-        Configuration cfg = Configuration.defaultConfiguration();
-        GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
-        Map<?, ?> runScript = gt.runScript("return @home.bool(@person.getAge()+'12'!=value);", vars);
+        Configuration                cfg            = Configuration.defaultConfiguration();
+        GroupTemplate                gt             = new GroupTemplate(resourceLoader, cfg);
+        Map<?, ?>                    runScript      = gt.runScript("return @home.bool(@person.getAge()+'12'!=value);", vars);
         System.out.println(runScript);
-        
         Expression lexer   = Expression.parse("home.bool(person.getAge() + '12' != value)");
         Expression lexer2  = Expression.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
         int        preheat = 100;
-        int count = 10000000;
+        int        count   = 10000000;
         for (int i = 0; i < preheat; i++)
         {
             lexer.calculate(vars);
@@ -84,14 +83,14 @@ public class PerTest extends TestSupport
         t1 = System.nanoTime();
         System.out.println("源代码直接计算" + (count / 10000) + "万次耗时:" + (t1 - t0) / 1000 / 1000 + "毫秒");
     }
-    
+
     @Test
     public void test2()
     {
-        Expression lexer = Expression.parse("person.age");
-        Expression lexer2 = Expression.parse("person.age");
-        int preheat = 1000;
-        int count = 100000000;
+        Expression lexer   = Expression.parse("person.age");
+        Expression lexer2  = Expression.parse("person.age");
+        int        preheat = 1000;
+        int        count   = 100000000;
         for (int i = 0; i < preheat; i++)
         {
             lexer.calculate(vars);
@@ -113,14 +112,14 @@ public class PerTest extends TestSupport
         timewatch.end();
         System.out.println(StringUtil.format("Unsafe模式计算:{}W次耗时:{}", count / 10000, timewatch.getTotal()));
     }
-    
+
     @Test
     public void test3()
     {
-        int preheat = 1000;
-        int count = 10000000;
-        Template syntax = Template.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>");
-        Map<String, Object> params = new HashMap<String, Object>();
+        int                 preheat = 1000;
+        int                 count   = 10000000;
+        Template            syntax  = Template.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>");
+        Map<String, Object> params  = new HashMap<String, Object>();
         params.put("name", "ll");
         params.put("age", 1);
         for (int i = 0; i < preheat; i++)

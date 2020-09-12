@@ -1,7 +1,5 @@
 package com.jfirer.jfireel.template.parser.impl;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import com.jfirer.jfireel.exception.IllegalFormatException;
 import com.jfirer.jfireel.template.ScanMode;
 import com.jfirer.jfireel.template.Template;
@@ -13,9 +11,12 @@ import com.jfirer.jfireel.template.execution.impl.IfExecution;
 import com.jfirer.jfireel.template.parser.Invoker;
 import com.jfirer.jfireel.template.parser.Parser;
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 public class EndBraceParser extends Parser
 {
-    
+
     @Override
     public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache, Invoker next)
     {
@@ -24,7 +25,7 @@ public class EndBraceParser extends Parser
             return next.scan(sentence, offset, executions, template, cache);
         }
         Deque<Execution> array = new LinkedList<Execution>();
-        Execution pop;
+        Execution        pop;
         while ((pop = executions.pollFirst()) != null)
         {
             if (pop instanceof WithBodyExecution == false || ((WithBodyExecution) pop).isBodyNotSet() == false)
@@ -64,5 +65,4 @@ public class EndBraceParser extends Parser
         offset += 1;
         return offset;
     }
-    
 }

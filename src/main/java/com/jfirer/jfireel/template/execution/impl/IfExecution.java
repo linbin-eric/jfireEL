@@ -10,17 +10,17 @@ import java.util.Map;
 
 public class IfExecution implements WithBodyExecution
 {
-    
-    private Expression  conditionLexer;
-    private Execution[] body;
-    private Execution       elseExecution;
-    private List<Execution> elseIfExecutions = new LinkedList<Execution>();
-    
+
+    private final Expression  conditionLexer;
+    private       Execution[] body;
+    private       Execution       elseExecution;
+    private final List<Execution> elseIfExecutions = new LinkedList<Execution>();
+
     public IfExecution(Expression conditionLexer)
     {
         this.conditionLexer = conditionLexer;
     }
-    
+
     @Override
     public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
@@ -52,34 +52,32 @@ public class IfExecution implements WithBodyExecution
         }
         return true;
     }
-    
+
     public void addElseIf(ElseIfExecution execution)
     {
         elseIfExecutions.add(execution);
     }
-    
+
     public void setElse(ElseExecution execution)
     {
         elseExecution = execution;
     }
-    
+
     @Override
     public void check()
     {
         // TODO Auto-generated method stub
-        
     }
-    
+
     @Override
     public void setBody(Execution... executions)
     {
         body = executions;
     }
-    
+
     @Override
     public boolean isBodyNotSet()
     {
         return body == null;
     }
-    
 }

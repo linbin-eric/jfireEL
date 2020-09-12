@@ -1,13 +1,12 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
-
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.NumberNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.CharType;
+
+import java.util.Deque;
 
 public class NumberParser extends NodeParser
 {
@@ -31,14 +30,7 @@ public class NumberParser extends NodeParser
                 throw new IllegalArgumentException("无法识别的-符号，不是负数也不是操作符,问题区间:" + el.substring(0, offset));
             }
         }
-        else if (CharType.isDigital(getChar(offset, el)))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        else return CharType.isDigital(getChar(offset, el));
     }
 
     @Override

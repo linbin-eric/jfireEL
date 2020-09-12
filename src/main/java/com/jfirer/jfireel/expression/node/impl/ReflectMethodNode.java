@@ -1,7 +1,6 @@
 package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.node.MethodNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
@@ -9,16 +8,14 @@ import com.jfirer.jfireel.expression.token.ValueResult;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class ReflectMethodNode implements MethodNode
+public class ReflectMethodNode extends AbstractMethodNode
 {
-    private final    CalculateNode   beanNode;
-    private final    String          methodName;
-    private volatile Method          method;
-    private volatile Class<?>        beanType;
-    protected final  boolean         recognizeEveryTime;
-    private          CalculateNode[] argsNodes;
-    private ConvertType[] convertTypes;
-    private TokenType     type;
+    protected final  boolean       recognizeEveryTime;
+    private final    CalculateNode beanNode;
+    private final    String        methodName;
+    private volatile Method        method;
+    private volatile Class<?>      beanType;
+    private          ConvertType[] convertTypes;
 
     public ReflectMethodNode(String literals, CalculateNode beanNode, boolean recognizeEveryTime)
     {
@@ -52,12 +49,6 @@ public class ReflectMethodNode implements MethodNode
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public TokenType type()
-    {
-        return type;
     }
 
     @Override
@@ -155,12 +146,6 @@ public class ReflectMethodNode implements MethodNode
             }
             return method;
         }
-    }
-
-    public void setArgsNodes(CalculateNode[] argsNodes)
-    {
-        this.argsNodes = argsNodes;
-        type = TokenType.METHOD_RESULT;
     }
 
     @Override

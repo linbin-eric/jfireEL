@@ -6,10 +6,10 @@ public class CharType
      * 输入结束符.
      */
     public static final byte EOI = 0x1A;
-    
+
     /**
      * 判断是否为空格.
-     * 
+     *
      * @param ch 待判断的字符
      * @return 是否为空格
      */
@@ -17,7 +17,7 @@ public class CharType
     {
         return ch == ' ';
     }
-    
+
     /**
      * 判断是否输入结束.
      *
@@ -28,7 +28,7 @@ public class CharType
     {
         return ch == 0x1A;
     }
-    
+
     /**
      * 判断是否为字母.
      *
@@ -39,7 +39,7 @@ public class CharType
     {
         return ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z';
     }
-    
+
     /**
      * 判断是否为数字.
      *
@@ -50,7 +50,7 @@ public class CharType
     {
         return ch >= '0' && ch <= '9';
     }
-    
+
     /**
      * 判断是否为符号.
      *
@@ -72,7 +72,6 @@ public class CharType
                 || '|' == ch //
                 || '?' == ch//
                 || ':' == ch //
-        ;
+                ;
     }
-    
 }

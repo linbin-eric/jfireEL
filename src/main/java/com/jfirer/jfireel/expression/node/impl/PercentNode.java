@@ -1,8 +1,9 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.number.PercentUtil;
+
+import java.util.Map;
 
 public class PercentNode extends OperatorResultNode
 {
@@ -10,7 +11,7 @@ public class PercentNode extends OperatorResultNode
     {
         super(Operator.PERCENT);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -26,5 +27,4 @@ public class PercentNode extends OperatorResultNode
         }
         return PercentUtil.calculate((Number) leftValue, (Number) rightValue);
     }
-
 }

@@ -7,6 +7,21 @@ import java.util.Map;
 
 public abstract class TestSupport
 {
+    public    Map<String, Object> vars = new HashMap<String, Object>();
+    protected Person              person;
+    protected Home                home;
+
+    @Before
+    public void before()
+    {
+        home = new Home();
+        person = new Person();
+        person.age = 14;
+        home.person = person;
+        vars.put("person", person);
+        vars.put("home", home);
+    }
+
     public static class Home
     {
         public Person person;
@@ -50,20 +65,5 @@ public abstract class TestSupport
         {
             return age;
         }
-    }
-
-    protected Person              person;
-    protected Home                home;
-    public    Map<String, Object> vars = new HashMap<String, Object>();
-
-    @Before
-    public void before()
-    {
-        home = new Home();
-        person = new Person();
-        person.age = 14;
-        home.person = person;
-        vars.put("person", person);
-        vars.put("home", home);
     }
 }

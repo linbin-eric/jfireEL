@@ -1,6 +1,5 @@
 package com.jfirer.jfireel.template.parser.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.exception.IllegalFormatException;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.template.ScanMode;
@@ -10,9 +9,11 @@ import com.jfirer.jfireel.template.execution.impl.ExpressionExecution;
 import com.jfirer.jfireel.template.parser.Invoker;
 import com.jfirer.jfireel.template.parser.Parser;
 
+import java.util.Deque;
+
 public class ExpressionParser extends Parser
 {
-    
+
     @Override
     public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache, Invoker next)
     {
@@ -26,7 +27,7 @@ public class ExpressionParser extends Parser
         }
         extractLiterals(cache, executions);
         offset += 2;
-        int start = offset;
+        int start  = offset;
         int length = sentence.length();
         while (getChar(offset, sentence) != '}' && offset < length)
         {
@@ -40,5 +41,4 @@ public class ExpressionParser extends Parser
         executions.push(execution);
         return offset + 1;
     }
-    
 }
