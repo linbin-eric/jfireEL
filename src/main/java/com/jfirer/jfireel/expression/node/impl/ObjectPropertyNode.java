@@ -6,6 +6,7 @@ import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.baseutil.StringUtil;
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.baseutil.reflect.ValueAccessor;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -52,7 +53,13 @@ public class ObjectPropertyNode implements CalculateNode
     @Override
     public TokenType type()
     {
-        return Token.PROPERTY;
+        return TokenType.PROPERTY;
+    }
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
     }
 
     protected final ValueAccessor getValueAccessor(Object value)

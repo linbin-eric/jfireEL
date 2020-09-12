@@ -1,21 +1,23 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import java.util.Deque;
+
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.NumberNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.Operator;
+import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.CharType;
 
 public class NumberParser extends NodeParser
 {
-    
+
     private boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
     {
         if ('-' == getChar(offset, el))
         {
             // 这种情况下，-是一个操作符
-            if (nodes.peek() != null && nodes.peek().type() instanceof Operator == false)
+            if (nodes.peek() != null && nodes.peek().type() != TokenType.OPERATOR)
             {
                 return false;
             }
@@ -38,7 +40,7 @@ public class NumberParser extends NodeParser
             return false;
         }
     }
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -46,8 +48,8 @@ public class NumberParser extends NodeParser
         {
             return next.parse(el, offset, nodes, function);
         }
-        int index = offset;
-        char c = getChar(offset, el);
+        int  index = offset;
+        char c     = getChar(offset, el);
         if (c == '-')
         {
             offset += 1;
@@ -69,5 +71,4 @@ public class NumberParser extends NodeParser
         nodes.push(new NumberNode(literals));
         return offset;
     }
-    
 }

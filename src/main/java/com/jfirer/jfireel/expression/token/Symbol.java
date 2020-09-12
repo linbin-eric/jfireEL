@@ -3,7 +3,7 @@ package com.jfirer.jfireel.expression.token;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Symbol implements TokenType
+public enum Symbol implements Token
 {
     LEFT_PAREN("("), //
     RIGHT_PAREN(")"), //

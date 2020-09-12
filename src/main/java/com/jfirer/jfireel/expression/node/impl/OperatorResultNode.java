@@ -4,6 +4,7 @@ import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 public abstract class OperatorResultNode implements CalculateNode
 {
@@ -29,9 +30,15 @@ public abstract class OperatorResultNode implements CalculateNode
     @Override
     public TokenType type()
     {
-        return Token.OPERATOR_RESULT;
+        return TokenType.OPERATOR_RESULT;
     }
-    
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
+    }
+
     public String literals()
     {
         return leftOperand.literals() + type.getLiterals() + rightOperand.literals();

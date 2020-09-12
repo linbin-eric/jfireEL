@@ -1,16 +1,17 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import java.util.Deque;
+
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.KeywordNode;
 import com.jfirer.jfireel.expression.node.impl.VariableNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.DefaultKeyWord;
+import com.jfirer.jfireel.expression.token.KeyWord;
 import com.jfirer.jfireel.expression.util.CharType;
 
 public class IdentifierParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -20,10 +21,10 @@ public class IdentifierParser extends NodeParser
         }
         return parseIdentifier(el, offset, nodes);
     }
-    
+
     private int parseIdentifier(String el, int offset, Deque<CalculateNode> nodes)
     {
-        int length = 0;
+        int  length = 0;
         char c;
         while (CharType.isAlphabet(c = getChar(length + offset, el)) || CharType.isDigital(c))
         {
@@ -31,7 +32,7 @@ public class IdentifierParser extends NodeParser
         }
         String literals = el.substring(offset, offset + length);
         offset += length;
-        if (DefaultKeyWord.getDefaultKeyWord(literals) != null)
+        if (KeyWord.getKeyWord(literals) != null)
         {
             nodes.push(new KeywordNode(literals));
         }
@@ -41,5 +42,4 @@ public class IdentifierParser extends NodeParser
         }
         return offset;
     }
-    
 }

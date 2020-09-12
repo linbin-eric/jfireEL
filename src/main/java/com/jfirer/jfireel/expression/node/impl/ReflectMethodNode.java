@@ -4,6 +4,7 @@ import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.MethodNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -17,12 +18,12 @@ public class ReflectMethodNode implements MethodNode
     protected final  boolean         recognizeEveryTime;
     private          CalculateNode[] argsNodes;
     private ConvertType[] convertTypes;
-    private Token         type;
+    private TokenType     type;
 
     public ReflectMethodNode(String literals, CalculateNode beanNode, boolean recognizeEveryTime)
     {
         methodName = literals;
-        type = Token.METHOD;
+        type = TokenType.METHOD;
         this.beanNode = beanNode;
         this.recognizeEveryTime = recognizeEveryTime;
     }
@@ -57,6 +58,12 @@ public class ReflectMethodNode implements MethodNode
     public TokenType type()
     {
         return type;
+    }
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
     }
 
     private Method getMethod(Object value, Object[] args)
@@ -153,7 +160,7 @@ public class ReflectMethodNode implements MethodNode
     public void setArgsNodes(CalculateNode[] argsNodes)
     {
         this.argsNodes = argsNodes;
-        type = Token.METHOD_RESULT;
+        type = TokenType.METHOD_RESULT;
     }
 
     @Override

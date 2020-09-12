@@ -2,36 +2,38 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import java.util.List;
 import java.util.Map;
+
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 public class BracketNode implements CalculateNode
 {
     private CalculateNode beanNode;
     private CalculateNode valueNode;
     private ValueType     type;
-    
+
     enum ValueType
     {
         STRING, NUMBER, RUNTIME
     }
-    
+
     /**
      * 代表[]的节点
-     * 
-     * @param beanNode 元素节点
+     *
+     * @param beanNode  元素节点
      * @param valueNode [] 内置的节点
      */
     public BracketNode(CalculateNode beanNode, CalculateNode valueNode)
     {
         this.beanNode = beanNode;
         this.valueNode = valueNode;
-        if (valueNode.type() == Token.STRING)
+        if (valueNode.type() == TokenType.STRING)
         {
             type = ValueType.STRING;
         }
-        else if (valueNode.type() == Token.NUMBER)
+        else if (valueNode.type() == TokenType.NUMBER)
         {
             type = ValueType.NUMBER;
         }
@@ -40,7 +42,7 @@ public class BracketNode implements CalculateNode
             type = ValueType.RUNTIME;
         }
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -72,7 +74,7 @@ public class BracketNode implements CalculateNode
                 throw new UnsupportedOperationException();
         }
     }
-    
+
     private Object returnArrayOrListValue(Map<String, Object> variables, Number value)
     {
         Object beanValue = beanNode.calculate(variables);
@@ -125,30 +127,34 @@ public class BracketNode implements CalculateNode
             throw new IllegalArgumentException(beanValue.getClass().getName());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private Object returnMapValue(Map<String, Object> variables, String value)
     {
         return ((Map<String, Object>) beanNode.calculate(variables)).get(value);
     }
-    
+
     @Override
     public TokenType type()
     {
-        return Token.BRACKET;
+        return TokenType.BRACKET;
     }
-    
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
+    }
 
     @Override
     public String literals()
     {
         return beanNode.literals() + "[" + valueNode.literals() + "]";
     }
-    
+
     @Override
     public String toString()
     {
         return literals();
     }
-    
 }

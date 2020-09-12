@@ -4,6 +4,7 @@ import java.util.Map;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 public class StringNode implements CalculateNode
 {
@@ -23,9 +24,15 @@ public class StringNode implements CalculateNode
     @Override
     public TokenType type()
     {
-        return Token.STRING;
+        return TokenType.STRING;
     }
-    
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
+    }
+
     @Override
     public String literals()
     {

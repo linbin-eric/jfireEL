@@ -9,6 +9,7 @@ import com.jfirer.baseutil.smc.SmcHelper;
 import com.jfirer.baseutil.smc.compiler.CompileHelper;
 import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -28,13 +29,13 @@ public class CompileObjectMethodNode implements MethodNode
     private volatile     Invoker         invoker;
     private volatile     Class<?>        beanType;
     protected final      boolean         recognizeEveryTime;
-    private CalculateNode[] argsNodes;
-    private Token           type;
+    private              CalculateNode[] argsNodes;
+    private              TokenType       type;
 
     public CompileObjectMethodNode(String literals, CalculateNode beanNode, boolean recognizeEveryTime)
     {
         methodName = literals;
-        type = Token.METHOD;
+        type = TokenType.METHOD;
         this.beanNode = beanNode;
         this.recognizeEveryTime = recognizeEveryTime;
     }
@@ -68,6 +69,12 @@ public class CompileObjectMethodNode implements MethodNode
     public TokenType type()
     {
         return type;
+    }
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
     }
 
     private Invoker getMethod(Object value, Object[] args)
@@ -249,7 +256,7 @@ public class CompileObjectMethodNode implements MethodNode
     public void setArgsNodes(CalculateNode[] argsNodes)
     {
         this.argsNodes = argsNodes;
-        type = Token.METHOD_RESULT;
+        type = TokenType.METHOD_RESULT;
     }
 
     @Override

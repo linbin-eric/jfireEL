@@ -1,28 +1,16 @@
 package com.jfirer.jfireel.expression.util;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.jfirer.baseutil.StringUtil;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.QuestionNode;
-import com.jfirer.jfireel.expression.node.impl.DivisionNode;
-import com.jfirer.jfireel.expression.node.impl.DoubleAmpNode;
-import com.jfirer.jfireel.expression.node.impl.DoubleBarNode;
-import com.jfirer.jfireel.expression.node.impl.EqualNode;
-import com.jfirer.jfireel.expression.node.impl.GtEqNode;
-import com.jfirer.jfireel.expression.node.impl.GtNode;
-import com.jfirer.jfireel.expression.node.impl.LtEqNode;
-import com.jfirer.jfireel.expression.node.impl.LtNode;
-import com.jfirer.jfireel.expression.node.impl.MinusNode;
-import com.jfirer.jfireel.expression.node.impl.MutliNode;
-import com.jfirer.jfireel.expression.node.impl.NotEqualNode;
-import com.jfirer.jfireel.expression.node.impl.OperatorResultNode;
-import com.jfirer.jfireel.expression.node.impl.PercentNode;
-import com.jfirer.jfireel.expression.node.impl.PlusNode;
-import com.jfirer.jfireel.expression.node.impl.QuestionNodeImpl;
+import com.jfirer.jfireel.expression.node.impl.*;
 import com.jfirer.jfireel.expression.token.Operator;
-import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
-import com.jfirer.baseutil.StringUtil;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.jfirer.jfireel.expression.token.Operator.MULTI;
 
 public class OperatorResultUtil
 {
@@ -37,7 +25,7 @@ public class OperatorResultUtil
         else if (list.size() == 3)
         {
             // 第二个node是操作符
-            if (Operator.class.isAssignableFrom(list.get(1).type().getClass()))
+            if (list.get(1).type() == TokenType.OPERATOR)
             {
                 return buildOperatorResultNode(list.get(0), list.get(1), list.get(2), function);
             }
@@ -51,14 +39,14 @@ public class OperatorResultUtil
         else if (list.size() >= 5)
         {
             // 优先操作乘法，除法，取余
-            for (int i = 0; i < list.size();)
+            for (int i = 0; i < list.size(); )
             {
-                TokenType type = list.get(i).type();
-                if (type == Operator.MULTI || type == Operator.DIVISION || type == Operator.PERCENT)
+                CalculateNode calculateNode = list.get(i);
+                if (calculateNode.token() == MULTI || calculateNode.token() == Operator.DIVISION || calculateNode.token() == Operator.PERCENT)
                 {
                     if (i > 0 && list.size() > i + 1//
-                            && Operator.isOperator(list.get(i - 1).type()) == false//
-                            && Operator.isOperator(list.get(i + 1).type()) == false//
+                            && list.get(i - 1).type() != TokenType.OPERATOR//
+                            && list.get(i + 1).type() != TokenType.OPERATOR//
                     )
                     {
                         CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1), function);
@@ -78,10 +66,10 @@ public class OperatorResultUtil
                     i++;
                 }
             }
-            for (int i = 0; i < list.size();)
+            for (int i = 0; i < list.size(); )
             {
                 TokenType type = list.get(i).type();
-                if (type == Operator.QUESTION)
+                if (list.get(i).token() == Operator.QUESTION)
                 {
                     if (i == 0)
                     {
@@ -94,14 +82,14 @@ public class OperatorResultUtil
                     list.remove(i - 1);
                     list.add(i - 1, buildQuestionNode(pred));
                 }
-                else if (type == Operator.COLON)
+                else if (list.get(i).token() == Operator.COLON)
                 {
                     list.remove(i);
-                    boolean find = false;
-                    List<CalculateNode> tmp = new LinkedList<CalculateNode>();
+                    boolean             find = false;
+                    List<CalculateNode> tmp  = new LinkedList<CalculateNode>();
                     for (int index = i - 1; index >= 0; index--)
                     {
-                        if (list.get(index).type() != Token.QUESTION)
+                        if (list.get(index).type() != TokenType.QUESTION)
                         {
                             tmp.add(0, list.get(index));
                             list.remove(index);
@@ -130,11 +118,11 @@ public class OperatorResultUtil
                     ((QuestionNode) list.get(i - 1)).setRightNode(list.get(i));
                     list.remove(i);
                 }
-                else if (Operator.isOperator(type))
+                else if (type == TokenType.OPERATOR)
                 {
                     if (i > 0 && list.size() > i + 1//
-                            && Operator.isOperator(list.get(i - 1).type()) == false//
-                            && Operator.isOperator(list.get(i + 1).type()) == false//
+                            && list.get(i - 1).type() != TokenType.OPERATOR//
+                            && list.get(i + 1).type() != TokenType.OPERATOR//
                     )
                     {
                         CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1), function);
@@ -165,11 +153,11 @@ public class OperatorResultUtil
             throw new IllegalArgumentException(el.substring(0, offset));
         }
     }
-    
+
     private static CalculateNode buildOperatorResultNode(CalculateNode leftNode, CalculateNode operatorNode, CalculateNode rightNode, int function)
     {
         OperatorResultNode resultNode = null;
-        switch ((Operator) operatorNode.type())
+        switch ((Operator)operatorNode.token())
         {
             case PLUS:
                 resultNode = new PlusNode();
@@ -211,13 +199,13 @@ public class OperatorResultUtil
                 resultNode = new DoubleBarNode();
                 break;
             default:
-                throw new UnsupportedOperationException(((Operator) operatorNode.type()).toString());
+                throw new UnsupportedOperationException(operatorNode.token().toString());
         }
         resultNode.setLeftOperand(leftNode);
         resultNode.setRightOperand(rightNode);
         return resultNode;
     }
-    
+
     private static CalculateNode buildQuestionNode(CalculateNode conditionNode)
     {
         QuestionNode questionNode = new QuestionNodeImpl();

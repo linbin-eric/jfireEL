@@ -4,7 +4,7 @@ import java.util.Deque;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.TypeNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.Token;
+import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.CharType;
 
 public class TypeParser extends NodeParser
@@ -37,11 +37,11 @@ public class TypeParser extends NodeParser
             Class<?> type = Class.forName(literals);
             if (Enum.class.isAssignableFrom(type))
             {
-                nodes.push(new TypeNode(type, Token.TYPE_ENUM));
+                nodes.push(new TypeNode(type, TokenType.TYPE_ENUM));
             }
             else
             {
-                nodes.push(new TypeNode(type, Token.TYPE));
+                nodes.push(new TypeNode(type, TokenType.TYPE));
             }
         }
         catch (Exception e)

@@ -4,6 +4,7 @@ import java.util.Map;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 public class KeywordNode implements CalculateNode
 {
@@ -38,9 +39,15 @@ public class KeywordNode implements CalculateNode
     @Override
     public TokenType type()
     {
-        return Token.CONSTANT;
+        return TokenType.CONSTANT;
     }
-    
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
+    }
+
     @Override
     public String toString()
     {

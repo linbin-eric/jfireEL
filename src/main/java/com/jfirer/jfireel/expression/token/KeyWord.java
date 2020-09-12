@@ -1,6 +1,24 @@
 package com.jfirer.jfireel.expression.token;
 
-public interface KeyWord extends TokenType
+import java.util.HashMap;
+import java.util.Map;
+
+public enum KeyWord implements Token
 {
-    
+    TRUE, FALSE, NULL;
+
+    private static Map<String, KeyWord> defaultKeeyWords = new HashMap<String, KeyWord>(128);
+
+    static
+    {
+        for (KeyWord each : KeyWord.values())
+        {
+            defaultKeeyWords.put(each.name().toLowerCase(), each);
+        }
+    }
+
+    public static KeyWord getKeyWord(String literals)
+    {
+        return defaultKeeyWords.get(literals.toLowerCase());
+    }
 }

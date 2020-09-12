@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public enum Operator implements TokenType
+public enum Operator implements Token
 {
     PLUS("+"), //
     MINUS("-"), //
@@ -52,7 +52,7 @@ public enum Operator implements TokenType
         return symbols.get(literals);
     }
     
-    public static boolean isOperator(TokenType type)
+    public static boolean isOperator(Token type)
     {
         return store.contains(type);
     }

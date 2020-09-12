@@ -5,6 +5,7 @@ import com.jfirer.jfireel.expression.node.MethodNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.baseutil.reflect.ReflectUtil;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,17 +18,17 @@ public class StaticObjectMethodNode implements MethodNode
     private          String          methodName;
     private          CalculateNode[] argsNodes;
     private ConvertType[] convertTypes;
-    private Token         type;
+    private TokenType     type;
 
     public StaticObjectMethodNode(String literals, CalculateNode beanNode)
     {
-        if (beanNode.type() != Token.TYPE)
+        if (beanNode.type() != TokenType.TYPE)
         {
             throw new IllegalArgumentException("静态方法的前面一个节点必须是类型节点");
         }
         beanType = (Class<?>) beanNode.calculate(null);
         methodName = literals;
-        type = Token.METHOD;
+        type = TokenType.METHOD;
     }
 
     @Override
@@ -55,6 +56,12 @@ public class StaticObjectMethodNode implements MethodNode
     public TokenType type()
     {
         return type;
+    }
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
     }
 
     private Method getMethod(Object[] args)
@@ -101,7 +108,7 @@ public class StaticObjectMethodNode implements MethodNode
     public void setArgsNodes(CalculateNode[] argsNodes)
     {
         this.argsNodes = argsNodes;
-        type = Token.METHOD_RESULT;
+        type = TokenType.METHOD_RESULT;
     }
 
     @Override

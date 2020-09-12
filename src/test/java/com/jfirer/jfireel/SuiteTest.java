@@ -3,7 +3,7 @@ package com.jfirer.jfireel;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
-@SuiteClasses({ PlusTest.class, //
+@SuiteClasses({PlusTest.class, //
         PropertyTest.class, //
         MethodTest.class, //
         MinusTest.class, //
@@ -12,11 +12,12 @@ import org.junit.runners.Suite.SuiteClasses;
         CompareTest.class, //
         TypeTest.class, //
         EnumTest.class, //
+        DoubleAmpTest.class,//
         TemplateTest.class, //
         QuestionTest.class//
 })
 @RunWith(value = org.junit.runners.Suite.class)
 public class SuiteTest
 {
-    
+
 }

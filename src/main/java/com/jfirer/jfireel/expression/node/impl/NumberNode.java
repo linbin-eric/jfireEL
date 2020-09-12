@@ -1,14 +1,16 @@
 package com.jfirer.jfireel.expression.node.impl;
 
 import java.util.Map;
+
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 public class NumberNode implements CalculateNode
 {
     private Number value;
-    
+
     public NumberNode(String literals)
     {
         if (literals.indexOf('.') > -1)
@@ -31,26 +33,31 @@ public class NumberNode implements CalculateNode
             }
         }
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
         return value;
     }
-    
+
     @Override
     public TokenType type()
     {
-        return Token.NUMBER;
+        return TokenType.NUMBER;
     }
-    
+
+    @Override
+    public Token token()
+    {
+        return ValueResult.RESULT;
+    }
 
     @Override
     public String literals()
     {
         return value.toString();
     }
-    
+
     @Override
     public String toString()
     {
