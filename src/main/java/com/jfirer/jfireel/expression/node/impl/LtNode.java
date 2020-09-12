@@ -1,17 +1,18 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.number.LtUtil;
 
+import java.util.Map;
+
 public class LtNode extends OperatorResultNode
 {
-    
+
     public LtNode()
     {
         super(Operator.LT);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -27,5 +28,4 @@ public class LtNode extends OperatorResultNode
         }
         return LtUtil.calculate((Number) leftValue, (Number) rightValue);
     }
-    
 }

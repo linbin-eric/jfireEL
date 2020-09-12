@@ -1,14 +1,14 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.BracketNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.Symbol;
 import com.jfirer.jfireel.expression.util.OperatorResultUtil;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 public class RightBracketParser extends NodeParser
 {
@@ -24,7 +24,7 @@ public class RightBracketParser extends NodeParser
         CalculateNode       pred;
         while ((pred = nodes.pollFirst()) != null)
         {
-            if (pred.type() != TokenType.SYMBOL)
+            if (pred.token() != Symbol.LEFT_BRACKET)
             {
                 list.add(0, pred);
             }

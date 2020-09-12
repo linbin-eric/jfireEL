@@ -1,26 +1,27 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
+import java.util.Map;
+
 public class StringNode implements CalculateNode
 {
-    private String literals;
-    
+    private final String literals;
+
     public StringNode(String literals)
     {
         this.literals = literals;
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
         return literals;
     }
-    
+
     @Override
     public TokenType type()
     {
@@ -38,11 +39,10 @@ public class StringNode implements CalculateNode
     {
         return '\'' + literals + "'";
     }
-    
+
     @Override
     public String toString()
     {
         return literals();
     }
-    
 }

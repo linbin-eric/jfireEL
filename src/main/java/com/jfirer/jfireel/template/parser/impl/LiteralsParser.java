@@ -10,7 +10,7 @@ import java.util.Deque;
 
 public class LiteralsParser extends Parser
 {
-    
+
     @Override
     public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache, Invoker next)
     {
@@ -22,5 +22,4 @@ public class LiteralsParser extends Parser
         cache.append(getChar(offset, sentence));
         return offset + 1;
     }
-    
 }

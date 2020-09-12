@@ -1,13 +1,13 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
-
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.KeywordNode;
 import com.jfirer.jfireel.expression.node.impl.VariableNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.KeyWord;
 import com.jfirer.jfireel.expression.util.CharType;
+
+import java.util.Deque;
 
 public class IdentifierParser extends NodeParser
 {

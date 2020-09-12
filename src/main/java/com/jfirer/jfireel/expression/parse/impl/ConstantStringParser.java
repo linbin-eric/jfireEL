@@ -1,14 +1,15 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.exception.IllegalFormatException;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.StringNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 
+import java.util.Deque;
+
 public class ConstantStringParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -32,5 +33,4 @@ public class ConstantStringParser extends NodeParser
         offset += 1;
         return offset;
     }
-    
 }

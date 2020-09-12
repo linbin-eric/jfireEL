@@ -11,9 +11,9 @@ public enum Symbol implements Token
     RIGHT_BRACKET("]"), //
     COMMA(",")//
     ;
-    
-    private static Map<String, Symbol> symbols = new HashMap<String, Symbol>(128);
-    
+
+    private static final Map<String, Symbol> symbols = new HashMap<String, Symbol>(128);
+
     static
     {
         for (Symbol each : symbols.values())
@@ -21,17 +21,17 @@ public enum Symbol implements Token
             symbols.put(each.getLiterals(), each);
         }
     }
-    
-    private Symbol(String literals)
+
+    private final String literals;
+
+    Symbol(String literals)
     {
         this.literals = literals;
     }
-    
-    private final String literals;
-    
+
     /**
      * 通过字面量查找词法符号.
-     * 
+     *
      * @param literals 字面量
      * @return 词法符号
      */
@@ -39,7 +39,7 @@ public enum Symbol implements Token
     {
         return symbols.get(literals);
     }
-    
+
     public String getLiterals()
     {
         return literals;

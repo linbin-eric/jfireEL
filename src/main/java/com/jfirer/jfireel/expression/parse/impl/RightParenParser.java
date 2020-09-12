@@ -1,16 +1,15 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.MethodNode;
-import com.jfirer.jfireel.expression.node.impl.SymBolNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.Symbol;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.OperatorResultUtil;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 public class RightParenParser extends NodeParser
 {
@@ -22,13 +21,13 @@ public class RightParenParser extends NodeParser
         {
             return next.parse(el, offset, nodes, function);
         }
-        List<CalculateNode> list = new LinkedList<CalculateNode>();
-        CalculateNode       pred;
+        Deque<CalculateNode> deque = new LinkedList<CalculateNode>();
+        CalculateNode        pred;
         while ((pred = nodes.pollFirst()) != null)
         {
-            if ((pred.type() != TokenType.SYMBOL || ((SymBolNode) pred).symbol() != Symbol.LEFT_PAREN) && pred.type() != TokenType.METHOD)
+            if (pred.type() != TokenType.METHOD && pred.token() != Symbol.LEFT_PAREN)
             {
-                list.add(0, pred);
+                deque.addFirst(pred);
             }
             else
             {
@@ -41,25 +40,23 @@ public class RightParenParser extends NodeParser
         }
         if (pred.type() == TokenType.METHOD)
         {
-            MethodNode          methodNode = (MethodNode) pred;
-            List<CalculateNode> argsNodes  = new LinkedList<CalculateNode>();
-            for (int i = 0; i < list.size(); )
-            {
-                if (list.get(i).type() == TokenType.SYMBOL && ((SymBolNode) list.get(i)).symbol()==Symbol.COMMA)
+            MethodNode          methodNode  = (MethodNode) pred;
+            List<CalculateNode> argsNodes   = new LinkedList<CalculateNode>();
+            int                 finalOffset = offset;
+            LinkedList<CalculateNode> leftDeque = deque.stream().collect(() -> new LinkedList<CalculateNode>(), (tmpDeque, node) -> {
+                if (node.token() == Symbol.COMMA)
                 {
-                    list.remove(i);
-                    argsNodes.add(OperatorResultUtil.aggregate(list.subList(0, i), el, offset));
-                    list.remove(0);
-                    i = 0;
+                    argsNodes.add(OperatorResultUtil.aggregate(tmpDeque, el, finalOffset));
+                    tmpDeque.clear();
                 }
                 else
                 {
-                    i++;
+                    tmpDeque.addLast(node);
                 }
-            }
-            if (list.isEmpty() == false)
+            }, (deque1, deque2) -> {});
+            if (leftDeque.isEmpty() == false)
             {
-                argsNodes.add(OperatorResultUtil.aggregate(list, el, offset));
+                argsNodes.add(OperatorResultUtil.aggregate(leftDeque, el, offset));
             }
             methodNode.setArgsNodes(argsNodes.toArray(new CalculateNode[argsNodes.size()]));
             offset += 1;
@@ -68,7 +65,7 @@ public class RightParenParser extends NodeParser
         }
         else
         {
-            nodes.push(OperatorResultUtil.aggregate(list, el, offset));
+            nodes.push(OperatorResultUtil.aggregate(((LinkedList) deque), el, offset));
             offset += 1;
             return offset;
         }

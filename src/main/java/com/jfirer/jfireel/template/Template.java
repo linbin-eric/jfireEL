@@ -1,39 +1,31 @@
 package com.jfirer.jfireel.template;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Map;
 import com.jfirer.jfireel.exception.IllegalFormatException;
 import com.jfirer.jfireel.template.execution.Execution;
 import com.jfirer.jfireel.template.execution.impl.StringExecution;
 import com.jfirer.jfireel.template.parser.Invoker;
 import com.jfirer.jfireel.template.parser.Parser;
-import com.jfirer.jfireel.template.parser.impl.ElseParser;
-import com.jfirer.jfireel.template.parser.impl.EndBraceParser;
-import com.jfirer.jfireel.template.parser.impl.ExecutionBeginParser;
-import com.jfirer.jfireel.template.parser.impl.ExecutionEndParser;
-import com.jfirer.jfireel.template.parser.impl.ExpressionParser;
-import com.jfirer.jfireel.template.parser.impl.ForEachParser;
-import com.jfirer.jfireel.template.parser.impl.IfParser;
-import com.jfirer.jfireel.template.parser.impl.LiteralsParser;
+import com.jfirer.jfireel.template.parser.impl.*;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class Template
 {
-    private static final ThreadLocal<StringBuilder> LOCAL      = new ThreadLocal<StringBuilder>() {
-                                                                 @Override
-                                                                 protected StringBuilder initialValue()
-                                                                 {
-                                                                     return new StringBuilder();
-                                                                 };
-                                                             };
-    private              Deque<Execution>           executions = new LinkedList<Execution>();
-    private              Execution[]                runtimeExecutions;
-    private              ScanMode                   mode       = ScanMode.LITERALS;
-    private              Invoker                    head       = DEFAULT_HEAD;
+    private static final ThreadLocal<StringBuilder> LOCAL      = new ThreadLocal<StringBuilder>()
+    {
+        @Override
+        protected StringBuilder initialValue()
+        {
+            return new StringBuilder();
+        }
+    };
     private static final Invoker                    DEFAULT_HEAD;
+
     static
     {
-        Parser[] parsers = new Parser[] { //
+        Parser[] parsers = new Parser[]{ //
                 new ExecutionBeginParser(), //
                 new ExecutionEndParser(), //
                 new IfParser(), //
@@ -42,10 +34,10 @@ public class Template
                 new EndBraceParser(), //
                 new ExpressionParser(), //
                 new LiteralsParser(), //
-        
         };
-        Invoker pred = new Invoker() {
-            
+        Invoker pred = new Invoker()
+        {
+
             @Override
             public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache)
             {
@@ -54,10 +46,11 @@ public class Template
         };
         for (int i = parsers.length - 1; i > -1; i--)
         {
-            final Parser parser = parsers[i];
-            final Invoker next = pred;
-            Invoker invoker = new Invoker() {
-                
+            final Parser  parser = parsers[i];
+            final Invoker next   = pred;
+            Invoker invoker = new Invoker()
+            {
+
                 @Override
                 public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache)
                 {
@@ -68,22 +61,17 @@ public class Template
         }
         DEFAULT_HEAD = pred;
     }
-    
-    public ScanMode getMode()
-    {
-        return mode;
-    }
-    
-    public void setMode(ScanMode mode)
-    {
-        this.mode = mode;
-    }
-    
+
+    private       Deque<Execution> executions = new LinkedList<Execution>();
+    private final Execution[]      runtimeExecutions;
+    private       ScanMode         mode = ScanMode.LITERALS;
+    private final Invoker  head = DEFAULT_HEAD;
+
     private Template(String sentence)
     {
-        StringBuilder cache = new StringBuilder();
-        int offset = 0;
-        int length = sentence.length();
+        StringBuilder cache  = new StringBuilder();
+        int           offset = 0;
+        int           length = sentence.length();
         mode = ScanMode.LITERALS;
         while (offset < length)
         {
@@ -108,7 +96,22 @@ public class Template
         executions = null;
         mode = null;
     }
-    
+
+    public static Template parse(String sentence)
+    {
+        return new Template(sentence);
+    }
+
+    public ScanMode getMode()
+    {
+        return mode;
+    }
+
+    public void setMode(ScanMode mode)
+    {
+        this.mode = mode;
+    }
+
     public String render(Map<String, Object> variables)
     {
         StringBuilder cache = LOCAL.get();
@@ -119,10 +122,5 @@ public class Template
         String result = cache.toString();
         cache.setLength(0);
         return result;
-    }
-    
-    public static Template parse(String sentence)
-    {
-        return new Template(sentence);
     }
 }

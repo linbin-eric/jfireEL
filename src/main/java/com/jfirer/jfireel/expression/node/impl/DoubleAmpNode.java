@@ -1,7 +1,10 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
+
+import java.util.Map;
+
+import static com.jfirer.jfireel.expression.util.OperatorResultUtil.trueOfFalse;
 
 public class DoubleAmpNode extends OperatorResultNode
 {
@@ -9,26 +12,13 @@ public class DoubleAmpNode extends OperatorResultNode
     {
         super(Operator.DOUBLE_AMP);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
-        Object leftValue = leftOperand.calculate(variables);
-        if (leftValue == null)
-        {
-            return null;
-        }
-        if (((Boolean) leftValue) == false)
-        {
-            return false;
-        }
-        Object rightValue = rightOperand.calculate(variables);
-        if (rightValue == null)
-        {
-            return null;
-        }
-        return (rightValue);
+        return trueOfFalse(leftOperand.calculate(variables)) != false && trueOfFalse(rightOperand.calculate(variables)) != false;
     }
+
     @Override
     public String toString()
     {

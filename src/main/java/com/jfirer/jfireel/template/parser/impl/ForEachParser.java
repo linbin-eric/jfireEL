@@ -1,6 +1,5 @@
 package com.jfirer.jfireel.template.parser.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.exception.IllegalFormatException;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.util.CharType;
@@ -11,9 +10,11 @@ import com.jfirer.jfireel.template.execution.impl.ForEachExecution;
 import com.jfirer.jfireel.template.parser.Invoker;
 import com.jfirer.jfireel.template.parser.Parser;
 
+import java.util.Deque;
+
 public class ForEachParser extends Parser
 {
-    
+
     @Override
     public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache, Invoker next)
     {
@@ -68,5 +69,4 @@ public class ForEachParser extends Parser
         offset = findMethodBodyBegin(sentence, offset);
         return offset;
     }
-    
 }

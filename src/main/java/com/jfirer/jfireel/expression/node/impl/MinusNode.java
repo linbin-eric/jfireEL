@@ -1,8 +1,9 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.Map;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.number.MinusUtil;
+
+import java.util.Map;
 
 public class MinusNode extends OperatorResultNode
 {
@@ -10,7 +11,7 @@ public class MinusNode extends OperatorResultNode
     {
         super(Operator.MINUS);
     }
-    
+
     @Override
     public Object calculate(Map<String, Object> variables)
     {
@@ -26,5 +27,4 @@ public class MinusNode extends OperatorResultNode
         }
         return MinusUtil.calculate((Number) leftValue, (Number) rightValue);
     }
-    
 }

@@ -1,6 +1,5 @@
 package com.jfirer.jfireel.template.parser.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.exception.IllegalFormatException;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.template.ScanMode;
@@ -11,9 +10,11 @@ import com.jfirer.jfireel.template.execution.impl.ElseIfExecution;
 import com.jfirer.jfireel.template.parser.Invoker;
 import com.jfirer.jfireel.template.parser.Parser;
 
+import java.util.Deque;
+
 public class ElseParser extends Parser
 {
-    
+
     @Override
     public int parse(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache, Invoker next)
     {
@@ -62,5 +63,4 @@ public class ElseParser extends Parser
             throw new IllegalFormatException("无法识别的语法内容", sentence.substring(0, offset));
         }
     }
-    
 }

@@ -1,12 +1,12 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 public class ClassPropertyNode implements CalculateNode
 {

@@ -1,23 +1,18 @@
 package com.jfirer.jfireel.expression.node.impl;
 
-import java.util.List;
-import java.util.Map;
-
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
+import java.util.List;
+import java.util.Map;
+
 public class BracketNode implements CalculateNode
 {
-    private CalculateNode beanNode;
-    private CalculateNode valueNode;
-    private ValueType     type;
-
-    enum ValueType
-    {
-        STRING, NUMBER, RUNTIME
-    }
+    private final CalculateNode beanNode;
+    private final CalculateNode valueNode;
+    private final ValueType     type;
 
     /**
      * 代表[]的节点
@@ -137,7 +132,7 @@ public class BracketNode implements CalculateNode
     @Override
     public TokenType type()
     {
-        return TokenType.BRACKET;
+        return TokenType.RESULT;
     }
 
     @Override
@@ -156,5 +151,10 @@ public class BracketNode implements CalculateNode
     public String toString()
     {
         return literals();
+    }
+
+    enum ValueType
+    {
+        STRING, NUMBER, RUNTIME
     }
 }

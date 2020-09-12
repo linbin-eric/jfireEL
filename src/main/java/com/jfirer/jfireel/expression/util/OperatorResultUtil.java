@@ -1,163 +1,117 @@
 package com.jfirer.jfireel.expression.util;
 
-import com.jfirer.baseutil.StringUtil;
+import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.QuestionNode;
 import com.jfirer.jfireel.expression.node.impl.*;
 import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.token.TokenType;
 
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.jfirer.jfireel.expression.token.Operator.MULTI;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public class OperatorResultUtil
 {
     public static CalculateNode aggregate(List<CalculateNode> list, String el, int offset)
     {
-        // 只有一个参数的情况
-        if (list.size() == 1)
+        checkNonSymbol(list, el, offset);
+        Deque<CalculateNode> result = processNonZeroPriorityOperator(list, el, offset);
+        result = processQuestionOperator(result);
+        if (result.size() != 1)
         {
-            return list.get(0);
+            throw new IllegalStateException();
         }
-        // 只有一个操作符
-        else if (list.size() == 3)
+        return result.getFirst();
+    }
+
+    private static Deque<CalculateNode> processQuestionOperator(Deque<CalculateNode> result)
+    {
+        if (result.stream().filter(node -> node.type() == TokenType.OPERATOR).filter(node -> ((Operator) node.token()).getPriority() == 0).findAny().isPresent())
         {
-            // 第二个node是操作符
-            if (list.get(1).type() == TokenType.OPERATOR)
-            {
-                return buildOperatorResultNode(list.get(0), list.get(1), list.get(2));
-            }
-            // 否则是非法情况
-            else
-            {
-                throw new IllegalArgumentException(el.substring(0, offset));
-            }
-        }
-        // 具备至少2个操作符
-        else if (list.size() >= 5)
-        {
-            // 优先操作乘法，除法，取余
-            for (int i = 0; i < list.size(); )
-            {
-                CalculateNode calculateNode = list.get(i);
-                if (calculateNode.token() == MULTI || calculateNode.token() == Operator.DIVISION || calculateNode.token() == Operator.PERCENT)
+            result = result.stream().collect(() -> new LinkedList<CalculateNode>(), (stack, node) -> {
+                if (stack.isEmpty() == false && stack.peekLast().token() == Operator.COLON)
                 {
-                    if (i > 0 && list.size() > i + 1//
-                            && list.get(i - 1).type() != TokenType.OPERATOR//
-                            && list.get(i + 1).type() != TokenType.OPERATOR//
-                    )
+                    stack.pollLast();//弹出 ":"
+                    CalculateNode leftValue = stack.pollLast();
+                    if (stack.pollLast().token() != Operator.QUESTION)
                     {
-                        CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
-                        list.remove(i - 1);
-                        list.remove(i - 1);
-                        list.remove(i - 1);
-                        // 执行3次消除操作符和2个操作数
-                        list.add(i - 1, resultNode);
+                        throw new IllegalStateException();
                     }
-                    else
-                    {
-                        throw new IllegalArgumentException(el.substring(0, offset));
-                    }
+                    CalculateNode conditionNode = stack.pollLast();
+                    QuestionNode  questionNode  = new QuestionNodeImpl();
+                    questionNode.setConditionNode(conditionNode);
+                    questionNode.setLeftNode(leftValue);
+                    questionNode.setRightNode(node);
+                    stack.addLast(questionNode);
                 }
                 else
                 {
-                    i++;
+                    stack.addLast(node);
                 }
-            }
-            for (int i = 0; i < list.size(); )
+            }, (stack1, stack2) -> stack1.addAll(stack2));
+        }
+        return result;
+    }
+
+    private static Deque<CalculateNode> processNonZeroPriorityOperator(List<CalculateNode> list, String el, int offset)
+    {
+        Deque<CalculateNode> result = new LinkedList<>(list);
+        for (int i = 5; i >= 1; i--)
+        {
+            int priority = i;
+            if (result.stream().filter(node -> node.type() == TokenType.OPERATOR).filter(node -> (((Operator) node.token()).getPriority() == priority)).findAny().isPresent())
             {
-                TokenType type = list.get(i).type();
-                if (list.get(i).token() == Operator.QUESTION)
-                {
-                    if (i == 0)
+                Supplier<Deque<CalculateNode>> supplier = () -> new LinkedList<>();
+                BiConsumer<Deque<CalculateNode>, CalculateNode> accumulator = (stack, node) -> {
+                    if (stack.isEmpty() != true && stack.peekLast().type() == TokenType.OPERATOR && ((Operator) stack.peekLast().token()).getPriority() == priority)
                     {
-                        throw new IllegalArgumentException(StringUtil.format("?操作符前面应该有操作数,问题区间:{}", el.substring(0, offset)));
-                    }
-                    CalculateNode pred = list.get(i - 1);
-                    // 删除前置节点
-                    list.remove(i - 1);
-                    // 删除？节点
-                    list.remove(i - 1);
-                    list.add(i - 1, buildQuestionNode(pred));
-                }
-                else if (list.get(i).token() == Operator.COLON)
-                {
-                    list.remove(i);
-                    boolean             find = false;
-                    List<CalculateNode> tmp  = new LinkedList<CalculateNode>();
-                    for (int index = i - 1; index >= 0; index--)
-                    {
-                        if (list.get(index).type() != TokenType.QUESTION)
+                        CalculateNode operator = stack.pollLast();
+                        CalculateNode leftNode = stack.pollLast();
+                        if (leftNode.type() != TokenType.OPERATOR && node.type() != TokenType.OPERATOR)
                         {
-                            tmp.add(0, list.get(index));
-                            list.remove(index);
+                            stack.addLast(buildOperatorResultNode(leftNode, operator, node));
                         }
                         else
                         {
-                            if (tmp.size() == 0)
-                            {
-                                throw new IllegalArgumentException("?和:之间缺少有效表达式,问题区间:" + el.substring(0, offset));
-                            }
-                            find = true;
-                            CalculateNode leftNode = aggregate(tmp, el, offset);
-                            ((QuestionNode) list.get(index)).setLeftNode(leftNode);
-                            i = index + 1;
-                            break;
+                            throw new IllegalArgumentException(el.substring(0, offset));
                         }
-                    }
-                    if (find == false)
-                    {
-                        throw new IllegalArgumentException("不是有效的三元表达式：" + el.substring(0, offset));
-                    }
-                    if (i >= list.size())
-                    {
-                        throw new IllegalArgumentException("不是有效的三元表达式：" + el.substring(0, offset));
-                    }
-                    ((QuestionNode) list.get(i - 1)).setRightNode(list.get(i));
-                    list.remove(i);
-                }
-                else if (type == TokenType.OPERATOR)
-                {
-                    if (i > 0 && list.size() > i + 1//
-                            && list.get(i - 1).type() != TokenType.OPERATOR//
-                            && list.get(i + 1).type() != TokenType.OPERATOR//
-                    )
-                    {
-                        CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
-                        list.remove(i - 1);
-                        list.remove(i - 1);
-                        list.remove(i - 1);
-                        // 执行3次消除操作符和2个操作数
-                        list.add(i - 1, resultNode);
                     }
                     else
                     {
-                        throw new IllegalArgumentException(el.substring(0, offset));
+                        stack.addLast(node);
                     }
-                }
-                else
-                {
-                    i++;
-                }
+                };
+                BiConsumer<Deque<CalculateNode>, Deque<CalculateNode>> combiner = (stack1, stack2) -> stack1.addAll(stack2);
+                result = result.stream().collect(supplier, accumulator, combiner);
             }
-            if (list.size() != 1)
-            {
-                throw new IllegalArgumentException(el.substring(0, offset));
-            }
-            return list.get(0);
         }
-        else
+        return result;
+    }
+
+    /**
+     * 在进行聚合的token流中不应该存在符号
+     *
+     * @param list
+     * @param el
+     * @param offset
+     */
+    private static void checkNonSymbol(List<CalculateNode> list, String el, int offset)
+    {
+        Optional<CalculateNode> any = list.stream().filter(node -> node.type() == TokenType.SYMBOL).findAny();
+        if (any.isPresent())
         {
-            throw new IllegalArgumentException(el.substring(0, offset));
+            ReflectUtil.throwException(new IllegalArgumentException(el.substring(0, offset)));
         }
     }
 
     private static CalculateNode buildOperatorResultNode(CalculateNode leftNode, CalculateNode operatorNode, CalculateNode rightNode)
     {
         OperatorResultNode resultNode = null;
-        switch ((Operator)operatorNode.token())
+        switch ((Operator) operatorNode.token())
         {
             case PLUS:
                 resultNode = new PlusNode();
@@ -206,10 +160,16 @@ public class OperatorResultUtil
         return resultNode;
     }
 
-    private static CalculateNode buildQuestionNode(CalculateNode conditionNode)
+    public static boolean trueOfFalse(Object value)
     {
-        QuestionNode questionNode = new QuestionNodeImpl();
-        questionNode.setConditionNode(conditionNode);
-        return questionNode;
+        if (value == null)
+        {
+            return false;
+        }
+        if (value instanceof Boolean && ((Boolean) value).booleanValue() == false)
+        {
+            return false;
+        }
+        else return !(value instanceof Number) || !(((Number) value).floatValue() < 0);
     }
 }

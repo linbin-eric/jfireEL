@@ -8,14 +8,14 @@ import java.util.Map;
 
 public class ElseIfExecution implements WithBodyExecution
 {
-    private Expression  expression;
-    private Execution[] body;
-    
+    private final Expression  expression;
+    private       Execution[] body;
+
     public ElseIfExecution(Expression expression)
     {
         this.expression = expression;
     }
-    
+
     @Override
     public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
@@ -32,18 +32,18 @@ public class ElseIfExecution implements WithBodyExecution
             return false;
         }
     }
-    
+
     @Override
     public void check()
     {
     }
-    
+
     @Override
     public void setBody(Execution... executions)
     {
         body = executions;
     }
-    
+
     @Override
     public boolean isBodyNotSet()
     {

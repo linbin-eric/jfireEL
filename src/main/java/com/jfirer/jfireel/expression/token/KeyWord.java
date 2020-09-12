@@ -7,7 +7,7 @@ public enum KeyWord implements Token
 {
     TRUE, FALSE, NULL;
 
-    private static Map<String, KeyWord> defaultKeeyWords = new HashMap<String, KeyWord>(128);
+    private static final Map<String, KeyWord> defaultKeeyWords = new HashMap<String, KeyWord>(128);
 
     static
     {

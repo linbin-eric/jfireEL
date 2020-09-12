@@ -1,14 +1,15 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.SymBolNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.Symbol;
 
+import java.util.Deque;
+
 public class CommaParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -20,5 +21,4 @@ public class CommaParser extends NodeParser
         offset += 1;
         return offset;
     }
-    
 }

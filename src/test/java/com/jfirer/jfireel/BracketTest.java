@@ -1,25 +1,27 @@
 package com.jfirer.jfireel;
 
-import static org.junit.Assert.assertEquals;
+import com.jfirer.jfireel.expression.Expression;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import com.jfirer.jfireel.expression.Expression;
+
+import static org.junit.Assert.assertEquals;
 
 public class BracketTest
 {
     @Test
     public void test()
     {
-        int[] array = new int[] { 1, 2, 3, 4 };
-        Map<String, Object> vars = new HashMap<String, Object>();
+        int[]               array = new int[]{1, 2, 3, 4};
+        Map<String, Object> vars  = new HashMap<String, Object>();
         vars.put("array", array);
         Expression lexer = Expression.parse("array[2]");
-        assertEquals(3, lexer.calculate(vars));
+        assertEquals(3, ((Integer) lexer.calculate(vars)).intValue());
     }
-    
+
     @Test
     public void test2()
     {
@@ -33,7 +35,7 @@ public class BracketTest
         Expression lexer2 = Expression.parse("map[age]");
         assertEquals("12", lexer2.calculate(vars));
     }
-    
+
     @Test
     public void test3()
     {
@@ -45,7 +47,7 @@ public class BracketTest
         Expression lexer = Expression.parse("list[1]");
         assertEquals("13", lexer.calculate(vars));
     }
-    
+
     @Test
     public void test4()
     {

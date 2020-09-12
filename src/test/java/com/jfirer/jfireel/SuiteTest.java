@@ -12,7 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
         CompareTest.class, //
         TypeTest.class, //
         EnumTest.class, //
-        DoubleAmpTest.class,//
+        DoubleAmpAndBarTest.class,//
         TemplateTest.class, //
         QuestionTest.class//
 })

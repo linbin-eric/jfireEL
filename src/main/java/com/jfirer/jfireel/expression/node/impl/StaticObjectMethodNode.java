@@ -1,24 +1,21 @@
 package com.jfirer.jfireel.expression.node.impl;
 
+import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.node.MethodNode;
 import com.jfirer.jfireel.expression.token.Token;
 import com.jfirer.jfireel.expression.token.TokenType;
-import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
-public class StaticObjectMethodNode implements MethodNode
+public class StaticObjectMethodNode extends AbstractMethodNode
 {
-    private final    Class<?>        beanType;
-    private volatile Method          method;
-    private          String          methodName;
-    private          CalculateNode[] argsNodes;
-    private ConvertType[] convertTypes;
-    private TokenType     type;
+    private final    Class<?>      beanType;
+    private volatile Method        method;
+    private final    String        methodName;
+    private          ConvertType[] convertTypes;
 
     public StaticObjectMethodNode(String literals, CalculateNode beanNode)
     {
@@ -28,7 +25,6 @@ public class StaticObjectMethodNode implements MethodNode
         }
         beanType = (Class<?>) beanNode.calculate(null);
         methodName = literals;
-        type = TokenType.METHOD;
     }
 
     @Override
@@ -55,7 +51,7 @@ public class StaticObjectMethodNode implements MethodNode
     @Override
     public TokenType type()
     {
-        return type;
+        return TokenType.METHOD;
     }
 
     @Override
@@ -103,12 +99,6 @@ public class StaticObjectMethodNode implements MethodNode
             }
         }
         return method;
-    }
-
-    public void setArgsNodes(CalculateNode[] argsNodes)
-    {
-        this.argsNodes = argsNodes;
-        type = TokenType.METHOD_RESULT;
     }
 
     @Override

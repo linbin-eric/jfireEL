@@ -61,11 +61,7 @@ public abstract class Parser
     {
         char c1 = getChar(offset, sentence);
         char c2 = getChar(offset + 1, sentence);
-        if (c1 != '<' || c2 != '%')
-        {
-            return false;
-        }
-        return true;
+        return c1 == '<' && c2 == '%';
     }
 
     /**

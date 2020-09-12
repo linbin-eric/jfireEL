@@ -9,16 +9,16 @@ import java.util.Map;
 
 public class ForEachExecution implements WithBodyExecution
 {
-    private Execution[] body;
-    private String      itemName;
-    private Expression  collection;
-    
+    private       Execution[] body;
+    private final String      itemName;
+    private final Expression  collection;
+
     public ForEachExecution(String itemName, Expression collection)
     {
         this.itemName = itemName;
         this.collection = collection;
     }
-    
+
     @Override
     public boolean execute(Map<String, Object> variables, StringBuilder cache)
     {
@@ -41,20 +41,19 @@ public class ForEachExecution implements WithBodyExecution
         }
         return true;
     }
-    
+
     @Override
     public void check()
     {
         // TODO Auto-generated method stub
-        
     }
-    
+
     @Override
     public void setBody(Execution... executions)
     {
         body = executions;
     }
-    
+
     @Override
     public boolean isBodyNotSet()
     {

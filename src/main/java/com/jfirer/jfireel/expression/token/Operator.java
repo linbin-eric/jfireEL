@@ -7,24 +7,24 @@ import java.util.Set;
 
 public enum Operator implements Token
 {
-    PLUS("+"), //
-    MINUS("-"), //
-    MULTI("*"), //
-    DIVISION("/"), //
-    QUESTION("?"), //
-    EQ("=="), //
-    GT(">"), //
-    LT("<"), //
-    PERCENT("%"), //
-    COLON(":"), //
-    LT_EQ("<="), //
-    GT_EQ(">="), //
-    NOT_EQ("!="), //
-    DOUBLE_AMP("&&"), //
-    DOUBLE_BAR("||"), //
+    QUESTION("?", 0), //
+    COLON(":", 0), //
+    DOUBLE_AMP("&&", 1), //
+    DOUBLE_BAR("||", 1), //
+    EQ("==", 2), //
+    GT(">", 2), //
+    LT("<", 2), //
+    LT_EQ("<=", 2), //
+    GT_EQ(">=", 2), //
+    NOT_EQ("!=", 2), //
+    PLUS("+", 3), //
+    MINUS("-", 3), //
+    MULTI("*", 5), //
+    DIVISION("/", 5), //
+    PERCENT("%", 5), //
     ;
-    private static Map<String, Operator> symbols = new HashMap<String, Operator>(128);
-    private static Set<Operator>         store   = new HashSet<Operator>();
+    private static final Map<String, Operator> symbols = new HashMap<String, Operator>(128);
+    private static final Set<Operator>         store   = new HashSet<Operator>();
 
     static
     {
@@ -35,14 +35,13 @@ public enum Operator implements Token
         }
     }
 
-    private Operator(String literals)
+    private final String literals;
+    private final int    priority;
+    Operator(String literals, int priority)
     {
         this.literals = literals;
-//        this.priority = priority;
+        this.priority = priority;
     }
-
-    private final String literals;
-//    private final int    priority;
 
     /**
      * 通过字面量查找词法符号.
@@ -55,13 +54,13 @@ public enum Operator implements Token
         return symbols.get(literals);
     }
 
-    public static boolean isOperator(Token type)
-    {
-        return store.contains(type);
-    }
-
     public String getLiterals()
     {
         return literals;
+    }
+
+    public int getPriority()
+    {
+        return priority;
     }
 }

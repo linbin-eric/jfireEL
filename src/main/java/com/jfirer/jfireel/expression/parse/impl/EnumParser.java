@@ -1,15 +1,16 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import java.util.Deque;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.EnumNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.CharType;
 
+import java.util.Deque;
+
 public class EnumParser extends NodeParser
 {
-    
+
     @Override
     public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
     {
@@ -29,11 +30,10 @@ public class EnumParser extends NodeParser
         {
             throw new IllegalArgumentException("非法的el表达式，检查:" + el.substring(origin, offset));
         }
-        String literals = el.substring(origin + 1, offset);
+        String        literals = el.substring(origin + 1, offset);
         CalculateNode beanNode = nodes.pop();
-        CalculateNode current = new EnumNode(beanNode, literals);
+        CalculateNode current  = new EnumNode(beanNode, literals);
         nodes.push(current);
         return offset;
     }
-    
 }

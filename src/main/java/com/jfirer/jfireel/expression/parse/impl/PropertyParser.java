@@ -1,8 +1,8 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.node.impl.ObjectPropertyNode;
 import com.jfirer.jfireel.expression.node.impl.ClassPropertyNode;
+import com.jfirer.jfireel.expression.node.impl.ObjectPropertyNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
 import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.CharType;

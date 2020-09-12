@@ -26,7 +26,7 @@ public class MutliUtil
             throw new UnsupportedOperationException(b.getClass().getName() + "不支持该类型的加操作");
         }
     }
-    
+
     private static Object calculate(long arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
@@ -50,7 +50,7 @@ public class MutliUtil
             throw new UnsupportedOperationException(b.getClass().getName() + "不支持该类型的加操作");
         }
     }
-    
+
     private static Object calculate(float arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
@@ -74,7 +74,7 @@ public class MutliUtil
             throw new UnsupportedOperationException(b.getClass().getName() + "不支持该类型的加操作");
         }
     }
-    
+
     private static Object calculate(double arg0, Number b)
     {
         if (b instanceof Integer || b instanceof Short || b instanceof Byte)
@@ -98,7 +98,7 @@ public class MutliUtil
             throw new UnsupportedOperationException(b.getClass().getName() + "不支持该类型的加操作");
         }
     }
-    
+
     public static Object calculate(Number a, Number b)
     {
         if (a instanceof Integer || a instanceof Short || a instanceof Byte)

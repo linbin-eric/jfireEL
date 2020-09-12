@@ -20,10 +20,20 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class PropertyBenchMark
 {
-    Expression lexer   = Expression.parse("home.person.age",Functional.build().setRecognizeEveryTime(false).toFunction());
-    Expression lexer_2 = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
-    protected TestSupport.Person  person;
     public    Map<String, Object> vars = new HashMap<String, Object>();
+    protected TestSupport.Person  person;
+    Expression lexer   = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
+    Expression lexer_2 = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
+
+    public static void main(String[] args) throws RunnerException
+    {
+        Options opt = new OptionsBuilder().include(PropertyBenchMark.class.getSimpleName()).warmupIterations(2)//
+                .warmupTime(TimeValue.seconds(3)).forks(2)//
+                .measurementIterations(5)//
+                .measurementTime(TimeValue.seconds(2))//
+                .timeUnit(TimeUnit.SECONDS).build();
+        new Runner(opt).run();
+    }
 
     @Setup
     public void before()
@@ -43,15 +53,5 @@ public class PropertyBenchMark
     public void testUnsafe()
     {
         lexer_2.calculate(vars);
-    }
-
-    public static void main(String[] args) throws RunnerException
-    {
-        Options opt = new OptionsBuilder().include(PropertyBenchMark.class.getSimpleName()).warmupIterations(2)//
-                .warmupTime(TimeValue.seconds(3)).forks(2)//
-                .measurementIterations(5)//
-                .measurementTime(TimeValue.seconds(2))//
-                .timeUnit(TimeUnit.SECONDS).build();
-        new Runner(opt).run();
     }
 }
