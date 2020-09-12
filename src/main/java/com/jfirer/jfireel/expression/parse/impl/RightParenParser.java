@@ -48,7 +48,7 @@ public class RightParenParser extends NodeParser
                 if (list.get(i).type() == TokenType.SYMBOL && ((SymBolNode) list.get(i)).symbol()==Symbol.COMMA)
                 {
                     list.remove(i);
-                    argsNodes.add(OperatorResultUtil.aggregate(list.subList(0, i), function, el, offset));
+                    argsNodes.add(OperatorResultUtil.aggregate(list.subList(0, i), el, offset));
                     list.remove(0);
                     i = 0;
                 }
@@ -59,7 +59,7 @@ public class RightParenParser extends NodeParser
             }
             if (list.isEmpty() == false)
             {
-                argsNodes.add(OperatorResultUtil.aggregate(list, function, el, offset));
+                argsNodes.add(OperatorResultUtil.aggregate(list, el, offset));
             }
             methodNode.setArgsNodes(argsNodes.toArray(new CalculateNode[argsNodes.size()]));
             offset += 1;
@@ -68,7 +68,7 @@ public class RightParenParser extends NodeParser
         }
         else
         {
-            nodes.push(OperatorResultUtil.aggregate(list, function, el, offset));
+            nodes.push(OperatorResultUtil.aggregate(list, el, offset));
             offset += 1;
             return offset;
         }

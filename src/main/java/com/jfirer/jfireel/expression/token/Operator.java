@@ -25,6 +25,7 @@ public enum Operator implements Token
     ;
     private static Map<String, Operator> symbols = new HashMap<String, Operator>(128);
     private static Set<Operator>         store   = new HashSet<Operator>();
+
     static
     {
         for (Operator each : Operator.values())
@@ -33,17 +34,19 @@ public enum Operator implements Token
             store.add(each);
         }
     }
-    
+
     private Operator(String literals)
     {
         this.literals = literals;
+//        this.priority = priority;
     }
-    
+
     private final String literals;
-    
+//    private final int    priority;
+
     /**
      * 通过字面量查找词法符号.
-     * 
+     *
      * @param literals 字面量
      * @return 词法符号
      */
@@ -51,12 +54,12 @@ public enum Operator implements Token
     {
         return symbols.get(literals);
     }
-    
+
     public static boolean isOperator(Token type)
     {
         return store.contains(type);
     }
-    
+
     public String getLiterals()
     {
         return literals;

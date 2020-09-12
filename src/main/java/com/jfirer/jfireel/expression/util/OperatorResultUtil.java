@@ -14,7 +14,7 @@ import static com.jfirer.jfireel.expression.token.Operator.MULTI;
 
 public class OperatorResultUtil
 {
-    public static CalculateNode aggregate(List<CalculateNode> list, int function, String el, int offset)
+    public static CalculateNode aggregate(List<CalculateNode> list, String el, int offset)
     {
         // 只有一个参数的情况
         if (list.size() == 1)
@@ -27,7 +27,7 @@ public class OperatorResultUtil
             // 第二个node是操作符
             if (list.get(1).type() == TokenType.OPERATOR)
             {
-                return buildOperatorResultNode(list.get(0), list.get(1), list.get(2), function);
+                return buildOperatorResultNode(list.get(0), list.get(1), list.get(2));
             }
             // 否则是非法情况
             else
@@ -49,7 +49,7 @@ public class OperatorResultUtil
                             && list.get(i + 1).type() != TokenType.OPERATOR//
                     )
                     {
-                        CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1), function);
+                        CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
                         list.remove(i - 1);
                         list.remove(i - 1);
                         list.remove(i - 1);
@@ -101,7 +101,7 @@ public class OperatorResultUtil
                                 throw new IllegalArgumentException("?和:之间缺少有效表达式,问题区间:" + el.substring(0, offset));
                             }
                             find = true;
-                            CalculateNode leftNode = aggregate(tmp, function, el, offset);
+                            CalculateNode leftNode = aggregate(tmp, el, offset);
                             ((QuestionNode) list.get(index)).setLeftNode(leftNode);
                             i = index + 1;
                             break;
@@ -125,7 +125,7 @@ public class OperatorResultUtil
                             && list.get(i + 1).type() != TokenType.OPERATOR//
                     )
                     {
-                        CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1), function);
+                        CalculateNode resultNode = buildOperatorResultNode(list.get(i - 1), list.get(i), list.get(i + 1));
                         list.remove(i - 1);
                         list.remove(i - 1);
                         list.remove(i - 1);
@@ -154,7 +154,7 @@ public class OperatorResultUtil
         }
     }
 
-    private static CalculateNode buildOperatorResultNode(CalculateNode leftNode, CalculateNode operatorNode, CalculateNode rightNode, int function)
+    private static CalculateNode buildOperatorResultNode(CalculateNode leftNode, CalculateNode operatorNode, CalculateNode rightNode)
     {
         OperatorResultNode resultNode = null;
         switch ((Operator)operatorNode.token())

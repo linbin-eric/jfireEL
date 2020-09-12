@@ -112,7 +112,7 @@ public class Expression
         {
             list.add(0, tmp);
         }
-        parseNode = OperatorResultUtil.aggregate(list, function, el, offset);
+        parseNode = OperatorResultUtil.aggregate(list, el, offset);
         nodes = null;
         el = null;
     }
