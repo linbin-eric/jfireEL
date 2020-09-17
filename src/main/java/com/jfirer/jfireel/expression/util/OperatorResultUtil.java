@@ -11,8 +11,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 public class OperatorResultUtil
 {
@@ -30,31 +28,33 @@ public class OperatorResultUtil
 
     private static Deque<CalculateNode> processQuestionOperator(Deque<CalculateNode> result)
     {
-        if (result.stream().filter(node -> node.type() == TokenType.OPERATOR).filter(node -> ((Operator) node.token()).getPriority() == 0).findAny().isPresent())
-        {
-            result = result.stream().collect(() -> new LinkedList<CalculateNode>(), (stack, node) -> {
-                if (stack.isEmpty() == false && stack.peekLast().token() == Operator.COLON)
+        Deque<CalculateNode> stack = new LinkedList<>();
+        result.stream().forEach(node -> {
+            if (stack.isEmpty())
+            {
+                stack.addLast(node);
+            }
+            else if (stack.peekLast().token() == Operator.COLON)
+            {
+                stack.pollLast();//弹出 ":"
+                CalculateNode leftValue = stack.pollLast();
+                if (stack.pollLast().token() != Operator.QUESTION)
                 {
-                    stack.pollLast();//弹出 ":"
-                    CalculateNode leftValue = stack.pollLast();
-                    if (stack.pollLast().token() != Operator.QUESTION)
-                    {
-                        throw new IllegalStateException();
-                    }
-                    CalculateNode conditionNode = stack.pollLast();
-                    QuestionNode  questionNode  = new QuestionNodeImpl();
-                    questionNode.setConditionNode(conditionNode);
-                    questionNode.setLeftNode(leftValue);
-                    questionNode.setRightNode(node);
-                    stack.addLast(questionNode);
+                    throw new IllegalStateException();
                 }
-                else
-                {
-                    stack.addLast(node);
-                }
-            }, (stack1, stack2) -> stack1.addAll(stack2));
-        }
-        return result;
+                CalculateNode conditionNode = stack.pollLast();
+                QuestionNode  questionNode  = new QuestionNodeImpl();
+                questionNode.setConditionNode(conditionNode);
+                questionNode.setLeftNode(leftValue);
+                questionNode.setRightNode(node);
+                stack.addLast(questionNode);
+            }
+            else
+            {
+                stack.addLast(node);
+            }
+        });
+        return stack;
     }
 
     private static Deque<CalculateNode> processNonZeroPriorityOperator(List<CalculateNode> list, String el, int offset)
@@ -62,32 +62,32 @@ public class OperatorResultUtil
         Deque<CalculateNode> result = new LinkedList<>(list);
         for (int i = 5; i >= 1; i--)
         {
-            int priority = i;
-            if (result.stream().filter(node -> node.type() == TokenType.OPERATOR).filter(node -> (((Operator) node.token()).getPriority() == priority)).findAny().isPresent())
-            {
-                Supplier<Deque<CalculateNode>> supplier = () -> new LinkedList<>();
-                BiConsumer<Deque<CalculateNode>, CalculateNode> accumulator = (stack, node) -> {
-                    if (stack.isEmpty() != true && stack.peekLast().type() == TokenType.OPERATOR && ((Operator) stack.peekLast().token()).getPriority() == priority)
+            int                  priority = i;
+            Deque<CalculateNode> stack    = new LinkedList<>();
+            result.stream().forEach(node -> {
+                if (stack.isEmpty())
+                {
+                    stack.addLast(node);
+                }
+                else if (stack.peekLast().type() == TokenType.OPERATOR && ((Operator) stack.peekLast().token()).getPriority() == priority)
+                {
+                    CalculateNode operator = stack.pollLast();
+                    CalculateNode leftNode = stack.pollLast();
+                    if (leftNode.type() != TokenType.OPERATOR && node.type() != TokenType.OPERATOR)
                     {
-                        CalculateNode operator = stack.pollLast();
-                        CalculateNode leftNode = stack.pollLast();
-                        if (leftNode.type() != TokenType.OPERATOR && node.type() != TokenType.OPERATOR)
-                        {
-                            stack.addLast(buildOperatorResultNode(leftNode, operator, node));
-                        }
-                        else
-                        {
-                            throw new IllegalArgumentException(el.substring(0, offset));
-                        }
+                        stack.addLast(buildOperatorResultNode(leftNode, operator, node));
                     }
                     else
                     {
-                        stack.addLast(node);
+                        throw new IllegalArgumentException(el.substring(0, offset));
                     }
-                };
-                BiConsumer<Deque<CalculateNode>, Deque<CalculateNode>> combiner = (stack1, stack2) -> stack1.addAll(stack2);
-                result = result.stream().collect(supplier, accumulator, combiner);
-            }
+                }
+                else
+                {
+                    stack.addLast(node);
+                }
+            });
+            result = stack;
         }
         return result;
     }
@@ -170,6 +170,9 @@ public class OperatorResultUtil
         {
             return false;
         }
-        else return !(value instanceof Number) || !(((Number) value).floatValue() < 0);
+        else
+        {
+            return !(value instanceof Number) || !(((Number) value).floatValue() < 0);
+        }
     }
 }
