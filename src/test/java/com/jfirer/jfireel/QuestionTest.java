@@ -24,4 +24,11 @@ public class QuestionTest
         assertEquals(2, ((Number) Expression.parse("map['b']?3:1*2").calculate(vars)).intValue());
         assertEquals(4, ((Number) Expression.parse("(map['b']?3:2)*2").calculate(vars)).intValue());
     }
+
+    @Test
+    public void test2()
+    {
+        Expression el = Expression.parse("2>1?1-2>0?-1:-2:3");
+        assertEquals(-2, ((Number) el.calculate()).intValue());
+    }
 }

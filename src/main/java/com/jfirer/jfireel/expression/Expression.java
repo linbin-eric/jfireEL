@@ -31,28 +31,12 @@ public class Expression
                 new IdentifierParser(), //
                 new OperatorParser()//
         };
-        Invoker pred = new Invoker()
-        {
-
-            @Override
-            public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
-            {
-                return offset;
-            }
-        };
+        Invoker pred = (el, offset, nodes, function) -> offset;
         for (int i = parsers.length - 1; i > -1; i--)
         {
             final NodeParser parser = parsers[i];
             final Invoker    next   = pred;
-            Invoker invoker = new Invoker()
-            {
-
-                @Override
-                public int parse(String el, int offset, Deque<CalculateNode> nodes, int function)
-                {
-                    return parser.parse(el, offset, nodes, function, next);
-                }
-            };
+            Invoker invoker = (el, offset, nodes, function) -> parser.parse(el, offset, nodes, function, next);
             pred = invoker;
         }
         DEFAULT_HEAD = pred;
