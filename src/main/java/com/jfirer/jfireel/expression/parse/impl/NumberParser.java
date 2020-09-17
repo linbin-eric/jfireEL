@@ -3,7 +3,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.NumberNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.util.CharType;
 
 import java.util.Deque;
@@ -16,7 +16,7 @@ public class NumberParser extends NodeParser
         if ('-' == getChar(offset, el))
         {
             // 这种情况下，-是一个操作符
-            if (nodes.peek() != null && nodes.peek().type() != TokenType.OPERATOR)
+            if (nodes.peek() != null && Operator.isOperator(nodes.peek().token()) == false)
             {
                 return false;
             }
@@ -30,7 +30,10 @@ public class NumberParser extends NodeParser
                 throw new IllegalArgumentException("无法识别的-符号，不是负数也不是操作符,问题区间:" + el.substring(0, offset));
             }
         }
-        else return CharType.isDigital(getChar(offset, el));
+        else
+        {
+            return CharType.isDigital(getChar(offset, el));
+        }
     }
 
     @Override

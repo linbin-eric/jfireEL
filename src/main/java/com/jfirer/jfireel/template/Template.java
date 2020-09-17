@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class Template
 {
-    private static final ThreadLocal<StringBuilder> LOCAL      = new ThreadLocal<StringBuilder>()
+    private static final ThreadLocal<StringBuilder> LOCAL = new ThreadLocal<StringBuilder>()
     {
         @Override
         protected StringBuilder initialValue()
@@ -62,10 +62,10 @@ public class Template
         DEFAULT_HEAD = pred;
     }
 
-    private       Deque<Execution> executions = new LinkedList<Execution>();
     private final Execution[]      runtimeExecutions;
-    private       ScanMode         mode = ScanMode.LITERALS;
-    private final Invoker  head = DEFAULT_HEAD;
+    private final Invoker          head       = DEFAULT_HEAD;
+    private       Deque<Execution> executions = new LinkedList<Execution>();
+    private       ScanMode         mode       = ScanMode.LITERALS;
 
     private Template(String sentence)
     {

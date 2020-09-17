@@ -2,9 +2,8 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.QuestionNode;
-import com.jfirer.jfireel.expression.token.Operator;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.util.Map;
 
@@ -33,15 +32,9 @@ public class QuestionNodeImpl implements QuestionNode
     }
 
     @Override
-    public TokenType type()
-    {
-        return TokenType.QUESTION;
-    }
-
-    @Override
     public Token token()
     {
-        return Operator.QUESTION;
+        return ValueResult.OPERATOR_RESULT;
     }
 
     @Override

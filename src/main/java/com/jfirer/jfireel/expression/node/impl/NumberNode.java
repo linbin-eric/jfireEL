@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.util.Map;
@@ -41,15 +40,9 @@ public class NumberNode implements CalculateNode
     }
 
     @Override
-    public TokenType type()
-    {
-        return TokenType.NUMBER;
-    }
-
-    @Override
     public Token token()
     {
-        return ValueResult.RESULT;
+        return ValueResult.NUMBER;
     }
 
     @Override

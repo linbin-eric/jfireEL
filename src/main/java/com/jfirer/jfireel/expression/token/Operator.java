@@ -37,6 +37,7 @@ public enum Operator implements Token
 
     private final String literals;
     private final int    priority;
+
     Operator(String literals, int priority)
     {
         this.literals = literals;
@@ -52,6 +53,11 @@ public enum Operator implements Token
     public static Operator literalsOf(final String literals)
     {
         return symbols.get(literals);
+    }
+
+    public static boolean isOperator(Token token)
+    {
+        return token instanceof Operator;
     }
 
     public String getLiterals()

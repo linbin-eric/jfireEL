@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Field;
@@ -45,15 +44,9 @@ public class ClassPropertyNode implements CalculateNode
     }
 
     @Override
-    public TokenType type()
-    {
-        return TokenType.PROPERTY;
-    }
-
-    @Override
     public Token token()
     {
-        return ValueResult.RESULT;
+        return ValueResult.PROPERTY;
     }
 
     @Override

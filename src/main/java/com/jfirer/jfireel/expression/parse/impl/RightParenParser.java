@@ -3,8 +3,8 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.MethodNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
+import com.jfirer.jfireel.expression.token.Intermediate;
 import com.jfirer.jfireel.expression.token.Symbol;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.util.OperatorResultUtil;
 
 import java.util.Deque;
@@ -25,7 +25,7 @@ public class RightParenParser extends NodeParser
         CalculateNode        pred;
         while ((pred = nodes.pollFirst()) != null)
         {
-            if (pred.type() != TokenType.METHOD && pred.token() != Symbol.LEFT_PAREN)
+            if (pred.token() != Intermediate.METHOD && pred.token() != Symbol.LEFT_PAREN)
             {
                 deque.addFirst(pred);
             }
@@ -38,7 +38,7 @@ public class RightParenParser extends NodeParser
         {
             throw new IllegalArgumentException(el.substring(0, offset));
         }
-        if (pred.type() == TokenType.METHOD)
+        if (pred.token() == Intermediate.METHOD)
         {
             MethodNode          methodNode  = (MethodNode) pred;
             List<CalculateNode> argsNodes   = new LinkedList<CalculateNode>();

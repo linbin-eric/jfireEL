@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Expression
 {
-    private static final Invoker              DEFAULT_HEAD;
+    private static final Invoker DEFAULT_HEAD;
 
     static
     {
@@ -34,19 +34,19 @@ public class Expression
         Invoker pred = (el, offset, nodes, function) -> offset;
         for (int i = parsers.length - 1; i > -1; i--)
         {
-            final NodeParser parser = parsers[i];
-            final Invoker    next   = pred;
-            Invoker invoker = (el, offset, nodes, function) -> parser.parse(el, offset, nodes, function, next);
+            final NodeParser parser  = parsers[i];
+            final Invoker    next    = pred;
+            Invoker          invoker = (el, offset, nodes, function) -> parser.parse(el, offset, nodes, function, next);
             pred = invoker;
         }
         DEFAULT_HEAD = pred;
     }
 
-    private              CalculateNode        parseNode;
-    private              Deque<CalculateNode> nodes = new LinkedList<CalculateNode>();
-    private       String  el;
-    private final int     function;
-    private final Invoker head;
+    private final int                  function;
+    private final Invoker              head;
+    private       CalculateNode        parseNode;
+    private       Deque<CalculateNode> nodes = new LinkedList<CalculateNode>();
+    private       String               el;
 
     private Expression(String el, int function, Invoker head)
     {

@@ -3,7 +3,6 @@ package com.jfirer.jfireel.expression.node.impl;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Symbol;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 
 import java.util.Map;
 
@@ -25,18 +24,7 @@ public class SymBolNode implements CalculateNode
     }
 
     @Override
-    public TokenType type()
-    {
-        return TokenType.SYMBOL;
-    }
-
-    @Override
     public Token token()
-    {
-        return symbol;
-    }
-
-    public Symbol symbol()
     {
         return symbol;
     }

@@ -2,8 +2,6 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
@@ -13,13 +11,13 @@ import java.util.Map;
 public class StaticObjectMethodNode extends AbstractMethodNode
 {
     private final    Class<?>      beanType;
-    private volatile Method        method;
     private final    String        methodName;
+    private volatile Method        method;
     private          ConvertType[] convertTypes;
 
     public StaticObjectMethodNode(String literals, CalculateNode beanNode)
     {
-        if (beanNode.type() != TokenType.TYPE)
+        if (beanNode.token() != ValueResult.TYPE)
         {
             throw new IllegalArgumentException("静态方法的前面一个节点必须是类型节点");
         }
@@ -46,18 +44,6 @@ public class StaticObjectMethodNode extends AbstractMethodNode
             ReflectUtil.throwException(e);
             return null;
         }
-    }
-
-    @Override
-    public TokenType type()
-    {
-        return TokenType.METHOD;
-    }
-
-    @Override
-    public Token token()
-    {
-        return ValueResult.RESULT;
     }
 
     private Method getMethod(Object[] args)

@@ -5,7 +5,6 @@ import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.baseutil.reflect.ValueAccessor;
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Field;
@@ -13,10 +12,10 @@ import java.util.Map;
 
 public class ObjectPropertyNode implements CalculateNode
 {
+    private final    CalculateNode beanNode;
     protected        Class<?>      beanType;
     protected        String        propertyName;
     protected        boolean       recognizeEveryTime = true;
-    private final    CalculateNode beanNode;
     private volatile ValueAccessor valueAccessor;
 
     /**
@@ -51,15 +50,9 @@ public class ObjectPropertyNode implements CalculateNode
     }
 
     @Override
-    public TokenType type()
-    {
-        return TokenType.PROPERTY;
-    }
-
-    @Override
     public Token token()
     {
-        return ValueResult.RESULT;
+        return ValueResult.PROPERTY;
     }
 
     protected final ValueAccessor getValueAccessor(Object value)

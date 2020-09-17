@@ -2,20 +2,18 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
-import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.util.Map;
 
 public class TypeNode implements CalculateNode
 {
-    private final Class<?>  ckass;
-    private final TokenType type;
+    private final Class<?> ckass;
+    private final Token    token;
 
-    public TypeNode(Class<?> ckass, TokenType type)
+    public TypeNode(Class<?> ckass, Token token)
     {
         this.ckass = ckass;
-        this.type = type;
+        this.token = token;
     }
 
     @Override
@@ -25,15 +23,9 @@ public class TypeNode implements CalculateNode
     }
 
     @Override
-    public TokenType type()
-    {
-        return type;
-    }
-
-    @Override
     public Token token()
     {
-        return ValueResult.RESULT;
+        return token;
     }
 
     @Override

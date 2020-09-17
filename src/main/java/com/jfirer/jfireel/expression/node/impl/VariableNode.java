@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.util.Map;
@@ -20,12 +19,6 @@ public class VariableNode implements CalculateNode
     public Object calculate(Map<String, Object> variables)
     {
         return variables.get(literals);
-    }
-
-    @Override
-    public TokenType type()
-    {
-        return TokenType.VARIABLE;
     }
 
     @Override

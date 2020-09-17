@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
 import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.util.List;
@@ -24,11 +23,11 @@ public class BracketNode implements CalculateNode
     {
         this.beanNode = beanNode;
         this.valueNode = valueNode;
-        if (valueNode.type() == TokenType.STRING)
+        if (valueNode.token() == ValueResult.STRING)
         {
             type = ValueType.STRING;
         }
-        else if (valueNode.type() == TokenType.NUMBER)
+        else if (valueNode.token() == ValueResult.NUMBER)
         {
             type = ValueType.NUMBER;
         }
@@ -130,15 +129,9 @@ public class BracketNode implements CalculateNode
     }
 
     @Override
-    public TokenType type()
-    {
-        return TokenType.RESULT;
-    }
-
-    @Override
     public Token token()
     {
-        return ValueResult.RESULT;
+        return ValueResult.BRACKET;
     }
 
     @Override

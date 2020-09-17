@@ -1,9 +1,6 @@
 package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
-import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -20,7 +17,6 @@ public class ReflectMethodNode extends AbstractMethodNode
     public ReflectMethodNode(String literals, CalculateNode beanNode, boolean recognizeEveryTime)
     {
         methodName = literals;
-        type = TokenType.METHOD;
         this.beanNode = beanNode;
         this.recognizeEveryTime = recognizeEveryTime;
     }
@@ -49,12 +45,6 @@ public class ReflectMethodNode extends AbstractMethodNode
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Token token()
-    {
-        return ValueResult.RESULT;
     }
 
     private Method getMethod(Object value, Object[] args)

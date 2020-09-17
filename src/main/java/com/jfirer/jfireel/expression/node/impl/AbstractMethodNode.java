@@ -2,23 +2,25 @@ package com.jfirer.jfireel.expression.node.impl;
 
 import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.MethodNode;
-import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.Intermediate;
+import com.jfirer.jfireel.expression.token.Token;
+import com.jfirer.jfireel.expression.token.ValueResult;
 
 public abstract class AbstractMethodNode implements MethodNode
 {
-    protected TokenType       type = TokenType.METHOD;
     protected CalculateNode[] argsNodes;
+    protected Token           token = Intermediate.METHOD;
 
     @Override
     public void setArgsNodes(CalculateNode[] argsNodes)
     {
         this.argsNodes = argsNodes;
-        type = TokenType.RESULT;
+        token = ValueResult.METHOD;
     }
 
     @Override
-    public TokenType type()
+    public Token token()
     {
-        return type;
+        return token;
     }
 }

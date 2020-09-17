@@ -9,9 +9,9 @@ import java.util.Map;
 
 public class ForEachExecution implements WithBodyExecution
 {
-    private       Execution[] body;
     private final String      itemName;
     private final Expression  collection;
+    private       Execution[] body;
 
     public ForEachExecution(String itemName, Expression collection)
     {

@@ -6,9 +6,6 @@ import com.jfirer.baseutil.smc.compiler.CompileHelper;
 import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
 import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.token.Token;
-import com.jfirer.jfireel.expression.token.TokenType;
-import com.jfirer.jfireel.expression.token.ValueResult;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -23,6 +20,7 @@ public class CompileObjectMethodNode extends AbstractMethodNode
     private final        String        methodName;
     private volatile     Invoker       invoker;
     private volatile     Class<?>      beanType;
+
     public CompileObjectMethodNode(String literals, CalculateNode beanNode, boolean recognizeEveryTime)
     {
         methodName = literals;
@@ -53,18 +51,6 @@ public class CompileObjectMethodNode extends AbstractMethodNode
             ReflectUtil.throwException(e);
             return null;
         }
-    }
-
-    @Override
-    public TokenType type()
-    {
-        return type;
-    }
-
-    @Override
-    public Token token()
-    {
-        return ValueResult.RESULT;
     }
 
     private Invoker getMethod(Object value, Object[] args)

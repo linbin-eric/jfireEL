@@ -6,7 +6,7 @@ import com.jfirer.jfireel.expression.node.impl.CompileObjectMethodNode;
 import com.jfirer.jfireel.expression.node.impl.ReflectMethodNode;
 import com.jfirer.jfireel.expression.node.impl.StaticObjectMethodNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 import com.jfirer.jfireel.expression.util.CharType;
 import com.jfirer.jfireel.expression.util.Functions;
 
@@ -37,7 +37,7 @@ public class MethodParser extends NodeParser
         String        literals = el.substring(origin + 1, offset);
         CalculateNode beanNode = nodes.pop();
         MethodNode    methodNode;
-        if (beanNode.type() == TokenType.TYPE)
+        if (beanNode.token() == ValueResult.TYPE)
         {
             methodNode = new StaticObjectMethodNode(literals, beanNode);
         }

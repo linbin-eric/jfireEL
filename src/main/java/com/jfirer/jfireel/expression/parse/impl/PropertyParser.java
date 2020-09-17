@@ -4,7 +4,7 @@ import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.impl.ClassPropertyNode;
 import com.jfirer.jfireel.expression.node.impl.ObjectPropertyNode;
 import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.ValueResult;
 import com.jfirer.jfireel.expression.util.CharType;
 import com.jfirer.jfireel.expression.util.Functions;
 
@@ -18,7 +18,7 @@ public class PropertyParser extends NodeParser
     {
         // 如果是后一种情况，意味着此时应该是一个枚举值而不是属性
         if ('.' != getChar(offset, el)//
-                || (nodes.peek() != null && nodes.peek().type() == TokenType.TYPE_ENUM))
+                || (nodes.peek() != null && nodes.peek().token() == ValueResult.TYPE_ENUM))
         {
             return next.parse(el, offset, nodes, function);
         }
@@ -37,7 +37,7 @@ public class PropertyParser extends NodeParser
         String        literals = el.substring(origin + 1, offset);
         CalculateNode beanNode = nodes.pop();
         CalculateNode current;
-        if (beanNode.type() == TokenType.TYPE)
+        if (beanNode.token() == ValueResult.TYPE)
         {
             current = new ClassPropertyNode(literals, beanNode);
         }

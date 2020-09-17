@@ -5,7 +5,7 @@ import com.jfirer.jfireel.expression.node.CalculateNode;
 import com.jfirer.jfireel.expression.node.QuestionNode;
 import com.jfirer.jfireel.expression.node.impl.*;
 import com.jfirer.jfireel.expression.token.Operator;
-import com.jfirer.jfireel.expression.token.TokenType;
+import com.jfirer.jfireel.expression.token.Symbol;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -69,11 +69,11 @@ public class OperatorResultUtil
                 {
                     stack.addLast(node);
                 }
-                else if (stack.peekLast().type() == TokenType.OPERATOR && ((Operator) stack.peekLast().token()).getPriority() == priority)
+                else if (Operator.isOperator(stack.peekLast().token()) && ((Operator) stack.peekLast().token()).getPriority() == priority)
                 {
                     CalculateNode operator = stack.pollLast();
                     CalculateNode leftNode = stack.pollLast();
-                    if (leftNode.type() != TokenType.OPERATOR && node.type() != TokenType.OPERATOR)
+                    if (Operator.isOperator(leftNode.token()) == false && Operator.isOperator(node.token()) == false)
                     {
                         stack.addLast(buildOperatorResultNode(leftNode, operator, node));
                     }
@@ -101,7 +101,7 @@ public class OperatorResultUtil
      */
     private static void checkNonSymbol(List<CalculateNode> list, String el, int offset)
     {
-        Optional<CalculateNode> any = list.stream().filter(node -> node.type() == TokenType.SYMBOL).findAny();
+        Optional<CalculateNode> any = list.stream().filter(node -> Symbol.isSymbol(node.token())).findAny();
         if (any.isPresent())
         {
             ReflectUtil.throwException(new IllegalArgumentException(el.substring(0, offset)));

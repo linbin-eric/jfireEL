@@ -40,6 +40,11 @@ public enum Symbol implements Token
         return symbols.get(literals);
     }
 
+    public static boolean isSymbol(Token token)
+    {
+        return token instanceof Symbol;
+    }
+
     public String getLiterals()
     {
         return literals;

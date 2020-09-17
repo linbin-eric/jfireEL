@@ -11,10 +11,10 @@ import java.util.Map;
 public class IfExecution implements WithBodyExecution
 {
 
-    private final Expression  conditionLexer;
-    private       Execution[] body;
-    private       Execution       elseExecution;
+    private final Expression      conditionLexer;
     private final List<Execution> elseIfExecutions = new LinkedList<Execution>();
+    private       Execution[]     body;
+    private       Execution       elseExecution;
 
     public IfExecution(Expression conditionLexer)
     {
