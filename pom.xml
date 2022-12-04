@@ -4,15 +4,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jfirer</groupId>
     <artifactId>jfireEL</artifactId>
-    <version>1.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -40,15 +40,11 @@
             <email>eric@jfire.cn</email>
         </developer>
     </developers>
-    <properties>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>com.jfirer</groupId>
             <artifactId>baseutil</artifactId>
-            <version>1.0</version>
+            <version>1.1.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.ibeetl</groupId>
@@ -107,14 +103,14 @@
     </dependencies>
     <distributionManagement>
         <repository>
-            <id>releases</id>
-            <name>Nexus Releases Repository</name>
-            <url>${releasesurl}</url>
+            <id>nexus</id>
+            <name>nexus</name>
+            <url>http://homenas.club:49159/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>Nexus Snapshots Repository</name>
-            <url>${snapshoturl}</url>
+            <id>nexus-snapshot</id>
+            <name>nexus</name>
+            <url>http://homenas.club:49159/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <profiles>
