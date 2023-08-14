@@ -18,6 +18,18 @@ public class CharType
         return ch == ' ';
     }
 
+    public static boolean isIgnore(char c)
+    {
+        if (c == ' ' || c == '\r' || c == '\n' || c == '\t')
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     /**
      * 判断是否输入结束.
      *
@@ -60,18 +72,18 @@ public class CharType
     public static boolean isOperator(final char ch)
     {
         return '+' == ch //
-                || '-' == ch //
-                || '*' == ch //
-                || '/' == ch //
-                || '%' == ch //
-                || '=' == ch //
-                || '>' == ch //
-                || '<' == ch //
-                || '!' == ch//
-                || '&' == ch //
-                || '|' == ch //
-                || '?' == ch//
-                || ':' == ch //
+               || '-' == ch //
+               || '*' == ch //
+               || '/' == ch //
+               || '%' == ch //
+               || '=' == ch //
+               || '>' == ch //
+               || '<' == ch //
+               || '!' == ch//
+               || '&' == ch //
+               || '|' == ch //
+               || '?' == ch//
+               || ':' == ch //
                 ;
     }
 }

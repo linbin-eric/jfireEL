@@ -1,21 +1,55 @@
 package com.jfirer.jfireel.expression2;
 
+import com.jfirer.jfireel.expression2.parse.TokenParser;
+import com.jfirer.jfireel.expression2.parse.impl.*;
 import lombok.Data;
 
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 @Data
 public class ParseContext
 {
-    private       Deque<Operand>  operandStack  = new LinkedList<>();
-    private       Deque<Operator> operatorStack = new LinkedList<>();
-    private       Deque<Operand>  processStack  = new LinkedList<>();
-    private final String          el;
-    private       int             index;
+    private static TokenParser[] parsers = new TokenParser[]{
+            new SkipIgnoreToken(),//
+            new NumberParser(),//
+            new StaticClassParser(),//
+            new VariableParser(),//
+            new LiteralParser(),//
+    };
+    private        Deque<Operand>        operandStack    = new LinkedList<>();
+    private        Deque<Operator>       operatorStack   = new LinkedList<>();
+    private        Deque<Operand>        processStack    = new LinkedList<>();
+    private final  String                el;
+    private        int                   index;
+    private        Map<String, Class<?>> staticClassName = new HashMap<>();
 
     public ParseContext(String el)
     {
         this.el = el;
     }
+
+    public void parse()
+    {
+        int length = el.length();
+        while (index != length)
+        {
+            int oldVersionOfIndex = index;
+            for (TokenParser each : parsers)
+            {
+                if (each.parse(this))
+                {
+                    break;
+                }
+            }
+            if (oldVersionOfIndex == index)
+            {
+                throw new IllegalStateException("无法解析表达式，当前解析进度为:" + el.substring(0, oldVersionOfIndex));
+            }
+        }
+    }
 }
+
+
