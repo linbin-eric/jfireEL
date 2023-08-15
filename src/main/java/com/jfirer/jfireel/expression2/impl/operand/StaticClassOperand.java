@@ -6,18 +6,15 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class VariableOperand implements Operand
+public class StaticClassOperand implements Operand
 {
-    private final String variable;
+    private final Class<?> ckass;
 
-    public VariableOperand(String variable)
-    {
-        this.variable = variable;
-    }
+    public StaticClassOperand(Class<?> ckass) {this.ckass = ckass;}
 
     @Override
     public Object calculate(Map<String, Object> param)
     {
-        return param.get(variable);
+        return ckass;
     }
 }

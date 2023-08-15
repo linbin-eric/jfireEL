@@ -40,11 +40,76 @@ public class BasicOperatorParser implements TokenParser
                 }
                 else
                 {
-                    new BasicOperator(1, GeOperand::new).push(parseContext);
+                    new BasicOperator(1, GtOperand::new).push(parseContext);
                     parseContext.setIndex(index + 1);
                 }
                 return true;
             }
+            case '<' ->
+            {
+                if (el.charAt(index + 1) == '=')
+                {
+                    new BasicOperator(1, LeOperand::new).push(parseContext);
+                    parseContext.setIndex(index + 2);
+                }
+                else
+                {
+                    new BasicOperator(1, LtOperand::new).push(parseContext);
+                    parseContext.setIndex(index + 1);
+                }
+                return true;
+            }
+            case '=' ->
+            {
+                if (el.charAt(index + 1) == '=')
+                {
+                    new BasicOperator(1, EqOperand::new).push(parseContext);
+                    parseContext.setIndex(index + 2);
+                }
+                else
+                {
+                    throw new IllegalArgumentException("解析出现异常，当前解析位置:" + el.substring(0, index));
+                }
+                return true;
+            }
+            case '!' ->
+            {
+                if (el.charAt(index + 1) == '=')
+                {
+                    new BasicOperator(1, NotEqOperand::new).push(parseContext);
+                    parseContext.setIndex(index + 2);
+                }
+                else
+                {
+                    throw new IllegalArgumentException("解析出现异常，当前解析位置:" + el.substring(0, index));
+                }
+                return true;
+            }
+            case '&' ->
+            {
+                if (el.charAt(index + 1) == '&')
+                {
+                    new BasicOperator(1, AndOperand::new).push(parseContext);
+                    parseContext.setIndex(index + 2);
+                }
+                else
+                {
+                    ;
+                }
+            }
+            case '|' ->
+            {
+                if (el.charAt(index + 1) == '|')
+                {
+                    new BasicOperator(1, OrOperand::new).push(parseContext);
+                    parseContext.setIndex(index + 2);
+                }
+                else
+                {
+                    ;
+                }
+            }
         }
+        return false;
     }
 }

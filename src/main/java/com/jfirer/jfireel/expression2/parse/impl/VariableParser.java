@@ -14,7 +14,6 @@ public class VariableParser implements TokenParser
     {
         int                   index           = parseContext.getIndex();
         String                el              = parseContext.getEl();
-        Map<String, Class<?>> staticClassName = parseContext.getStaticClassName();
         if (CharType.isAlphabet(el.charAt(index)))
         {
             index += 1;

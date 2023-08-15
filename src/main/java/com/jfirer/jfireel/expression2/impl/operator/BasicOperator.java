@@ -9,12 +9,20 @@ import java.util.function.BiFunction;
 
 public class BasicOperator implements Operator
 {
-    private int                                   priority;
-    private BiFunction<Operand, Operand, Operand> constructor;
+    private int          priority;
+    private String       fragment;
+    private BasicOperand constructor;
 
-    public BasicOperator(int priority, BiFunction<Operand, Operand, Operand> constructor)
+    @FunctionalInterface
+    interface BasicOperand
+    {
+        Operand apply(Operand left, Operand right, String fragment);
+    }
+
+    public BasicOperator(int priority, String fragment, BasicOperand constructor)
     {
         this.priority    = priority;
+        this.fragment    = fragment;
         this.constructor = constructor;
     }
 
@@ -41,6 +49,6 @@ public class BasicOperator implements Operator
         Deque<Operand> operandStack = parseContext.getOperandStack();
         Operand        right        = operandStack.pop();
         Operand        left         = operandStack.pop();
-        operandStack.push(constructor.apply(left, right));
+        operandStack.push(constructor.apply(left, right, fragment));
     }
 }
