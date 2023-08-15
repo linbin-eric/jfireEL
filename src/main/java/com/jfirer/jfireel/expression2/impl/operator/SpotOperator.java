@@ -3,11 +3,11 @@ package com.jfirer.jfireel.expression2.impl.operator;
 import com.jfirer.jfireel.expression2.Operand;
 import com.jfirer.jfireel.expression2.Operator;
 import com.jfirer.jfireel.expression2.ParseContext;
+import com.jfirer.jfireel.expression2.impl.operand.MethodInvokeOperand;
 import com.jfirer.jfireel.expression2.impl.operand.StaticClassOperand;
 import com.jfirer.jfireel.expression2.impl.operand.VariableOperand;
 import lombok.Data;
 
-import java.lang.reflect.Method;
 import java.util.Deque;
 
 @Data
@@ -43,25 +43,19 @@ public class SpotOperator implements Operator
             {
                 StaticClassOperand staticClassOperand = (StaticClassOperand) processStack.pop();
                 VariableOperand    variableOperand    = (VariableOperand) processStack.pop();
-                int                methodParamCount   = processStack.size();
-                Class<?>           ckass              = staticClassOperand.getCkass();
-                Method             matchMethod;
-                int                matchTime          = 0;
-                while (ckass != Object.class)
-                {
-                    for (Method method : ckass.getMethods())
-                    {
-                        if (method.getParameterCount() == methodParamCount && method.getName().equalsIgnoreCase(variableOperand.getVariable()))
-                        {
-                            matchTime += 1;
-                            matchMethod = method;
-                        }
-                    }
-                }
-                if (matchTime > 1)
-                {
-                    throw new IllegalArgumentException("解析过程中发现静态类的方法有多个匹配，当前方法重载仅能支持不同入参个数的。异常解析位置为" + fragment);
-                }
+                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethodInvokeOperand(staticClassOperand.getCkass(), variableOperand.getVariable(), processStack.stream().toList(), fragment));
+                processStack.clear();
+            }
+            else if (processStack.peek() instanceof VariableOperand)
+            {
+                VariableOperand instance   = (VariableOperand) processStack.pop();
+                VariableOperand methodName = (VariableOperand) processStack.pop();
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethodInvokeOperand(instance, methodName, processStack.stream().toList(), fragment));
+                processStack.clear();
+            }
+            else
+            {
+                throw new IllegalArgumentException("解析过程中方法调用解析异常，方法调用的对象不是静态类也不是变量名称。异常解析位置为" + fragment);
             }
         }
         else

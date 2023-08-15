@@ -14,7 +14,7 @@ public class BasicOperator implements Operator
     private BasicOperand constructor;
 
     @FunctionalInterface
-    interface BasicOperand
+    public interface BasicOperand
     {
         Operand apply(Operand left, Operand right, String fragment);
     }

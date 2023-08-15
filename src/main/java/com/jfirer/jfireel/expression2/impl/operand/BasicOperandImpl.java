@@ -243,9 +243,9 @@ public abstract class BasicOperandImpl implements Operand
         }
     }
 
-    public static class Mutlioperand extends BasicOperandImpl
+    public static class MutliOperand extends BasicOperandImpl
     {
-        public Mutlioperand(Operand left, Operand right, String fragment)
+        public MutliOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
         }
@@ -393,6 +393,142 @@ public abstract class BasicOperandImpl implements Operand
             {
                 throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
             }
+        }
+    }
+
+    public static class NotEqOperand extends BasicOperandImpl
+    {
+        private EqOperand eqOperand;
+
+        public NotEqOperand(Operand left, Operand right, String fragment)
+        {
+            super(left, right, fragment);
+            eqOperand = new EqOperand(left, right, fragment);
+        }
+
+        @Override
+        public Object calculate(Map<String, Object> param)
+        {
+            return ((Boolean) eqOperand.calculate(param)) == false;
+        }
+    }
+
+    public static class  GeOperand extends  BasicOperandImpl{
+        public GeOperand(Operand left, Operand right, String fragment)
+        {
+            super(left, right, fragment);
+        }
+
+        @Override
+        protected Object process(Double d1, Double d2, Map<String, Object> param)
+        {
+            return d1 >= d2;
+        }
+
+        @Override
+        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        {
+            return d1 >= l2;
+        }
+
+        @Override
+        protected Object process(Long l1, Double d2, Map<String, Object> param)
+        {
+            return l1  >= d2;
+        }
+
+        @Override
+        protected Object process(Long l1, Long l2, Map<String, Object> param)
+        {
+            return l1  >= l2;
+        }
+
+    }
+    public  static  class GtOperand extends  BasicOperandImpl{
+        public GtOperand(Operand left, Operand right, String fragment)
+        {
+            super(left, right, fragment);
+        }
+        @Override
+        protected Object process(Double d1, Double d2, Map<String, Object> param)
+        {
+            return d1 > d2;
+        }
+
+        @Override
+        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        {
+            return d1 > l2;
+        }
+
+        @Override
+        protected Object process(Long l1, Double d2, Map<String, Object> param)
+        {
+            return l1 > d2;
+        }
+
+        @Override
+        protected Object process(Long l1, Long l2, Map<String, Object> param)
+        {
+            return l1 > l2;
+        }
+    }
+    public static  class  LeOperand extends  BasicOperandImpl{
+        public LeOperand(Operand left, Operand right, String fragment)
+        {
+            super(left, right, fragment);
+        }
+        @Override
+        protected Object process(Double d1, Double d2, Map<String, Object> param)
+        {
+            return d1 <= d2;
+        }
+
+        @Override
+        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        {
+            return d1 <= l2;
+        }
+
+        @Override
+        protected Object process(Long l1, Double d2, Map<String, Object> param)
+        {
+            return l1 <= d2;
+        }
+
+        @Override
+        protected Object process(Long l1, Long l2, Map<String, Object> param)
+        {
+            return l1 <= l2;
+        }
+    }
+    public static  class LtOperand extends  BasicOperandImpl{
+        public LtOperand(Operand left, Operand right, String fragment)
+        {
+            super(left, right, fragment);
+        }
+        @Override
+        protected Object process(Double d1, Double d2, Map<String, Object> param)
+        {
+            return d1 < d2;
+        }
+
+        @Override
+        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        {
+            return d1 < l2;
+        }
+
+        @Override
+        protected Object process(Long l1, Double d2, Map<String, Object> param)
+        {
+            return l1 < d2;
+        }
+
+        @Override
+        protected Object process(Long l1, Long l2, Map<String, Object> param)
+        {
+            return l1 < l2;
         }
     }
 }
