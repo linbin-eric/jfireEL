@@ -2,14 +2,38 @@ package com.jfirer.jfireel.expression2.impl.operand;
 
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression2.Operand;
+import jdk.dynalink.StandardOperation;
 import lombok.Data;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+@Data
 public abstract class MethodInvokeOperand implements Operand
 {
+    protected final    Operand         operand;
+    protected final    VariableOperand methodNameOperand;
+    protected final    List<Operand>   methodParams;
+    protected final    String          fragment;
+    protected volatile Method          method;
+
+    public MethodInvokeOperand()
+    {
+        operand           = null;
+        methodNameOperand = null;
+        methodParams      = null;
+        fragment          = null;
+    }
+
+    public MethodInvokeOperand(Operand operand, VariableOperand methodNameOperand, List<Operand> methodParams, String fragment)
+    {
+        this.operand           = operand;
+        this.methodNameOperand = methodNameOperand;
+        this.methodParams      = methodParams;
+        this.fragment          = fragment;
+    }
+
     protected Method findMethod(Class<?> ckass, String methodName, int paramCount, String fragment)
     {
         Method matchMethod = null;
@@ -39,13 +63,10 @@ public abstract class MethodInvokeOperand implements Operand
 
     public static class StaticMethodInvokeOperand extends MethodInvokeOperand
     {
-        private Method        method;
-        private List<Operand> methodParams;
-
-        public StaticMethodInvokeOperand(Class<?> ckass, String methodName, List<Operand> methodParams, String fragment)
+        public StaticMethodInvokeOperand(StaticClassOperand operand, VariableOperand methodNameOperand, List<Operand> methodParams, String fragment)
         {
-            method            = findMethod(ckass, methodName, methodParams.size(), fragment);
-            this.methodParams = methodParams;
+            super(operand, methodNameOperand, methodParams, fragment);
+            method = findMethod(operand.getCkass(), methodNameOperand.getVariable(), methodParams.size(), fragment);
         }
 
         @Override
@@ -67,11 +88,10 @@ public abstract class MethodInvokeOperand implements Operand
     @Data
     public static class InstanceMethodInvokeOperand extends MethodInvokeOperand
     {
-        private final    VariableOperand instanceOperand;
-        private final    VariableOperand methodNameOperand;
-        private final    List<Operand>   methodParams;
-        private final    String          fragment;
-        private volatile Method          method;
+        public InstanceMethodInvokeOperand(VariableOperand instanceOperand, VariableOperand methodNameOperand, List<Operand> methodParams, String fragment)
+        {
+            super(instanceOperand, methodNameOperand, methodParams, fragment);
+        }
 
         @Override
         public Object calculate(Map<String, Object> param)
@@ -82,7 +102,7 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (method == null)
                     {
-                        Object instance = instanceOperand.calculate(param);
+                        Object instance = operand.calculate(param);
                         method = findMethod(instance.getClass(), methodNameOperand.getVariable(), methodParams.size(), fragment);
                         try
                         {
@@ -98,7 +118,7 @@ public abstract class MethodInvokeOperand implements Operand
             }
             try
             {
-                return method.invoke(instanceOperand.calculate(param), methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
+                return method.invoke(operand.calculate(param), methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
             }
             catch (Throwable e)
             {

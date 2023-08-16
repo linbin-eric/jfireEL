@@ -8,14 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class CandidateStaticMethodOperand implements Operand
+public class DirectMethodOperand implements Operand
 {
-    private final List<Method> methods;
-
-    public CandidateStaticMethodOperand(List<Method> methods)
-    {
-        this.methods = methods;
-    }
+    private final Method        method;
+    private       List<Operand> methodParams;
 
     @Override
     public Object calculate(Map<String, Object> param)

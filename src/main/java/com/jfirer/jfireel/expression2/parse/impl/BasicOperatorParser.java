@@ -3,7 +3,7 @@ package com.jfirer.jfireel.expression2.parse.impl;
 import com.jfirer.jfireel.expression2.Operator;
 import com.jfirer.jfireel.expression2.ParseContext;
 import com.jfirer.jfireel.expression2.impl.operand.BasicOperandImpl;
-import com.jfirer.jfireel.expression2.impl.operator.BasicOperator;
+import com.jfirer.jfireel.expression2.impl.operator.*;
 import com.jfirer.jfireel.expression2.parse.TokenParser;
 
 public class BasicOperatorParser implements TokenParser
@@ -23,6 +23,10 @@ public class BasicOperatorParser implements TokenParser
             case '*' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.MutliOperand::new);
             case '/' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.DivisionOperand::new);
             case '%' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.RemainOperand::new);
+            case '?' -> operator = new QuestionOperator();
+            case ':' -> operator = new ColonOperator(fragment);
+            case '.' -> operator = new SpotOperator(fragment);
+            case '('->operator = new LeftBracketsOperator();
         }
         if (operator != null)
         {

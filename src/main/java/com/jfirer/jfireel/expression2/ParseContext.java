@@ -13,7 +13,7 @@ public class ParseContext
     private static TokenParser[]             parsers          = new TokenParser[]{//
             new SkipIgnoreToken(),//
             new NumberParser(),//
-            new StaticMethodParser(),//
+            new DirectMethodParser(),//
             new StaticClassParser(),//
             new VariableParser(),//
             new LiteralParser(),//
@@ -25,7 +25,7 @@ public class ParseContext
     private final  String                    el;
     private        int                       index;
     private        Map<String, Class<?>>     staticClassName  = new HashMap<>();
-    private        Map<String, List<Method>> staticMethodName = new HashMap<>();
+    private        Map<String, Method> directMethodName = new HashMap<>();
 
     public ParseContext(String el)
     {

@@ -4,6 +4,7 @@ import com.jfirer.jfireel.expression2.Operand;
 import com.jfirer.jfireel.expression2.Operator;
 import com.jfirer.jfireel.expression2.ParseContext;
 import com.jfirer.jfireel.expression2.impl.operand.MethodInvokeOperand;
+import com.jfirer.jfireel.expression2.impl.operand.PropertyReadOperand;
 import com.jfirer.jfireel.expression2.impl.operand.StaticClassOperand;
 import com.jfirer.jfireel.expression2.impl.operand.VariableOperand;
 import lombok.Data;
@@ -39,27 +40,34 @@ public class SpotOperator implements Operator
         processStack.push(operandStack.pop());
         if (type == METHOD)
         {
-            if (processStack.peek() instanceof StaticClassOperand)
+            Operand         pop        = processStack.pop();
+            VariableOperand methodName = (VariableOperand) processStack.pop();
+            if (pop instanceof StaticClassOperand)
             {
-                StaticClassOperand staticClassOperand = (StaticClassOperand) processStack.pop();
-                VariableOperand    variableOperand    = (VariableOperand) processStack.pop();
-                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethodInvokeOperand(staticClassOperand.getCkass(), variableOperand.getVariable(), processStack.stream().toList(), fragment));
-                processStack.clear();
+                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethodInvokeOperand((StaticClassOperand) pop, methodName, processStack.stream().toList(), fragment));
             }
-            else if (processStack.peek() instanceof VariableOperand)
+            else if (pop instanceof VariableOperand)
             {
-                VariableOperand instance   = (VariableOperand) processStack.pop();
-                VariableOperand methodName = (VariableOperand) processStack.pop();
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethodInvokeOperand(instance, methodName, processStack.stream().toList(), fragment));
-                processStack.clear();
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethodInvokeOperand((VariableOperand) pop, methodName, processStack.stream().toList(), fragment));
             }
             else
             {
                 throw new IllegalArgumentException("解析过程中方法调用解析异常，方法调用的对象不是静态类也不是变量名称。异常解析位置为" + fragment);
             }
+            processStack.clear();
         }
         else
         {
+            Operand         typeOperand     = (StaticClassOperand) processStack.pop();
+            VariableOperand variableOperand = (VariableOperand) processStack.pop();
+            if (processStack.peek() instanceof StaticClassOperand)
+            {
+                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment));
+            }
+            else
+            {
+                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment));
+            }
         }
     }
 }
