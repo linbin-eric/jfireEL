@@ -4,16 +4,14 @@ import com.jfirer.jfireel.expression2.Operand;
 import com.jfirer.jfireel.expression2.Operator;
 import com.jfirer.jfireel.expression2.ParseContext;
 import com.jfirer.jfireel.expression2.impl.operand.DirectMethodOperand;
-import com.jfirer.jfireel.expression2.impl.operand.MethodInvokeOperand;
 import com.jfirer.jfireel.expression2.impl.operand.StaticClassOperand;
-import com.jfirer.jfireel.expression2.impl.operand.VariableOperand;
 import lombok.Data;
 
 import java.util.Deque;
 import java.util.List;
 
 @Data
-public class LeftBracketsOperator implements Operator
+public class LeftParenOperator implements Operator
 {
     public static final int    PURE_LEFT_BRACKETS = 1;
     public static final int    STATIC_METHOD      = 2;
@@ -48,11 +46,13 @@ public class LeftBracketsOperator implements Operator
                 type = INSTANCE_METHOD;
             }
             operandStack.push(tmp);
+            ((SpotOperator) parseContext.getOperatorStack().peek()).setType(SpotOperator.METHOD);
         }
         else
         {
             type = PURE_LEFT_BRACKETS;
         }
+        parseContext.getOperatorStack().push(this);
     }
 
     @Override
@@ -68,25 +68,16 @@ public class LeftBracketsOperator implements Operator
                 DirectMethodOperand peek = (DirectMethodOperand) parseContext.getOperandStack().peek();
                 peek.setMethodParams(list);
             }
-            case STATIC_METHOD ->
+            case STATIC_METHOD, INSTANCE_METHOD ->
             {
-                Deque<Operand>     operandStack = parseContext.getOperandStack();
-                VariableOperand    methodName   = (VariableOperand) operandStack.pop();
-                StaticClassOperand pop          = (StaticClassOperand) operandStack.pop();
-                Deque<Operand>     processStack = parseContext.getProcessStack();
-                List<Operand>      list         = processStack.stream().toList();
-                processStack.clear();
-                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethodInvokeOperand(pop, methodName, list, fragment));
-            }
-            case INSTANCE_METHOD ->
-            {
-                Deque<Operand>  operandStack = parseContext.getOperandStack();
-                VariableOperand methodName   = (VariableOperand) operandStack.pop();
-                VariableOperand pop          = (VariableOperand) operandStack.pop();
-                Deque<Operand>  processStack = parseContext.getProcessStack();
-                List<Operand>   list         = processStack.stream().toList();
-                processStack.clear();
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethodInvokeOperand(pop, methodName, list, fragment));
+                if (parseContext.getOperatorStack().peek() instanceof SpotOperator)
+                {
+                    parseContext.getOperatorStack().pop().onPop(parseContext);
+                }
+                else
+                {
+                    throw new IllegalStateException("解析表达式异常，异常位置" + fragment);
+                }
             }
             case PURE_LEFT_BRACKETS ->
             {

@@ -28,6 +28,7 @@ public abstract class PropertyReadOperand implements Operand
                 }
                 else
                 {
+                    candidate.setAccessible(true);
                     return candidate;
                 }
             }
@@ -46,6 +47,7 @@ public abstract class PropertyReadOperand implements Operand
             super(typeOperand, propertyNameOperand, fragment);
             Class<?> ckass = ((StaticClassOperand) typeOperand).getCkass();
             field = findField(ckass, propertyNameOperand.getVariable(), fragment);
+
         }
 
         @Override

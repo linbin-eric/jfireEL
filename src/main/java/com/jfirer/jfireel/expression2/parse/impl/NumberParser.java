@@ -50,15 +50,15 @@ public class NumberParser implements TokenParser
 
     private static void extractNum(ParseContext parseContext)
     {
-        int index = parseContext.getIndex();
-        String el = parseContext.getEl();
+        int    index = parseContext.getIndex();
+        String el    = parseContext.getEl();
         index += 1;
-        while (CharType.isDigital(el.charAt(index)) || el.charAt(index) == '.')
+        while (index < el.length() && (CharType.isDigital(el.charAt(index)) || el.charAt(index) == '.'))
         {
             index++;
         }
         String numStr = el.substring(parseContext.getIndex(), index);
-        parseContext.getOperandStack().push(new NumberOperand(numStr));
+        parseContext.getOperandStack().push(new NumberOperand(numStr, el.substring(0, index)));
         parseContext.setIndex(index);
     }
 }

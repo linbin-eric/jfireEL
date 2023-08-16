@@ -7,15 +7,17 @@ import java.util.Map;
 public class NumberOperand implements Operand
 {
     private       Long    lValue;
-    private       Double  dValuel;
+    private       Double  dValue;
     private final boolean natural;
+    private final String  fragment;
 
-    public NumberOperand(String numStr)
+    public NumberOperand(String numStr, String fragment)
     {
+        this.fragment = fragment;
         if (numStr.indexOf('.') != -1)
         {
             natural = false;
-            dValuel = Double.valueOf(numStr);
+            dValue  = Double.valueOf(numStr);
         }
         else
         {
@@ -27,6 +29,7 @@ public class NumberOperand implements Operand
     @Override
     public Object calculate(Map<String, Object> param)
     {
-        return natural ? lValue : dValuel;
+        //Number 的类型强转不能去除，否则会导致外部收到 Long 数据类型的时候自动变为 Double，引起问题。
+        return natural ? ((Number) lValue) : ((Number) dValue);
     }
 }

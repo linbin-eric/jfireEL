@@ -5,19 +5,17 @@ import com.jfirer.jfireel.expression2.ParseContext;
 import com.jfirer.jfireel.expression2.impl.operand.VariableOperand;
 import com.jfirer.jfireel.expression2.parse.TokenParser;
 
-import java.util.Map;
-
 public class VariableParser implements TokenParser
 {
     @Override
     public boolean parse(ParseContext parseContext)
     {
-        int                   index           = parseContext.getIndex();
-        String                el              = parseContext.getEl();
+        int    index = parseContext.getIndex();
+        String el    = parseContext.getEl();
         if (CharType.isAlphabet(el.charAt(index)))
         {
             index += 1;
-            while (CharType.isAlphabet(el.charAt(index)) || CharType.isDigital(el.charAt(index)))
+            while (index < el.length() && (CharType.isAlphabet(el.charAt(index)) || CharType.isDigital(el.charAt(index))))
             {
                 index += 1;
             }

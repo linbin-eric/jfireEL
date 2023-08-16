@@ -28,7 +28,12 @@ public class SpotOperator implements Operator
     @Override
     public void push(ParseContext parseContext)
     {
-        parseContext.getOperatorStack().push(this);
+        Deque<Operator> operatorStack = parseContext.getOperatorStack();
+        while (operatorStack.isEmpty() == false && operatorStack.peek().priority() >= priority())
+        {
+            operatorStack.pop().onPop(parseContext);
+        }
+        operatorStack.push(this);
     }
 
     @Override
@@ -46,27 +51,23 @@ public class SpotOperator implements Operator
             {
                 parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethodInvokeOperand((StaticClassOperand) pop, methodName, processStack.stream().toList(), fragment));
             }
-            else if (pop instanceof VariableOperand)
-            {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethodInvokeOperand((VariableOperand) pop, methodName, processStack.stream().toList(), fragment));
-            }
             else
             {
-                throw new IllegalArgumentException("解析过程中方法调用解析异常，方法调用的对象不是静态类也不是变量名称。异常解析位置为" + fragment);
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethodInvokeOperand( pop, methodName, processStack.stream().toList(), fragment));
             }
             processStack.clear();
         }
         else
         {
-            Operand         typeOperand     = (StaticClassOperand) processStack.pop();
+            Operand         typeOperand     = processStack.pop();
             VariableOperand variableOperand = (VariableOperand) processStack.pop();
-            if (processStack.peek() instanceof StaticClassOperand)
+            if (typeOperand instanceof StaticClassOperand)
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment));
+                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment+"."+variableOperand.getVariable()));
             }
             else
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment));
+                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment+"."+variableOperand.getVariable()));
             }
         }
     }

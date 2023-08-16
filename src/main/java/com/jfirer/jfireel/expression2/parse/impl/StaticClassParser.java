@@ -19,11 +19,11 @@ public class StaticClassParser implements TokenParser
         if (CharType.isAlphabet(el.charAt(index)))
         {
             index += 1;
-            while (CharType.isAlphabet(el.charAt(index)) || CharType.isDigital(el.charAt(index)))
+            while (index < el.length() && (CharType.isAlphabet(el.charAt(index)) || CharType.isDigital(el.charAt(index))))
             {
                 index += 1;
             }
-            if (staticClassName.containsKey(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator==false)
+            if (staticClassName.containsKey(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
                 parseContext.getOperandStack().push(new StaticClassOperand(staticClassName.get(el.substring(parseContext.getIndex(), index))));
                 parseContext.setIndex(index);

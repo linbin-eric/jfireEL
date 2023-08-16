@@ -49,7 +49,7 @@ public class CharType
      */
     public static boolean isAlphabet(final char ch)
     {
-        return ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z';
+        return ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch == '$';
     }
 
     /**

@@ -28,51 +28,119 @@ public abstract class BasicOperandImpl implements Operand
             {
                 return process(s1, s2, param);
             }
-            else if (rightValue instanceof Long l2)
+            else if (rightValue instanceof Number)
             {
-                return process(s1, l2, param);
+                if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                {
+                    return process(s1, ((Number) rightValue).longValue(), param);
+                }
+                else if (rightValue instanceof Double || rightValue instanceof Float)
+                {
+                    return process(s1, ((Number) rightValue).doubleValue(), param);
+                }
+                else
+                {
+                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
+                }
             }
-            else if (rightValue instanceof Double d2)
+            else if (rightValue instanceof Boolean)
             {
-                return process(s1, d2, param);
-            }
-            else
-            {
-                throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-            }
-        }
-        else if (leftValue instanceof Long l1)
-        {
-            if (rightValue instanceof String s2)
-            {
-                return process(l1, s2, param);
-            }
-            else if (rightValue instanceof Long l2)
-            {
-                return process(l1, l2, param);
-            }
-            else if (rightValue instanceof Double d2)
-            {
-                return process(l1, d2, param);
+                return process(s1, ((Boolean) rightValue), param);
             }
             else
             {
                 throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
             }
         }
-        else if (leftValue instanceof Double d1)
+        else if (leftValue instanceof Number)
+        {
+            if (leftValue instanceof Integer || leftValue instanceof Long || leftValue instanceof Short || leftValue instanceof Byte)
+            {
+                long l1 = ((Number) leftValue).longValue();
+                if (rightValue instanceof String s2)
+                {
+                    return process(l1, s2, param);
+                }
+                else if (rightValue instanceof Number)
+                {
+                    if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                    {
+                        return process(l1, ((Number) rightValue).longValue(), param);
+                    }
+                    else if (rightValue instanceof Double || rightValue instanceof Float)
+                    {
+                        return process(l1, ((Number) rightValue).doubleValue(), param);
+                    }
+                    else
+                    {
+                        throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
+                    }
+                }
+                else if (rightValue instanceof Boolean)
+                {
+                    return process(l1, ((Boolean) rightValue), param);
+                }
+                else
+                {
+                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
+                }
+            }
+            else
+            {
+                double d1 = ((Number) leftValue).doubleValue();
+                if (rightValue instanceof String s2)
+                {
+                    return process(d1, s2, param);
+                }
+                else if (rightValue instanceof Number)
+                {
+                    if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                    {
+                        return process(d1, ((Number) rightValue).longValue(), param);
+                    }
+                    else if (rightValue instanceof Double || rightValue instanceof Float)
+                    {
+                        return process(d1, ((Number) rightValue).doubleValue(), param);
+                    }
+                    else
+                    {
+                        throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
+                    }
+                }
+                else if (rightValue instanceof Boolean)
+                {
+                    return process(d1, ((Boolean) rightValue), param);
+                }
+                else
+                {
+                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
+                }
+            }
+        }
+        else if (leftValue instanceof Boolean b1)
         {
             if (rightValue instanceof String s2)
             {
-                return process(d1, s2, param);
+                return process(b1, s2, param);
             }
-            else if (rightValue instanceof Long l2)
+            else if (rightValue instanceof Number)
             {
-                return process(d1, l2, param);
+                if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                {
+                    return process(b1, ((Number) rightValue).longValue(), param);
+                }
+                else if (rightValue instanceof Double || rightValue instanceof Float)
+                {
+                    return process(b1, ((Number) rightValue).doubleValue(), param);
+                }
+                else
+                {
+                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
+                }
             }
-            else if (rightValue instanceof Double d2)
+            else if (rightValue instanceof Boolean)
             {
-                return process(d1, d2, param);
+                return process(b1, ((Boolean) rightValue), param);
             }
             else
             {
@@ -85,23 +153,37 @@ public abstract class BasicOperandImpl implements Operand
         }
     }
 
-    protected Object process(Double d1, Double d2, Map<String, Object> param) {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Double d1, Double d2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(Double d1, Long l2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Double d1, Long l2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(Double d1, String s2, Map<String, Object> param) {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Double d1, String s2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(Long l1, Double d2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Double d1, Boolean b2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(Long l1, Long l2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Long l1, Double d2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(Long l1, String s2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Long l1, Long l2, Map<String, Object> param)       {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(String s1, Double d2, Map<String, Object> param) {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Long l1, String s2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(String s1, Long l2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(Long l1, Boolean b2, Map<String, Object> param)    {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
-    protected Object process(String s1, String s2, Map<String, Object> param) {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+    protected Object process(String s1, Double d2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+
+    protected Object process(String s1, Long l2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+
+    protected Object process(String s1, String s2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+
+    protected Object process(String s1, Boolean b2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+
+    protected Object process(Boolean b1, Double d2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+
+    protected Object process(Boolean b1, Long l2, Map<String, Object> param)    {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+
+    protected Object process(Boolean b1, String s2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
+
+    protected Object process(Boolean b1, Boolean b2, Map<String, Object> param) {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
 
     public static class AndOperand extends BasicOperandImpl
     {
@@ -111,18 +193,9 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        protected Object process(Boolean b1, Boolean b2, Map<String, Object> param)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
-            if (leftValue instanceof Boolean b1 && rightValue instanceof Boolean b2)
-            {
-                return b1.booleanValue() && b2.booleanValue();
-            }
-            else
-            {
-                throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-            }
+            return b1 && b2;
         }
     }
 
@@ -134,18 +207,9 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        protected Object process(Boolean b1, Boolean b2, Map<String, Object> param)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
-            if (leftValue instanceof Boolean b1 && rightValue instanceof Boolean b2)
-            {
-                return b1.booleanValue() || b2.booleanValue();
-            }
-            else
-            {
-                throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-            }
+            return b1 || b2;
         }
     }
 
@@ -172,6 +236,12 @@ public abstract class BasicOperandImpl implements Operand
         protected Object process(String s1, Double d2, Map<String, Object> param)
         {
             return s1 + d2;
+        }
+
+        @Override
+        protected Object process(String s1, Boolean b2, Map<String, Object> param)
+        {
+            return s1 + b2;
         }
 
         @Override
@@ -347,52 +417,39 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        protected Object process(Boolean b1, Boolean b2, Map<String, Object> param)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
-            if (leftValue instanceof Boolean b1 && rightValue instanceof Boolean b2)
-            {
-                return b1.booleanValue() == b2.booleanValue();
-            }
-            else if (leftValue instanceof String s1 && rightValue instanceof String s2)
-            {
-                return s1.equals(s2);
-            }
-            else if (leftValue instanceof Long l1)
-            {
-                if (rightValue instanceof Long l2)
-                {
-                    return l1.longValue() == l2.longValue();
-                }
-                else if (rightValue instanceof Double d2)
-                {
-                    return l1.longValue() == d2.doubleValue();
-                }
-                else
-                {
-                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-                }
-            }
-            else if (leftValue instanceof Double d1)
-            {
-                if (rightValue instanceof Long l2)
-                {
-                    return d1.doubleValue() == l2.longValue();
-                }
-                else if (rightValue instanceof Double d2)
-                {
-                    return d1.doubleValue() == d2.doubleValue();
-                }
-                else
-                {
-                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-                }
-            }
-            else
-            {
-                throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-            }
+            return b1.booleanValue() == b2.booleanValue();
+        }
+
+        @Override
+        protected Object process(Long l1, Long l2, Map<String, Object> param)
+        {
+            return l1.longValue() == l2.longValue();
+        }
+
+        @Override
+        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        {
+            return d1.doubleValue() == l2.longValue();
+        }
+
+        @Override
+        protected Object process(Long l1, Double d2, Map<String, Object> param)
+        {
+            return l1.longValue() == d2.doubleValue();
+        }
+
+        @Override
+        protected Object process(Double d1, Double d2, Map<String, Object> param)
+        {
+            return d1.doubleValue() == d2.doubleValue();
+        }
+
+        @Override
+        protected Object process(String s1, String s2, Map<String, Object> param)
+        {
+            return s2.equals(s1);
         }
     }
 
@@ -413,7 +470,8 @@ public abstract class BasicOperandImpl implements Operand
         }
     }
 
-    public static class  GeOperand extends  BasicOperandImpl{
+    public static class GeOperand extends BasicOperandImpl
+    {
         public GeOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
@@ -434,21 +492,23 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object process(Long l1, Double d2, Map<String, Object> param)
         {
-            return l1  >= d2;
+            return l1 >= d2;
         }
 
         @Override
         protected Object process(Long l1, Long l2, Map<String, Object> param)
         {
-            return l1  >= l2;
+            return l1 >= l2;
         }
-
     }
-    public  static  class GtOperand extends  BasicOperandImpl{
+
+    public static class GtOperand extends BasicOperandImpl
+    {
         public GtOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
         }
+
         @Override
         protected Object process(Double d1, Double d2, Map<String, Object> param)
         {
@@ -473,11 +533,14 @@ public abstract class BasicOperandImpl implements Operand
             return l1 > l2;
         }
     }
-    public static  class  LeOperand extends  BasicOperandImpl{
+
+    public static class LeOperand extends BasicOperandImpl
+    {
         public LeOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
         }
+
         @Override
         protected Object process(Double d1, Double d2, Map<String, Object> param)
         {
@@ -502,11 +565,14 @@ public abstract class BasicOperandImpl implements Operand
             return l1 <= l2;
         }
     }
-    public static  class LtOperand extends  BasicOperandImpl{
+
+    public static class LtOperand extends BasicOperandImpl
+    {
         public LtOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
         }
+
         @Override
         protected Object process(Double d1, Double d2, Map<String, Object> param)
         {

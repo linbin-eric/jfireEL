@@ -3,7 +3,6 @@ package com.jfirer.jfireel.expression2.impl.operator;
 import com.jfirer.jfireel.expression2.Operand;
 import com.jfirer.jfireel.expression2.Operator;
 import com.jfirer.jfireel.expression2.ParseContext;
-import com.jfirer.jfireel.expression2.impl.operand.QuestionOperand;
 import lombok.Data;
 
 import java.util.Deque;
@@ -26,14 +25,14 @@ public class ColonOperator implements Operator
         do
         {
             Operator peek = operatorStack.peek();
-            if (peek instanceof QuestionOperator || peek instanceof CommaOperator || peek instanceof LeftBracketsOperator || peek instanceof ColonOperator)
+            if (peek instanceof QuestionOperator || peek instanceof CommaOperator || peek instanceof LeftParenOperator || peek instanceof ColonOperator)
             {
-                Operator pop = operatorStack.pop();
-                pop.onPop(parseContext);
+                break;
             }
             else
             {
-                break;
+                Operator pop = operatorStack.pop();
+                pop.onPop(parseContext);
             }
         } while (true);
         parseContext.getOperatorStack().push(this);

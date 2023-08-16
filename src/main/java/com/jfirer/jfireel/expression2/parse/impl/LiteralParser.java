@@ -1,6 +1,5 @@
 package com.jfirer.jfireel.expression2.parse.impl;
 
-import com.jfirer.jfireel.expression.util.CharType;
 import com.jfirer.jfireel.expression2.ParseContext;
 import com.jfirer.jfireel.expression2.impl.operand.LiteralOparand;
 import com.jfirer.jfireel.expression2.parse.TokenParser;
@@ -16,21 +15,18 @@ public class LiteralParser implements TokenParser
         if (c == '\'')
         {
             index += 1;
-            while (CharType.isAlphabet(el.charAt(index)))
+            while (el.charAt(index) != '\'' && index < el.length())
             {
                 index += 1;
             }
-            if (el.charAt(index) == '\'')
+            if (index == el.length())
             {
-                String literal = el.substring(parseContext.getIndex() + 1, index);
-                parseContext.setIndex(index + 1);
-                parseContext.getOperandStack().push(new LiteralOparand(literal));
-                return true;
+                throw new IllegalStateException("字符串中存在错误的字面量，没有使用'将字面量前后包围。错误范围在" + el.substring(0, parseContext.getIndex()));
             }
-            else
-            {
-                throw new IllegalStateException("字符串中存在错误的字面量，没有使用'将字面量前后包围。错误范围在:" + el.substring(0, index));
-            }
+            String literal = el.substring(parseContext.getIndex() + 1, index);
+            parseContext.setIndex(index + 1);
+            parseContext.getOperandStack().push(new LiteralOparand(literal));
+            return true;
         }
         else
         {

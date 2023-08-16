@@ -22,7 +22,7 @@ public class QuestionOperator implements Operator
         do
         {
             Operator peek = operatorStack.peek();
-            if (peek instanceof QuestionOperator || peek instanceof CommaOperator || peek instanceof LeftBracketsOperator || peek instanceof ColonOperator)
+            if (peek instanceof QuestionOperator ==false && peek instanceof CommaOperator==false && peek instanceof LeftParenOperator == false && peek instanceof ColonOperator == false)
             {
                 Operator pop = operatorStack.pop();
                 pop.onPop(parseContext);

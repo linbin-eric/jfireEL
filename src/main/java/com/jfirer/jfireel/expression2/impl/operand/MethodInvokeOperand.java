@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression2.impl.operand;
 
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression2.Operand;
-import jdk.dynalink.StandardOperation;
 import lombok.Data;
 
 import java.lang.reflect.Method;
@@ -48,6 +47,7 @@ public abstract class MethodInvokeOperand implements Operand
                     matchMethod = method;
                 }
             }
+            ckass = ckass.getSuperclass();
         }
         if (matchTime > 1)
         {
@@ -88,7 +88,7 @@ public abstract class MethodInvokeOperand implements Operand
     @Data
     public static class InstanceMethodInvokeOperand extends MethodInvokeOperand
     {
-        public InstanceMethodInvokeOperand(VariableOperand instanceOperand, VariableOperand methodNameOperand, List<Operand> methodParams, String fragment)
+        public InstanceMethodInvokeOperand(Operand instanceOperand, VariableOperand methodNameOperand, List<Operand> methodParams, String fragment)
         {
             super(instanceOperand, methodNameOperand, methodParams, fragment);
         }
