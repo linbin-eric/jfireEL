@@ -25,7 +25,7 @@ public class ColonOperator implements Operator
         do
         {
             Operator peek = operatorStack.peek();
-            if (peek instanceof QuestionOperator || peek instanceof CommaOperator || peek instanceof LeftParenOperator || peek instanceof ColonOperator)
+            if (peek instanceof QuestionOperator )
             {
                 break;
             }

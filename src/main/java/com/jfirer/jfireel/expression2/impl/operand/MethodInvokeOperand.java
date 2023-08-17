@@ -5,6 +5,7 @@ import com.jfirer.jfireel.expression2.Operand;
 import lombok.Data;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,13 @@ public abstract class MethodInvokeOperand implements Operand
     protected final    VariableOperand methodNameOperand;
     protected final    List<Operand>   methodParams;
     protected final    String          fragment;
+    protected          ConvertType[]   convertTypes;
     protected volatile Method          method;
+
+    enum ConvertType
+    {
+        INT, LONG, SHORT, BYTE, CHAR, FLOAT, DOUBLE, BOOLEAN, NONE
+    }
 
     public MethodInvokeOperand()
     {
@@ -33,32 +40,202 @@ public abstract class MethodInvokeOperand implements Operand
         this.fragment          = fragment;
     }
 
-    protected Method findMethod(Class<?> ckass, String methodName, int paramCount, String fragment)
+    protected Object methodInvoke(Object instance, Object[] methodParamValues)
     {
-        Method matchMethod = null;
-        int    matchTime   = 0;
+        for (int i = 0; i < methodParamValues.length; i++)
+        {
+            switch (convertTypes[i])
+            {
+                case INT -> methodParamValues[i] = ((Number) methodParamValues[i]).intValue();
+                case LONG -> methodParamValues[i] = ((Number) methodParamValues[i]).longValue();
+                case SHORT -> methodParamValues[i] = ((Number) methodParamValues[i]).shortValue();
+                case BYTE -> methodParamValues[i] = ((Number) methodParamValues[i]).byteValue();
+                case CHAR -> methodParamValues[i] = methodParamValues[i] instanceof Character ? methodParamValues[i] : ((String) methodParamValues[i]).charAt(0);
+                case FLOAT -> methodParamValues[i] = ((Number) methodParamValues[i]).floatValue();
+                case DOUBLE -> methodParamValues[i] = ((Number) methodParamValues[i]).doubleValue();
+                case BOOLEAN, NONE -> {}
+            }
+        }
+        try
+        {
+            return method.invoke(instance, methodParamValues);
+        }
+        catch (Throwable e)
+        {
+            ReflectUtil.throwException(e);
+            return null;
+        }
+    }
+
+    protected void findMethod(Class<?> ckass, String methodName, Object[] methodParamValues, String fragment)
+    {
         while (ckass != Object.class)
         {
-            for (Method method : ckass.getMethods())
+            for (Method method : ckass.getDeclaredMethods())
             {
-                if (method.getParameterCount() == paramCount && method.getName().equalsIgnoreCase(methodName))
+                if (method.getParameterCount() == methodParamValues.length && method.getName().equals(methodName))
                 {
-                    matchTime += 1;
-                    matchMethod = method;
+                    boolean allTypeMatch = true;
+                    for (int i = 0; i < method.getParameterTypes().length; i++)
+                    {
+                        Class<?> parameterType    = method.getParameterTypes()[i];
+                        Object   methodParamValue = methodParamValues[i];
+                        if (parameterType.isPrimitive())
+                        {
+                            if (parameterType == float.class || parameterType == double.class)
+                            {
+                                if (methodParamValues[i] != null && (methodParamValue.getClass() == Float.class || methodParamValue.getClass() == Double.class))
+                                {
+                                    ;
+                                }
+                                else
+                                {
+                                    allTypeMatch = false;
+                                    break;
+                                }
+                            }
+                            else if (parameterType == boolean.class)
+                            {
+                                if (methodParamValue != null && methodParamValue.getClass() == Boolean.class)
+                                {
+                                    ;
+                                }
+                                else
+                                {
+                                    allTypeMatch = false;
+                                    break;
+                                }
+                            }
+                            else if (parameterType == char.class)
+                            {
+                                if (methodParamValue != null && methodParamValue.getClass() == Character.class)
+                                {
+                                    ;
+                                }
+                                else
+                                {
+                                    allTypeMatch = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (methodParamValue != null && (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class))
+                                {
+                                    ;
+                                }
+                                else
+                                {
+                                    allTypeMatch = false;
+                                }
+                            }
+                        }
+                        else if (Number.class.isAssignableFrom(parameterType))
+                        {
+                            if (parameterType == Float.class || parameterType == Double.class)
+                            {
+                                if (methodParamValue == null || (methodParamValue.getClass() == Float.class || methodParamValue == Double.class))
+                                {
+                                    ;
+                                }
+                                else
+                                {
+                                    allTypeMatch = false;
+                                }
+                            }
+                            else
+                            {
+                                if (methodParamValue == null || (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class))
+                                {
+                                    ;
+                                }
+                                else
+                                {
+                                    allTypeMatch = false;
+                                }
+                            }
+                        }
+                        else if (Boolean.class.isAssignableFrom(parameterType))
+                        {
+                            if (methodParamValue == null || methodParamValue.getClass() == Boolean.class)
+                            {
+                                ;
+                            }
+                            else
+                            {
+                                allTypeMatch = false;
+                                break;
+                            }
+                        }
+                        else if (parameterType == Character.class)
+                        {
+                            if (methodParamValue == null || (methodParamValue.getClass() == Character.class || methodParamValue.getClass() == String.class))
+                            {
+                                ;
+                            }
+                            else
+                            {
+                                allTypeMatch = false;
+                                break;
+                            }
+                        }
+                        else if (methodParamValue == null || parameterType.isAssignableFrom(methodParamValue.getClass()))
+                        {
+                            ;
+                        }
+                        else
+                        {
+                            allTypeMatch = false;
+                        }
+                    }
+                    if (allTypeMatch)
+                    {
+                        convertTypes = Arrays.stream(method.getParameterTypes()).map(type -> {
+                            if (type == int.class || type == Integer.class)
+                            {
+                                return ConvertType.INT;
+                            }
+                            else if (type == short.class || type == Short.class)
+                            {
+                                return ConvertType.SHORT;
+                            }
+                            else if (type == long.class || type == Long.class)
+                            {
+                                return ConvertType.LONG;
+                            }
+                            else if (type == float.class || type == Float.class)
+                            {
+                                return ConvertType.FLOAT;
+                            }
+                            else if (type == double.class || type == Double.class)
+                            {
+                                return ConvertType.DOUBLE;
+                            }
+                            else if (type == byte.class || type == Byte.class)
+                            {
+                                return ConvertType.BYTE;
+                            }
+                            else if (type == char.class || type == Character.class)
+                            {
+                                return ConvertType.CHAR;
+                            }
+                            else if (type == boolean.class || type == Boolean.class)
+                            {
+                                return ConvertType.BOOLEAN;
+                            }
+                            else
+                            {
+                                return ConvertType.NONE;
+                            }
+                        }).toArray(ConvertType[]::new);
+                        this.method  = method;
+                        return;
+                    }
                 }
             }
             ckass = ckass.getSuperclass();
         }
-        if (matchTime > 1)
-        {
-            throw new IllegalArgumentException("解析过程中发现静态类的方法有多个匹配，当前方法重载仅能支持不同入参个数的。异常解析位置为" + fragment);
-        }
-        if (matchTime == 0)
-        {
-            throw new IllegalArgumentException("解析过程中发现静态类的方法没有匹配。异常解析位置为" + fragment);
-        }
-        matchMethod.setAccessible(true);
-        return matchMethod;
+        throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法对象。异常解析位置为" + fragment);
     }
 
     public static class StaticMethodInvokeOperand extends MethodInvokeOperand
@@ -66,22 +243,24 @@ public abstract class MethodInvokeOperand implements Operand
         public StaticMethodInvokeOperand(StaticClassOperand operand, VariableOperand methodNameOperand, List<Operand> methodParams, String fragment)
         {
             super(operand, methodNameOperand, methodParams, fragment);
-            method = findMethod(operand.getCkass(), methodNameOperand.getVariable(), methodParams.size(), fragment);
         }
 
         @Override
         public Object calculate(Map<String, Object> param)
         {
-            Object[] array = methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new);
-            try
+            if (method == null)
             {
-                return method.invoke(null, array);
+                synchronized (this)
+                {
+                    if (method == null)
+                    {
+                        Object[] methodParamValues = methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new);
+                        findMethod(((StaticClassOperand) operand).getStaticClass(), methodNameOperand.getVariable(), methodParamValues, fragment);
+                        return methodInvoke(null, methodParamValues);
+                    }
+                }
             }
-            catch (Throwable e)
-            {
-                ReflectUtil.throwException(e);
-                return null;
-            }
+            return methodInvoke(null, methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
         }
     }
 
@@ -102,29 +281,14 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (method == null)
                     {
-                        Object instance = operand.calculate(param);
-                        method = findMethod(instance.getClass(), methodNameOperand.getVariable(), methodParams.size(), fragment);
-                        try
-                        {
-                            return method.invoke(instance, methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
-                        }
-                        catch (Throwable e)
-                        {
-                            ReflectUtil.throwException(e);
-                            return null;
-                        }
+                        Object   instance          = operand.calculate(param);
+                        Object[] methodParamValues = methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new);
+                        findMethod(instance.getClass(), methodNameOperand.getVariable(), methodParamValues, fragment);
+                        return methodInvoke(instance, methodParamValues);
                     }
                 }
             }
-            try
-            {
-                return method.invoke(operand.calculate(param), methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
-            }
-            catch (Throwable e)
-            {
-                ReflectUtil.throwException(e);
-                return null;
-            }
+            return methodInvoke(operand.calculate(param), methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
         }
     }
 }

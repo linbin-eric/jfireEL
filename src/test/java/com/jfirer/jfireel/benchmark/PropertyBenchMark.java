@@ -3,6 +3,8 @@ package com.jfirer.jfireel.benchmark;
 import com.jfirer.jfireel.TestSupport;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.util.Functional;
+import com.jfirer.jfireel.expression2.Expression2;
+import com.jfirer.jfireel.expression2.Operand;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -38,7 +40,7 @@ public class PropertyBenchMark
     @Setup
     public void before()
     {
-        person = new TestSupport.Person();
+        person     = new TestSupport.Person();
         person.age = 14;
         vars.put("person", person);
     }
@@ -54,4 +56,5 @@ public class PropertyBenchMark
     {
         lexer_2.calculate(vars);
     }
+
 }

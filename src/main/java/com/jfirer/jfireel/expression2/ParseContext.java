@@ -40,25 +40,32 @@ public class ParseContext
 
     public Operand parse()
     {
-        int length = el.length();
-        while (index != length)
+        try
         {
-            int oldVersionOfIndex = index;
-            for (TokenParser each : parsers)
+            int length = el.length();
+            while (index != length)
             {
-                if (each.parse(this))
+                int oldVersionOfIndex = index;
+                for (TokenParser each : parsers)
                 {
-                    break;
+                    if (each.parse(this))
+                    {
+                        break;
+                    }
+                }
+                if (oldVersionOfIndex == index)
+                {
+                    throw new IllegalStateException("无法解析表达式，当前解析进度为:" + el.substring(0, oldVersionOfIndex));
                 }
             }
-            if (oldVersionOfIndex == index)
+            while (operatorStack.isEmpty() == false)
             {
-                throw new IllegalStateException("无法解析表达式，当前解析进度为:" + el.substring(0, oldVersionOfIndex));
+                operatorStack.pop().onPop(this);
             }
         }
-        while (operatorStack.isEmpty() == false)
+        catch (Throwable e)
         {
-            operatorStack.pop().onPop(this);
+            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index), e);
         }
         if (operandStack.size() == 1)
         {

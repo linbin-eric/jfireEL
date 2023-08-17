@@ -242,5 +242,121 @@ public class BracketTest extends TestSupport
         String result = (String) operand.calculate();
         assertEquals("ab", result);
     }
+    @Test
+    public void test30()
+    {
+        assertEquals(1, ((Number) Expression2.parse("3-1-1").calculate(null)).intValue());
+    }
 
+    @Test
+    public void test31()
+    {
+        assertEquals(2, ((Number) Expression2.parse("5-(4-1)").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test32()
+    {
+        assertEquals(1, ((Number) Expression2.parse("1*2-1").calculate(null)).intValue());
+    }
+    /**
+     * 测试加法
+     */
+    @Test
+    public void test33()
+    {
+        Operand lexer = Expression2.parse("1+2");
+        assertEquals(3, ((Number) lexer.calculate(new HashMap<String, Object>())).intValue());
+        assertEquals(3, ((Number) lexer.calculate(null)).intValue());
+    }
+
+    /**
+     * 测试加法中出现字符串的类型转化
+     */
+    @Test
+    public void test34()
+    {
+        assertEquals("11", Expression2.parse("'1'+1").calculate(null));
+    }
+
+    /**
+     * 测试多个运算符
+     */
+    @Test
+    public void test35()
+    {
+        assertEquals(12, ((Number) Expression2.parse("1+2+3+6").calculate(null)).intValue());
+    }
+
+    /**
+     * 测试乘法
+     */
+    @Test
+    public void test36()
+    {
+        assertEquals(5, ((Number) Expression2.parse("1*5").calculate(null)).intValue());
+    }
+
+    /**
+     * 测试运算符优先级
+     */
+    @Test
+    public void test37()
+    {
+        assertEquals(7, ((Number) Expression2.parse("3+2*2").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test38()
+    {
+        assertEquals(10, ((Number) Expression2.parse("2*(3+2)").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test39()
+    {
+        assertTrue(((Boolean) Expression2.parse("(2+1!=2)==true").calculate()));
+    }
+    public static int age = 12;
+
+    @Test
+    public void test40()
+    {
+        Operand lexer = Expression2.parse("home.person.age");
+        //home 是一个对象，包含一个对象属性 person，age是person中的一个数字属性
+        assertEquals(person.age, ((Number) lexer.calculate(vars)).intValue());
+        lexer = Expression2.parse("home.person.age");
+        assertEquals(person.age, ((Number) lexer.calculate(vars)).intValue());
+    }
+
+    // 测试静态属性获取
+    @Test
+    public void test41()
+    {
+        ParseContext parseContext = new ParseContext("BracketTest.age");
+        parseContext.getStaticClassName().put(BracketTest.class.getSimpleName(),BracketTest.class);
+        Operand operand = parseContext.parse();
+        int result = ((Number) operand.calculate()).intValue();
+        assertEquals(age, result);
+    }
+    @Test
+    public void test42()
+    {
+        assertEquals(1, ((Number) Expression2.parse("2>1?1:2").calculate()).intValue());
+        assertEquals(1, ((Number) Expression2.parse("3-2+1>1?1:2").calculate()).intValue());
+        assertEquals(1, ((Number) Expression2.parse("3-2+1>1?2-1:2").calculate()).intValue());
+        assertEquals(2, ((Number) Expression2.parse("3-2+1<1?2:1+1").calculate()).intValue());
+        Map<String, Object> vars  = new HashMap<String, Object>();
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("b", false);
+        vars.put("map", param);
+        assertEquals(2, ((Number) Expression2.parse("map['b']?3:1*2").calculate(vars)).intValue());
+        assertEquals(4, ((Number) Expression2.parse("(map['b']?3:2)*2").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test43()
+    {
+        assertEquals(-2, ((Number) Expression2.parse("2>1?1-2>0?-1:-2:3").calculate()).intValue());
+    }
 }

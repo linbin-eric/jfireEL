@@ -4,6 +4,8 @@ import com.jfirer.baseutil.StringUtil;
 import com.jfirer.baseutil.time.Timewatch;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.util.Functional;
+import com.jfirer.jfireel.expression2.Expression2;
+import com.jfirer.jfireel.expression2.Operand;
 import com.jfirer.jfireel.template.Template;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
@@ -38,12 +40,14 @@ public class PerTest extends TestSupport
         System.out.println(runScript);
         Expression lexer   = Expression.parse("home.bool(person.getAge() + '12' != value)");
         Expression lexer2  = Expression.parse("home.bool(person.getAge() + '12' != value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
-        int        preheat = 100;
+        Operand    operand = Expression2.parse("home.bool(person.getAge() + '12' != value)");
+        int        preheat = 50000;
         int        count   = 10000000;
         for (int i = 0; i < preheat; i++)
         {
             lexer.calculate(vars);
             lexer2.calculate(vars);
+            operand.calculate(vars);
             exp.getValue(societyContext);
             gt.runScript("return @home.bool(@person.getAge()+'12'!=value);", vars);
         }
@@ -61,6 +65,13 @@ public class PerTest extends TestSupport
         }
         t1 = System.nanoTime();
         System.out.println("编译优化jfireEl计算" + (count / 10000) + "万次耗时:" + (t1 - t0) / 1000 / 1000 + "毫秒");
+        t0 = System.nanoTime();
+        for (int i = 0; i < count; i++)
+        {
+            operand.calculate(vars);
+        }
+        t1 = System.nanoTime();
+        System.out.println("新算法jfireEl计算" + (count / 10000) + "万次耗时:" + (t1 - t0) / 1000 / 1000 + "毫秒");
         t0 = System.nanoTime();
         for (int i = 0; i < count; i++)
         {

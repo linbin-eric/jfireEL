@@ -8,13 +8,13 @@ import java.util.Map;
 @Data
 public class StaticClassOperand implements Operand
 {
-    private final Class<?> ckass;
+    private final Class<?> staticClass;
 
-    public StaticClassOperand(Class<?> ckass) {this.ckass = ckass;}
+    public StaticClassOperand(Class<?> staticClass) {this.staticClass = staticClass;}
 
     @Override
     public Object calculate(Map<String, Object> param)
     {
-        return ckass;
+        return staticClass;
     }
 }

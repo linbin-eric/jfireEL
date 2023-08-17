@@ -45,7 +45,7 @@ public abstract class PropertyReadOperand implements Operand
         public StaticClassPropertyOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment)
         {
             super(typeOperand, propertyNameOperand, fragment);
-            Class<?> ckass = ((StaticClassOperand) typeOperand).getCkass();
+            Class<?> ckass = ((StaticClassOperand) typeOperand).getStaticClass();
             field = findField(ckass, propertyNameOperand.getVariable(), fragment);
 
         }

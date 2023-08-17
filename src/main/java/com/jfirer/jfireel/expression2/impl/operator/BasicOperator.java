@@ -5,7 +5,6 @@ import com.jfirer.jfireel.expression2.Operator;
 import com.jfirer.jfireel.expression2.ParseContext;
 
 import java.util.Deque;
-import java.util.function.BiFunction;
 
 public class BasicOperator implements Operator
 {
