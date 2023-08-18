@@ -128,17 +128,20 @@ public class BracketTest extends TestSupport
         m.put("BLOODPRESSURE1", 100);
         Assert.assertTrue((Boolean) Expression2.parse("BLOODPRESSURE1<140&&BLOODPRESSURE1>90").calculate(m));
     }
+
     enum Name
     {
         dd
     }
+
     @Test
     public void test14()
     {
         ParseContext parseContext = new ParseContext("EnumTest$Name.dd");
-        parseContext.getStaticClassName().put("EnumTest$Name",Name.class);
+        parseContext.getStaticClassName().put("EnumTest$Name", Name.class);
         assertEquals(BracketTest.Name.dd, parseContext.parse().calculate());
     }
+
     @Test
     public void test15()
     {
@@ -172,7 +175,7 @@ public class BracketTest extends TestSupport
     @Test
     public void test20()
     {
-        String     value = person.age + 3 * 2 + "abc";
+        String value = person.age + 3 * 2 + "abc";
         vars.put("value", value);
         assertTrue((Boolean) Expression2.parse("home.getPerson().getAge()+3*2+'abc' == value").calculate(vars));
     }
@@ -180,7 +183,7 @@ public class BracketTest extends TestSupport
     @Test
     public void test21()
     {
-        String     value = person.age + 3 * 2 + "abced";
+        String value = person.age + 3 * 2 + "abced";
         vars.put("value", value);
         assertTrue((Boolean) Expression2.parse("home.getPerson().getAge()+3*2+'abc' != value").calculate(vars));
     }
@@ -239,9 +242,10 @@ public class BracketTest extends TestSupport
         ParseContext parseContext = new ParseContext("String.valueOf('ab')");
         parseContext.getStaticClassName().put("String", String.class);
         Operand operand = parseContext.parse();
-        String result = (String) operand.calculate();
+        String  result  = (String) operand.calculate();
         assertEquals("ab", result);
     }
+
     @Test
     public void test30()
     {
@@ -259,6 +263,7 @@ public class BracketTest extends TestSupport
     {
         assertEquals(1, ((Number) Expression2.parse("1*2-1").calculate(null)).intValue());
     }
+
     /**
      * 测试加法
      */
@@ -317,6 +322,7 @@ public class BracketTest extends TestSupport
     {
         assertTrue(((Boolean) Expression2.parse("(2+1!=2)==true").calculate()));
     }
+
     public static int age = 12;
 
     @Test
@@ -334,11 +340,12 @@ public class BracketTest extends TestSupport
     public void test41()
     {
         ParseContext parseContext = new ParseContext("BracketTest.age");
-        parseContext.getStaticClassName().put(BracketTest.class.getSimpleName(),BracketTest.class);
+        parseContext.getStaticClassName().put(BracketTest.class.getSimpleName(), BracketTest.class);
         Operand operand = parseContext.parse();
-        int result = ((Number) operand.calculate()).intValue();
+        int     result  = ((Number) operand.calculate()).intValue();
         assertEquals(age, result);
     }
+
     @Test
     public void test42()
     {
@@ -358,5 +365,11 @@ public class BracketTest extends TestSupport
     public void test43()
     {
         assertEquals(-2, ((Number) Expression2.parse("2>1?1-2>0?-1:-2:3").calculate()).intValue());
+    }
+
+    @Test
+    public void test44()
+    {
+        assertEquals(age, ((Number) Expression2.parse("@(com.jfirer.jfireel.test2.BracketTest).age").calculate()).intValue());
     }
 }

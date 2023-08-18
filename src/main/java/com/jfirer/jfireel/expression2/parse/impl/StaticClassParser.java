@@ -1,5 +1,6 @@
 package com.jfirer.jfireel.expression2.parse.impl;
 
+import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.util.CharType;
 import com.jfirer.jfireel.expression2.ParseContext;
 import com.jfirer.jfireel.expression2.impl.operand.StaticClassOperand;
@@ -16,7 +17,30 @@ public class StaticClassParser implements TokenParser
         int                   index           = parseContext.getIndex();
         String                el              = parseContext.getEl();
         Map<String, Class<?>> staticClassName = parseContext.getStaticClassName();
-        if (CharType.isAlphabet(el.charAt(index)))
+        if (el.charAt(index) == '@' && index + 1 < el.length() && el.charAt(index + 1) == '(')
+        {
+            index += 2;
+            while (index < el.length() && (CharType.isAlphabet(el.charAt(index)) || CharType.isDigital(el.charAt(index)) || el.charAt(index) == '.'))
+            {
+                index += 1;
+            }
+            if (el.charAt(index) != ')')
+            {
+                return false;
+            }
+            String className = el.substring(parseContext.getIndex() + 2, index);
+            try
+            {
+                parseContext.getOperandStack().push(new StaticClassOperand(Class.forName(className)));
+            }
+            catch (ClassNotFoundException e)
+            {
+                throw new IllegalStateException("解析表达式异常，无法加载静态类：" + className + ",解析位置在" + el.substring(0, index));
+            }
+            parseContext.setIndex(index + 1);
+            return true;
+        }
+        else if (CharType.isAlphabet(el.charAt(index)))
         {
             index += 1;
             while (index < el.length() && (CharType.isAlphabet(el.charAt(index)) || CharType.isDigital(el.charAt(index))))
