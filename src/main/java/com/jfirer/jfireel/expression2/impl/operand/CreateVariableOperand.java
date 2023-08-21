@@ -6,13 +6,14 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class LiteralOparand implements Operand
+public class CreateVariableOperand implements Operand
 {
-    private final String literal;
+    protected final String variableName;
 
     @Override
     public Object calculate(Map<String, Object> param)
     {
-        return literal;
+        param.put(variableName, null);
+        return null;
     }
 }

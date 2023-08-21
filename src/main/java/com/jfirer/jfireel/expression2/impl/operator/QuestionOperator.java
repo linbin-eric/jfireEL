@@ -28,7 +28,7 @@ public class QuestionOperator implements Operator
         do
         {
             Operator peek = operatorStack.peek();
-            if (peek != null && (peek instanceof QuestionOperator == false && peek instanceof CommaOperator == false && peek instanceof LeftParenOperator == false && peek instanceof ColonOperator == false))
+            if (peek != null && !peek.isBoundary())
             {
                 Operator pop = operatorStack.pop();
                 pop.onPop(parseContext);

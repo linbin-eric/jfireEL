@@ -17,6 +17,7 @@ public class ParseContext
             new SkipIgnoreToken(),//
             new NumberParser(),//
             new BooleanParser(),//
+            new VarParser(),//
             new DirectMethodParser(),//
             new StaticClassParser(),//
             new VariableParser(),//

@@ -1,9 +1,6 @@
 package com.jfirer.jfireel.test2;
 
-import com.jfirer.jfireel.EnumTest;
 import com.jfirer.jfireel.TestSupport;
-import com.jfirer.jfireel.expression.Expression;
-import com.jfirer.jfireel.expression.util.Functional;
 import com.jfirer.jfireel.expression2.Expression2;
 import com.jfirer.jfireel.expression2.Operand;
 import com.jfirer.jfireel.expression2.ParseContext;
@@ -371,5 +368,35 @@ public class BracketTest extends TestSupport
     public void test44()
     {
         assertEquals(age, ((Number) Expression2.parse("@(com.jfirer.jfireel.test2.BracketTest).age").calculate()).intValue());
+    }
+
+    @Test
+    public void test45()
+    {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "test");
+        Expression2.parse("var l=name").calculate(params);
+        assertEquals("test", params.get("l"));
+        Expression2.parse("var l=name;").calculate(params);
+        assertEquals("test", params.get("l"));
+    }
+
+    @Test
+    public void test46()
+    {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "test");
+        Operand operand = Expression2.parse("l=name");
+        try
+        {
+            operand.calculate(params);
+        }
+        catch (IllegalArgumentException e)
+        {
+            e.printStackTrace();
+            assertTrue(true);
+            return;
+        }
+        assertTrue(false);
     }
 }

@@ -29,6 +29,7 @@ public class BasicOperatorParser implements TokenParser
             case ',' -> operator = new CommaOperator(fragment);
             case '[' -> operator = new LeftBracketOperator();
             case ']' -> operator = new RightBracketOperator();
+            case ';' -> operator = new SemicolonOperator();
         }
         if (operator != null)
         {
@@ -75,7 +76,8 @@ public class BasicOperatorParser implements TokenParser
                 }
                 else
                 {
-                    throw new IllegalArgumentException("解析出现异常，当前解析位置:" + el.substring(0, index));
+                    new AssignOperator(fragment).push(parseContext);
+                    parseContext.setIndex(index + 1);
                 }
                 return true;
             }
