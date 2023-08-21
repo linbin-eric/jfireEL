@@ -19,13 +19,19 @@ public class ColonOperator implements Operator
     }
 
     @Override
+    public boolean isBoundary()
+    {
+        return true;
+    }
+
+    @Override
     public void push(ParseContext parseContext)
     {
         Deque<Operator> operatorStack = parseContext.getOperatorStack();
         do
         {
             Operator peek = operatorStack.peek();
-            if (peek instanceof QuestionOperator )
+            if (peek instanceof QuestionOperator)
             {
                 break;
             }

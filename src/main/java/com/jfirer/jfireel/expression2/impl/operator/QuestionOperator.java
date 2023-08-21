@@ -16,6 +16,12 @@ public class QuestionOperator implements Operator
     }
 
     @Override
+    public boolean isBoundary()
+    {
+        return true;
+    }
+
+    @Override
     public void push(ParseContext parseContext)
     {
         Deque<Operator> operatorStack = parseContext.getOperatorStack();

@@ -27,6 +27,12 @@ public class LeftParenOperator implements Operator
     }
 
     @Override
+    public boolean isBoundary()
+    {
+        return true;
+    }
+
+    @Override
     public void push(ParseContext parseContext)
     {
         Deque<Operand> operandStack = parseContext.getOperandStack();

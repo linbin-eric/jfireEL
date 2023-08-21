@@ -7,4 +7,9 @@ public interface Operator
     void push(ParseContext parseContext);
 
     void onPop(ParseContext parseContext);
+
+    default boolean isBoundary()
+    {
+        return false;
+    }
 }
