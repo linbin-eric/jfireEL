@@ -20,7 +20,7 @@ public class BasicOperatorParser implements TokenParser
         {
             case '+' -> operator = new BasicOperator(2, fragment, BasicOperandImpl.PlusOperand::new);
             case '-' -> operator = new BasicOperator(2, fragment, BasicOperandImpl.MinusOperand::new);
-            case '*' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.MutliOperand::new);
+            case '*' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.TimesOperand::new);
             case '/' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.DivisionOperand::new);
             case '%' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.RemainOperand::new);
             case '?' -> operator = new QuestionOperator();
@@ -30,6 +30,7 @@ public class BasicOperatorParser implements TokenParser
             case '[' -> operator = new LeftBracketOperator();
             case ']' -> operator = new RightBracketOperator();
             case ';' -> operator = new SemicolonOperator();
+            case '}' -> operator = new RightAngleBracketOperator(fragment);
         }
         if (operator != null)
         {

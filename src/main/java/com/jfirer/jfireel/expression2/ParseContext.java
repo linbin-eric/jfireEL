@@ -1,5 +1,6 @@
 package com.jfirer.jfireel.expression2;
 
+import com.jfirer.jfireel.expression2.impl.operand.MutliOperand;
 import com.jfirer.jfireel.expression2.parse.TokenParser;
 import com.jfirer.jfireel.expression2.parse.impl.*;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class ParseContext
             new SkipIgnoreToken(),//
             new NumberParser(),//
             new BooleanParser(),//
-            new VarParser(),//
+            new ExtraExecuteParser(),//
             new DirectMethodParser(),//
             new StaticClassParser(),//
             new VariableParser(),//
@@ -76,6 +77,46 @@ public class ParseContext
         {
             throw new IllegalStateException("解析表达式异常，解析完毕后剩余的操作数大于 1 个");
         }
+    }
+
+    public Operand parseMutli()
+    {
+        try
+        {
+            int length = el.length();
+            while (index != length)
+            {
+                int oldVersionOfIndex = index;
+                for (TokenParser each : parsers)
+                {
+                    if (each.parse(this))
+                    {
+                        break;
+                    }
+                }
+                if (oldVersionOfIndex == index)
+                {
+                    throw new IllegalStateException("无法解析表达式，当前解析进度为:" + el.substring(0, oldVersionOfIndex));
+                }
+            }
+            while (operatorStack.isEmpty() == false)
+            {
+                operatorStack.pop().onPop(this);
+            }
+        }
+        catch (Throwable e)
+        {
+            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index), e);
+        }
+        if (processStack.isEmpty() == false)
+        {
+            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index));
+        }
+        while (operandStack.isEmpty() == false)
+        {
+            processStack.push(operandStack.pop());
+        }
+        return new MutliOperand(processStack.toArray(Operand[]::new));
     }
 }
 

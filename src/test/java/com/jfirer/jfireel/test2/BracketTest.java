@@ -399,4 +399,90 @@ public class BracketTest extends TestSupport
         }
         assertTrue(false);
     }
+
+    @Test
+    public void test47()
+    {
+        Operand operand = Expression2.parseMutli("""
+                                                         if(1+age>5)
+                                                         {
+                                                            var name ='f1';
+                                                         }
+                                                         else
+                                                         { 
+                                                            var name = 'f2';
+                                                         }
+                                                         """);
+        Map<String, Object> param = new HashMap<>();
+        param.put("age", 3);
+        operand.calculate(param);
+        assertEquals("f2", param.get("name"));
+        param.put("age", 5);
+        operand.calculate(param);
+        assertEquals("f1", param.get("name"));
+    }
+
+    @Test
+    public void test48()
+    {
+        Operand operand = Expression2.parseMutli("""
+                                                         var value;
+                                                         for(i in array)
+                                                         {
+                                                    if(i<5)
+                                                            {
+                                                                value = i;
+                                                            }
+                                                            else
+                                                            {
+                                                                break;
+                                                            }
+                                                         }
+                                                         var result;
+                                                         if(value==4)
+                                                         {
+                                                            result = true;
+                                                         }
+                                                         else
+                                                         {
+                                                            result=false;
+                                                         }
+                                                         """);
+        Map<String, Object> param = new HashMap<>();
+        param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
+        operand.calculate(param);
+        assertTrue((Boolean) param.get("result"));
+    }
+    @Test
+    public void test49()
+    {
+        Operand operand = Expression2.parseMutli("""
+                                                         var value;
+                                                         for(i in array)
+                                                         {
+                                                            if(i<5)
+                                                            {
+                                                                value = i;
+                                                                return;
+                                                            }
+                                                            else
+                                                            {
+                                                                break;
+                                                            }
+                                                         }
+                                                         var result;
+                                                         if(value==4)
+                                                         {
+                                                            result = true;
+                                                         }
+                                                         else
+                                                         {
+                                                            result=false;
+                                                         }
+                                                         """);
+        Map<String, Object> param = new HashMap<>();
+        param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
+        operand.calculate(param);
+        assertFalse(param.containsKey("result"));
+    }
 }

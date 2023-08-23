@@ -313,9 +313,9 @@ public abstract class BasicOperandImpl implements Operand
         }
     }
 
-    public static class MutliOperand extends BasicOperandImpl
+    public static class TimesOperand extends BasicOperandImpl
     {
-        public MutliOperand(Operand left, Operand right, String fragment)
+        public TimesOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
         }
