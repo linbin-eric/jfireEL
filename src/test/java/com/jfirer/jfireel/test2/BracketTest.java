@@ -4,13 +4,11 @@ import com.jfirer.jfireel.TestSupport;
 import com.jfirer.jfireel.expression2.Expression2;
 import com.jfirer.jfireel.expression2.Operand;
 import com.jfirer.jfireel.expression2.ParseContext;
+import com.jfirer.jfireel.template2.Template2;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -237,7 +235,7 @@ public class BracketTest extends TestSupport
     public void test29()
     {
         ParseContext parseContext = new ParseContext("String.valueOf('ab')");
-        parseContext.getStaticClassName().put("String", String.class);
+        parseContext.registerClass("String", String.class);
         Operand operand = parseContext.parse();
         String  result  = (String) operand.calculate();
         assertEquals("ab", result);
@@ -426,33 +424,34 @@ public class BracketTest extends TestSupport
     public void test48()
     {
         Operand operand = Expression2.parseMutli("""
-                                                         var value;
-                                                         for(i in array)
-                                                         {
-                                                    if(i<5)
-                                                            {
-                                                                value = i;
-                                                            }
-                                                            else
-                                                            {
-                                                                break;
-                                                            }
-                                                         }
-                                                         var result;
-                                                         if(value==4)
-                                                         {
-                                                            result = true;
-                                                         }
-                                                         else
-                                                         {
-                                                            result=false;
-                                                         }
-                                                         """);
+                                                              var value;
+                                                              for(i in array)
+                                                              {
+                                                         if(i<5)
+                                                                 {
+                                                                     value = i;
+                                                                 }
+                                                                 else
+                                                                 {
+                                                                     break;
+                                                                 }
+                                                              }
+                                                              var result;
+                                                              if(value==4)
+                                                              {
+                                                                 result = true;
+                                                              }
+                                                              else
+                                                              {
+                                                                 result=false;
+                                                              }
+                                                              """);
         Map<String, Object> param = new HashMap<>();
         param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
         operand.calculate(param);
         assertTrue((Boolean) param.get("result"));
     }
+
     @Test
     public void test49()
     {
@@ -484,5 +483,101 @@ public class BracketTest extends TestSupport
         param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
         operand.calculate(param);
         assertFalse(param.containsKey("result"));
+    }
+
+    @Test
+    public void test50()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 10);
+        assertEquals("hello ll,my age is 12", Template2.parse("hello ${name},my age is ${age+2}").render(params));
+    }
+
+    @Test
+    public void test51()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        assertEquals("hello ll", Template2.parse("hello ${name}").render(params));
+    }
+
+    @Test
+    public void test52()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 10);
+        assertEquals("hello, my name is ll  ", Template2.parse("hello,<%if(age>2){%> my name is ${name}<%}%>  ").render(params));
+    }
+
+    @Test
+    public void test53()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 10);
+        assertEquals("hello, my name is ll", Template2.parse("hello,<%if(age>2){%> my name is <%if(name=='ll'){%>${name}<%}%><%}%>").render(params));
+    }
+
+    @Test
+    public void test54()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 1);
+        assertEquals("hello, ll", Template2.parse("hello,<%if(age>2){%> ${name} <%}%><%else{%> ll<%}%>").render(params));
+    }
+
+    @Test
+    public void test55()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 1);
+        assertEquals("hello, ll", Template2.parse("hello,<%if(age>2){%> ${name} <% } else {%> ll<%}%>").render(params));
+    }
+
+    @Test
+    public void test56()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 1);
+        assertEquals("hello, age<5", Template2.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>").render(params));
+    }
+
+    @Test
+    public void test57()
+    {
+        List<String> list = new LinkedList<String>();
+        list.add("name1");
+        list.add("name2");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+        assertEquals("hello, name1 name2", Template2.parse("hello,<% for (name in list) {%> ${name}<%}%>").render(params));
+    }
+
+    @Test
+    public void test58()
+    {
+        List<String> list = new LinkedList<String>();
+        list.add("name1");
+        list.add("name2");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+        assertEquals("hello, name1", Template2.parse("hello,<% for (name in list) {%><% if(name=='name1'){%> ${name}<%}%><%}%>").render(params));
+    }
+
+    @Test
+    public void test59()
+    {
+        List<String> list     = new LinkedList<String>();
+        list.add("name1");
+        list.add("name2");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+        params.put("age", 11);
+        assertEquals(" name1  name2 ", Template2.parse("<% if(age>10){ for(name in list){ %> ${name} <%}}%>").render(params));
     }
 }

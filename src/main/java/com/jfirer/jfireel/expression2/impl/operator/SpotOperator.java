@@ -45,15 +45,15 @@ public class SpotOperator implements Operator
         processStack.push(operandStack.pop());
         if (type == METHOD)
         {
-            Operand         pop        = processStack.pop();
-            VariableOperand methodName = (VariableOperand) processStack.pop();
-            if (pop instanceof StaticClassOperand)
+            Operand pop        = processStack.pop();
+            String  methodName = ((VariableOperand) processStack.pop()).getVariable();
+            if (pop instanceof StaticClassOperand staticClassOperand)
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethodInvokeOperand((StaticClassOperand) pop, methodName, processStack.stream().toList(), fragment));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(staticClassOperand.getStaticClass(), methodName, processStack.stream().toList(), fragment));
             }
             else
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethodInvokeOperand( pop, methodName, processStack.stream().toList(), fragment));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toList(), fragment));
             }
             processStack.clear();
         }
@@ -63,11 +63,11 @@ public class SpotOperator implements Operator
             VariableOperand variableOperand = (VariableOperand) processStack.pop();
             if (typeOperand instanceof StaticClassOperand)
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment+"."+variableOperand.getVariable()));
+                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
             }
             else
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment+"."+variableOperand.getVariable()));
+                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
             }
         }
     }
