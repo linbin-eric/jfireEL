@@ -19,6 +19,7 @@ public class LeftParenOperator implements Operator
     public static final int    IF                 = 5;
     public static final int    ELSE_IF            = 6;
     public static final int    FOR                = 7;
+    public static final int    INNER_CALL         = 8;
     private final       String fragment;
     private             int    type;
 
@@ -41,6 +42,10 @@ public class LeftParenOperator implements Operator
         if (operandStack.peek() instanceof MethodInvokeOperand.DirectMethod)
         {
             type = DIRECT_METHOD;
+        }
+        else if (operandStack.peek() instanceof InnerCallOperand)
+        {
+            type = INNER_CALL;
         }
         else if (parseContext.getOperatorStack().peek() instanceof SpotOperator)
         {
@@ -86,7 +91,15 @@ public class LeftParenOperator implements Operator
                 List<Operand>  list         = processStack.stream().toList();
                 processStack.clear();
                 MethodInvokeOperand.DirectMethod peek = (MethodInvokeOperand.DirectMethod) parseContext.getOperandStack().peek();
-                peek.setMethodParams(list);
+                peek.setMethodParams(list.toArray(Operand[]::new));
+            }
+            case INNER_CALL ->
+            {
+                Deque<Operand> processStack = parseContext.getProcessStack();
+                List<Operand>  list         = processStack.stream().toList();
+                processStack.clear();
+                InnerCallOperand peek = (InnerCallOperand) parseContext.getOperandStack().peek();
+                peek.setMethodParams(list.toArray(Operand[]::new));
             }
             case STATIC_METHOD, INSTANCE_METHOD ->
             {

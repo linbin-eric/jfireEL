@@ -31,7 +31,11 @@ public class RightParenOperator implements Operator
             throw new IllegalStateException("表达式存在异常，)没有对应匹配的(，异常位置" + fragment);
         }
         LeftParenOperator leftParenOperator = (LeftParenOperator) operatorStack.peek();
-        if (leftParenOperator.getType() == LeftParenOperator.DIRECT_METHOD || leftParenOperator.getType() == LeftParenOperator.STATIC_METHOD || leftParenOperator.getType() == LeftParenOperator.INSTANCE_METHOD)
+        if (leftParenOperator.getType() == LeftParenOperator.DIRECT_METHOD//
+            || leftParenOperator.getType() == LeftParenOperator.STATIC_METHOD //
+            || leftParenOperator.getType() == LeftParenOperator.INSTANCE_METHOD//
+            || leftParenOperator.getType() == LeftParenOperator.INNER_CALL//
+        )
         {
             String sub = fragment.substring(leftParenOperator.getFragment().length() + 1, fragment.length());
             if (sub.trim().equals(")") == false)

@@ -1,53 +1,59 @@
 package com.jfirer.jfireel.expression2;
 
+import com.jfirer.jfireel.expression2.impl.operand.LeftAngleBracketOperand;
 import com.jfirer.jfireel.expression2.impl.operand.MutliOperand;
 import com.jfirer.jfireel.expression2.parse.TokenParser;
 import com.jfirer.jfireel.expression2.parse.impl.*;
 import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiFunction;
 
 @Data
 public class ParseContext
 {
-    private static TokenParser[]             parsers         = new TokenParser[]{//
+    private static TokenParser[]                                                  parsers         = new TokenParser[]{//
             new SkipIgnoreToken(),//
             new NumberParser(),//
             new BooleanParser(),//
+            new NullParser(),//
             new ExtraExecuteParser(),//
+            new InnnerCallParser(),//
             new DirectMethodParser(),//
             new StaticClassParser(),//
             new VariableParser(),//
             new LiteralParser(),//
             new BasicOperatorParser(),//
             new LeftParenParser(),//
-            new RightParenParser(),//玩
+            new RightParenParser(),//
     };
-    private        Deque<Operand>            operandStack    = new LinkedList<>();
-    private        Deque<Operator>           operatorStack   = new LinkedList<>();
-    private        Deque<Operand>            processStack    = new LinkedList<>();
-    private final  String                    el;
-    private        int                       index;
+    private        Deque<Operand>                                                 operandStack    = new LinkedList<>();
+    private        Deque<Operator>                                                operatorStack   = new LinkedList<>();
+    private        Deque<Operand>                                                 processStack    = new LinkedList<>();
+    private final  String                                                         el;
+    private        int                                                            index;
     @Setter(AccessLevel.NONE)
-    private        Map<String, Class<?>>     staticClassName = new HashMap<>();
+    private        Map<String, Class<?>>                                          staticClassName = new HashMap<>();
     @Setter(AccessLevel.NONE)
-    private        Map<String, List<Method>> directMethods   = new HashMap<>();
+    private        Map<String, List<Method>>                                      directMethods   = new HashMap<>();
+    @Setter(AccessLevel.NONE)
+    private        Map<String, BiFunction<Map<String, Object>, Object[], Object>> innerCalls      = new HashMap<>();
 
     public ParseContext(String el)
     {
         this.el = el;
     }
 
-    public ParseContext(String el, Map<String, Class<?>> staticClassName, Map<String, List<Method>> directMethods)
+    public ParseContext(String el, Map<String, Class<?>> staticClassName, Map<String, List<Method>> directMethods, Map<String, BiFunction<Map<String, Object>, Object[], Object>> innerCalls)
     {
         this.el = el;
         this.staticClassName.putAll(staticClassName);
         this.directMethods.putAll(directMethods);
+        this.innerCalls.putAll(innerCalls);
     }
 
     public void registerClass(String name, Class<?> ckass)
@@ -141,6 +147,10 @@ public class ParseContext
         while (operandStack.isEmpty() == false)
         {
             processStack.push(operandStack.pop());
+        }
+        if (processStack.stream().filter(operand -> operand instanceof LeftAngleBracketOperand).findAny().isPresent())
+        {
+            throw new IllegalStateException("当前表达式解析出现异常，代码中{}没有完全配对");
         }
         return new MutliOperand(processStack.toArray(Operand[]::new));
     }

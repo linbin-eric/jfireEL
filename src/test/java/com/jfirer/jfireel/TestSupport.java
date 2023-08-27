@@ -55,6 +55,11 @@ public abstract class TestSupport
         {
             return a + b;
         }
+
+        public void setPerson(Person person)
+        {
+            this.person = person;
+        }
     }
 
     public static class Person
@@ -64,6 +69,11 @@ public abstract class TestSupport
         public int getAge()
         {
             return age;
+        }
+
+        public void setAge(int age)
+        {
+            this.age = age;
         }
     }
 }

@@ -3,18 +3,12 @@ package com.jfirer.jfireel.expression2.impl.operand;
 import com.jfirer.jfireel.expression2.Operand;
 
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public abstract class BasicOperandImpl implements Operand
 {
-    protected Operand                             left;
-    protected Operand                             right;
-    protected String                              fragment;
-    protected BiFunction<String, Object, Object>  stringObjectFunction;
-    protected BiFunction<Number, Object, Object>  numberObjectFunction;
-    protected BiFunction<Boolean, Object, Object> booleanOperandFunction;
-    protected Function<Object, Object>            nullFunction;
+    protected Operand left;
+    protected Operand right;
+    protected String  fragment;
 
     public BasicOperandImpl(Operand left, Operand right, String fragment)
     {
@@ -23,267 +17,40 @@ public abstract class BasicOperandImpl implements Operand
         this.fragment = fragment;
     }
 
-    @Override
-    public Object calculate(Map<String, Object> param)
-    {
-        Object leftValue  = left.calculate(param);
-        Object rightValue = right.calculate(param);
-//        if (leftValue == null)
-//        {
-//            if (rightValue == null)
-//            {
-//                return true;
-//            }
-//            else if (rightValue instanceof String s2)
-//            {
-//                return process(null, s2, param);
-//            }
-//            else if (rightValue instanceof Number)
-//            {
-//                if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-//                {
-//                    return process(s1, ((Number) rightValue).longValue(), param);
-//                }
-//                else if (rightValue instanceof Double || rightValue instanceof Float)
-//                {
-//                    return process(s1, ((Number) rightValue).doubleValue(), param);
-//                }
-//                else
-//                {
-//                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//                }
-//            }
-//            else if (rightValue instanceof Boolean)
-//            {
-//                return process(s1, ((Boolean) rightValue), param);
-//            }
-//            else
-//            {
-//                throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//            }
-//        }
-//        if (leftValue instanceof String s1)
-//        {
-//            if (rightValue == null)
-//            {
-//                return s1 == null;
-//            }
-//            else if (rightValue instanceof String s2)
-//            {
-//                return process(s1, s2, param);
-//            }
-//            else if (rightValue instanceof Number)
-//            {
-//                if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-//                {
-//                    return process(s1, ((Number) rightValue).longValue(), param);
-//                }
-//                else if (rightValue instanceof Double || rightValue instanceof Float)
-//                {
-//                    return process(s1, ((Number) rightValue).doubleValue(), param);
-//                }
-//                else
-//                {
-//                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//                }
-//            }
-//            else if (rightValue instanceof Boolean)
-//            {
-//                return process(s1, ((Boolean) rightValue), param);
-//            }
-//            else
-//            {
-//                throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//            }
-//        }
-//        else if (leftValue instanceof Number)
-//        {
-//            if (rightValue == null)
-//            {
-//                return leftValue == null;
-//            }
-//            else if (leftValue instanceof Integer || leftValue instanceof Long || leftValue instanceof Short || leftValue instanceof Byte)
-//            {
-//                long l1 = ((Number) leftValue).longValue();
-//                if (rightValue instanceof String s2)
-//                {
-//                    return process(l1, s2, param);
-//                }
-//                else if (rightValue instanceof Number)
-//                {
-//                    if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-//                    {
-//                        return process(l1, ((Number) rightValue).longValue(), param);
-//                    }
-//                    else if (rightValue instanceof Double || rightValue instanceof Float)
-//                    {
-//                        return process(l1, ((Number) rightValue).doubleValue(), param);
-//                    }
-//                    else
-//                    {
-//                        throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//                    }
-//                }
-//                else if (rightValue instanceof Boolean)
-//                {
-//                    return process(l1, ((Boolean) rightValue), param);
-//                }
-//                else
-//                {
-//                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//                }
-//            }
-//            else
-//            {
-//                double d1 = ((Number) leftValue).doubleValue();
-//                if (rightValue instanceof String s2)
-//                {
-//                    return process(d1, s2, param);
-//                }
-//                else if (rightValue instanceof Number)
-//                {
-//                    if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-//                    {
-//                        return process(d1, ((Number) rightValue).longValue(), param);
-//                    }
-//                    else if (rightValue instanceof Double || rightValue instanceof Float)
-//                    {
-//                        return process(d1, ((Number) rightValue).doubleValue(), param);
-//                    }
-//                    else
-//                    {
-//                        throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//                    }
-//                }
-//                else if (rightValue instanceof Boolean)
-//                {
-//                    return process(d1, ((Boolean) rightValue), param);
-//                }
-//                else
-//                {
-//                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//                }
-//            }
-//        }
-//        else if (leftValue instanceof Boolean b1)
-//        {
-//            if (rightValue == null)
-//            {
-//                return leftValue == null;
-//            }
-//            else if (rightValue instanceof String s2)
-//            {
-//                return process(b1, s2, param);
-//            }
-//            else if (rightValue instanceof Number)
-//            {
-//                if (rightValue instanceof Long || rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-//                {
-//                    return process(b1, ((Number) rightValue).longValue(), param);
-//                }
-//                else if (rightValue instanceof Double || rightValue instanceof Float)
-//                {
-//                    return process(b1, ((Number) rightValue).doubleValue(), param);
-//                }
-//                else
-//                {
-//                    throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//                }
-//            }
-//            else if (rightValue instanceof Boolean)
-//            {
-//                return process(b1, ((Boolean) rightValue), param);
-//            }
-//            else
-//            {
-//                throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//            }
-//        }
-//        else
-//        {
-//            throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);
-//        }
-        if (leftValue instanceof String s)
-        {
-            return stringObjectFunction.apply(s, rightValue);
-        }
-        else if (rightValue instanceof Number n)
-        {
-            return numberObjectFunction.apply(n, rightValue);
-        }
-        else if (rightValue instanceof Boolean b)
-        {
-            return booleanOperandFunction.apply(b, rightValue);
-        }
-        else
-        {
-            return nullFunction.apply(rightValue);
-        }
-    }
-
-    protected Object process(Double d1, Double d2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Double d1, Long l2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Double d1, String s2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Double d1, Boolean b2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Long l1, Double d2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Long l1, Long l2, Map<String, Object> param)       {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Long l1, String s2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Long l1, Boolean b2, Map<String, Object> param)    {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(String s1, Double d2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(String s1, Long l2, Map<String, Object> param)     {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(String s1, String s2, Map<String, Object> param)   {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(String s1, Boolean b2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Boolean b1, Double d2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Boolean b1, Long l2, Map<String, Object> param)    {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Boolean b1, String s2, Map<String, Object> param)  {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
-    protected Object process(Boolean b1, Boolean b2, Map<String, Object> param) {throw new IllegalArgumentException("操作数解析出现异常，该操作符能够识别的操作数类型只有字符串，Long，Double。异常解析位置为" + fragment);}
-
     public static class AndOperand extends BasicOperandImpl
     {
         public AndOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-            String msg = "操作数解析出现异常，&& 操作符要求左右参数都是 Boolean。异常解析位置为" + fragment;
-            booleanOperandFunction = (b, o) -> {
-                if (o instanceof Boolean b2)
-                {
-                    return b && b2;
-                }
-                else
-                {
-                    throw new IllegalArgumentException(msg);
-                }
-            };
-            stringObjectFunction   = (s1, s2) -> {
-                throw new IllegalArgumentException(msg);
-            };
-            numberObjectFunction   = (n1, n2) -> {
-                throw new IllegalArgumentException(msg);
-            };
-            nullFunction           = n -> {
-                throw new IllegalArgumentException(msg);
-            };
         }
 
         @Override
-        protected Object process(Boolean b1, Boolean b2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return b1 && b2;
+            Object leftValue = left.calculate(param);
+            if (leftValue instanceof Boolean b)
+            {
+                if (!b.booleanValue())
+                {
+                    return false;
+                }
+                else
+                {
+                    Object rightValue = right.calculate(param);
+                    if (rightValue instanceof Boolean b2)
+                    {
+                        return b2.booleanValue();
+                    }
+                    else
+                    {
+                        throw new IllegalStateException("操作数解析出现异常，&& 操作符要求左右参数都是 Boolean。异常解析位置为" + fragment);
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，&& 操作符要求左右参数都是 Boolean。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -292,115 +59,146 @@ public abstract class BasicOperandImpl implements Operand
         public OrOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-            String msg = "操作数解析出现异常，|| 操作符要求左右参数都是 Boolean。异常解析位置为" + fragment;
-            booleanOperandFunction = (b, o) -> {
-                if (o instanceof Boolean b2)
+        }
+
+        @Override
+        public Object calculate(Map<String, Object> param)
+        {
+            Object leftValue = left.calculate(param);
+            if (leftValue instanceof Boolean b)
+            {
+                if (b.booleanValue())
                 {
-                    return b || b2;
+                    return true;
                 }
                 else
                 {
-                    throw new IllegalArgumentException(msg);
+                    Object rightValue = right.calculate(param);
+                    if (rightValue instanceof Boolean b2)
+                    {
+                        return b2.booleanValue();
+                    }
+                    else
+                    {
+                        throw new IllegalStateException("操作数解析出现异常，|| 操作符要求左右参数都是 Boolean。异常解析位置为" + fragment);
+                    }
                 }
-            };
-            stringObjectFunction   = (s1, s2) -> {
-                throw new IllegalArgumentException(msg);
-            };
-            numberObjectFunction   = (n1, n2) -> {
-                throw new IllegalArgumentException(msg);
-            };
-            nullFunction           = n -> {
-                throw new IllegalArgumentException(msg);
-            };
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，|| 操作符要求左右参数都是 Boolean。异常解析位置为" + fragment);
+            }
         }
-
     }
 
     public static class PlusOperand extends BasicOperandImpl
     {
+        private static final ThreadLocal<StringBuilder> BUILDER = ThreadLocal.withInitial(() -> new StringBuilder());
+
         public PlusOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-            String msg = "操作数解析出现异常，++ 操作符要求左右参数都是 String,Number。异常解析位置为" + fragment;
-            booleanOperandFunction = (b, o) -> {
-                if (o instanceof Boolean b2)
+        }
+
+        @Override
+        public Object calculate(Map<String, Object> param)
+        {
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof String || rightValue instanceof String)
+            {
+                StringBuilder builder = BUILDER.get();
+                String        result  = builder.append(leftValue).append(rightValue).toString();
+                builder.setLength(0);
+                return result;
+            }
+            else if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
                 {
-                    return b && b2;
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i + ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i + ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i + ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i + ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i + ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i + ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i + ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i + ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i + ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i + ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i + ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i + ((Number) rightValue).doubleValue();
+                    }
                 }
                 else
                 {
-                    throw new IllegalArgumentException(msg);
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i + ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i + ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i + ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i + ((Number) rightValue).doubleValue();
+                    }
                 }
-            };
-            stringObjectFunction   = (s1, s2) -> {
-                throw new IllegalArgumentException(msg);
-            };
-            numberObjectFunction   = (n1, n2) -> {
-                throw new IllegalArgumentException(msg);
-            };
-            nullFunction           = n -> {
-                throw new IllegalArgumentException(msg);
-            };
-        }
-
-        @Override
-        protected Object process(String s1, String s2, Map<String, Object> param)
-        {
-            return s1 + s2;
-        }
-
-        @Override
-        protected Object process(String s1, Long l2, Map<String, Object> param)
-        {
-            return s1 + l2;
-        }
-
-        @Override
-        protected Object process(String s1, Double d2, Map<String, Object> param)
-        {
-            return s1 + d2;
-        }
-
-        @Override
-        protected Object process(String s1, Boolean b2, Map<String, Object> param)
-        {
-            return s1 + b2;
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1 + l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 + d2;
-        }
-
-        @Override
-        protected Object process(Long l1, String s2, Map<String, Object> param)
-        {
-            return l1 + s2;
-        }
-
-        @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
-        {
-            return d1 + l2;
-        }
-
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1 + d2;
-        }
-
-        @Override
-        protected Object process(Double d1, String s2, Map<String, Object> param)
-        {
-            return d1 + s2;
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，+ 操作符要求左右参数都是 String,Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -412,27 +210,97 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return d1 - d2;
-        }
-
-        @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
-        {
-            return d1 - l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 - d2;
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1 - l2;
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i - ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i - ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i - ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i - ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i - ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i - ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i - ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i - ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i - ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i - ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i - ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i - ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i - ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i - ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i - ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i - ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，- 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -444,27 +312,97 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return l1 * l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 * d2;
-        }
-
-        @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
-        {
-            return d1 * l2;
-        }
-
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1 * d2;
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i * ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i * ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i * ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i * ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i * ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i * ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i * ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i * ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i * ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i * ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i * ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i * ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i * ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i * ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i * ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i * ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，* 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -476,27 +414,97 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return d1 / d2;
-        }
-
-        @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
-        {
-            return d1 / l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 / d2;
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1 / l2.doubleValue();
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i / ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i / ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i / ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i / ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i / ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i / ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i / ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i / ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i / ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i / ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i / ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i / ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i / ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i / ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i / ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i / ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，/ 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -508,27 +516,97 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return l1 % l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 % d2;
-        }
-
-        @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
-        {
-            return d1 % l2;
-        }
-
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1 % d2;
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i % ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i % ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i % ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i % ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i % ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i % ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i % ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i % ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i % ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i % ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i % ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i % ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i % ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i % ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i % ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i % ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，% 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -537,42 +615,112 @@ public abstract class BasicOperandImpl implements Operand
         public EqOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+            String msg = "操作数解析出现异常，= 操作符要求左右参数都是可比较对象。异常解析位置为" + fragment;
         }
 
         @Override
-        protected Object process(Boolean b1, Boolean b2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return b1.booleanValue() == b2.booleanValue();
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1.longValue() == l2.longValue();
-        }
-
-        @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
-        {
-            return d1.doubleValue() == l2.longValue();
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1.longValue() == d2.doubleValue();
-        }
-
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1.doubleValue() == d2.doubleValue();
-        }
-
-        @Override
-        protected Object process(String s1, String s2, Map<String, Object> param)
-        {
-            return s2.equals(s1);
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i == ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i == ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i == ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i == ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i == ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i == ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i == ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i == ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i == ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i == ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i == ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i == ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i == ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i == ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i == ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i == ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else if (leftValue == null)
+            {
+                return rightValue == null;
+            }
+            else
+            {
+                if (rightValue == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return leftValue.equals(rightValue);
+                }
+            }
         }
     }
 
@@ -589,7 +737,7 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         public Object calculate(Map<String, Object> param)
         {
-            return ((Boolean) eqOperand.calculate(param)) == false;
+            return !(Boolean) eqOperand.calculate(param);
         }
     }
 
@@ -598,30 +746,100 @@ public abstract class BasicOperandImpl implements Operand
         public GeOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-        }
 
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1 >= d2;
         }
-
         @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return d1 >= l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 >= d2;
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1 >= l2;
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i >= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i >= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i >= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i >= ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i >= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i >= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i >= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i >= ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i >= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i >= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i >= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i >= ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i >= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i >= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i >= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i >= ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，>= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -630,30 +848,100 @@ public abstract class BasicOperandImpl implements Operand
         public GtOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-        }
 
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1 > d2;
         }
-
         @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return d1 > l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 > d2;
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1 > l2;
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i > ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i > ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i > ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i > ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i > ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i > ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i > ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i > ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i > ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i > ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i > ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i > ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i > ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i > ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i > ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i > ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，> 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -662,30 +950,100 @@ public abstract class BasicOperandImpl implements Operand
         public LeOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-        }
 
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1 <= d2;
         }
-
         @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return d1 <= l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 <= d2;
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1 <= l2;
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i <= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i <= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i <= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i <= ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i <= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i <= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i <= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i <= ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i <= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i <= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i <= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i <= ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i <= ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i <= ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i <= ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i <= ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，<= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 
@@ -694,30 +1052,100 @@ public abstract class BasicOperandImpl implements Operand
         public LtOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-        }
 
-        @Override
-        protected Object process(Double d1, Double d2, Map<String, Object> param)
-        {
-            return d1 < d2;
         }
-
         @Override
-        protected Object process(Double d1, Long l2, Map<String, Object> param)
+        public Object calculate(Map<String, Object> param)
         {
-            return d1 < l2;
-        }
-
-        @Override
-        protected Object process(Long l1, Double d2, Map<String, Object> param)
-        {
-            return l1 < d2;
-        }
-
-        @Override
-        protected Object process(Long l1, Long l2, Map<String, Object> param)
-        {
-            return l1 < l2;
+            Object leftValue  = left.calculate(param);
+            Object rightValue = right.calculate(param);
+            if (leftValue instanceof Number && rightValue instanceof Number)
+            {
+                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
+                {
+                    int i = ((Number) leftValue).intValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i < ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i < ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i < ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i < ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Long)
+                {
+                    long i = ((Number) leftValue).longValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i <  ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i < ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i < ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i < ((Number) rightValue).doubleValue();
+                    }
+                }
+                else if (leftValue instanceof Float)
+                {
+                    float i = ((Number) leftValue).floatValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i < ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i < ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i < ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i < ((Number) rightValue).doubleValue();
+                    }
+                }
+                else
+                {
+                    double i = ((Number) leftValue).doubleValue();
+                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
+                    {
+                        return i < ((Number) rightValue).intValue();
+                    }
+                    else if (rightValue instanceof Long)
+                    {
+                        return i < ((Long) rightValue).longValue();
+                    }
+                    else if (rightValue instanceof Float)
+                    {
+                        return i < ((Float) rightValue).floatValue();
+                    }
+                    else
+                    {
+                        return i < ((Number) rightValue).doubleValue();
+                    }
+                }
+            }
+            else
+            {
+                throw new IllegalStateException("操作数解析出现异常，< 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
+            }
         }
     }
 }

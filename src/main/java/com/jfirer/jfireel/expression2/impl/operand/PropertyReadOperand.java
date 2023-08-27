@@ -1,6 +1,6 @@
 package com.jfirer.jfireel.expression2.impl.operand;
 
-import com.jfirer.baseutil.reflect.ReflectUtil;
+import com.jfirer.baseutil.reflect.ValueAccessor;
 import com.jfirer.jfireel.expression2.Operand;
 import lombok.Data;
 
@@ -21,20 +21,11 @@ public abstract class PropertyReadOperand implements Operand
         {
             try
             {
-                Field candidate = ckass.getDeclaredField(fieldName);
-                if (candidate == null)
-                {
-                    ckass = ckass.getSuperclass();
-                }
-                else
-                {
-                    candidate.setAccessible(true);
-                    return candidate;
-                }
+                return ckass.getDeclaredField(fieldName);
             }
             catch (NoSuchFieldException e)
             {
-                throw new RuntimeException(e);
+                ckass = ckass.getSuperclass();
             }
         }
         throw new IllegalArgumentException("解析属性，未能发现属性，异常解析表达式位置为：" + fragment);
@@ -47,7 +38,7 @@ public abstract class PropertyReadOperand implements Operand
             super(typeOperand, propertyNameOperand, fragment);
             Class<?> ckass = ((StaticClassOperand) typeOperand).getStaticClass();
             field = findField(ckass, propertyNameOperand.getVariable(), fragment);
-
+            field.setAccessible(true);
         }
 
         @Override
@@ -66,6 +57,8 @@ public abstract class PropertyReadOperand implements Operand
 
     public static class InstancePropertyReadOperand extends PropertyReadOperand
     {
+        private volatile ValueAccessor valueAccessor;
+
         public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment)
         {
             super(typeOperand, propertyNameOperand, fragment);
@@ -74,35 +67,20 @@ public abstract class PropertyReadOperand implements Operand
         @Override
         public Object calculate(Map<String, Object> param)
         {
-            if (field == null)
+            if (valueAccessor == null)
             {
                 synchronized (this)
                 {
-                    if (field == null)
+                    if (valueAccessor == null)
                     {
                         Object instance = typeOperand.calculate(param);
-                        field = findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
-                        field.setAccessible(true);
-                        try
-                        {
-                            return field.get(instance);
-                        }
-                        catch (IllegalAccessException e)
-                        {
-                            ReflectUtil.throwException(e);
-                            return null;
-                        }
+                        field         = findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
+                        valueAccessor = new ValueAccessor(field);
+                        return valueAccessor.get(instance);
                     }
                 }
             }
-            try
-            {
-                return field.get(typeOperand.calculate(param));
-            }
-            catch (IllegalAccessException e)
-            {
-                throw new RuntimeException(e);
-            }
+            return valueAccessor.get(typeOperand.calculate(param));
         }
     }
 }

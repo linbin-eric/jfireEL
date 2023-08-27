@@ -14,7 +14,7 @@ public abstract class MethodInvokeOperand implements Operand
 {
     protected          String        fragment;
     protected          String        methodName;
-    protected          List<Operand> methodParams;
+    protected          Operand[]     methodParams;
     protected          ConvertType[] convertTypes;
     protected volatile Method        method;
 
@@ -27,15 +27,52 @@ public abstract class MethodInvokeOperand implements Operand
     {
         for (int i = 0; i < methodParamValues.length; i++)
         {
+            Object paramValue = methodParamValues[i];
             switch (convertTypes[i])
             {
-                case INT -> methodParamValues[i] = ((Number) methodParamValues[i]).intValue();
-                case LONG -> methodParamValues[i] = ((Number) methodParamValues[i]).longValue();
-                case SHORT -> methodParamValues[i] = ((Number) methodParamValues[i]).shortValue();
-                case BYTE -> methodParamValues[i] = ((Number) methodParamValues[i]).byteValue();
-                case CHAR -> methodParamValues[i] = methodParamValues[i] instanceof Character ? methodParamValues[i] : ((String) methodParamValues[i]).charAt(0);
-                case FLOAT -> methodParamValues[i] = ((Number) methodParamValues[i]).floatValue();
-                case DOUBLE -> methodParamValues[i] = ((Number) methodParamValues[i]).doubleValue();
+                case INT ->
+                {
+                    if (paramValue instanceof Integer == false)
+                    {
+                        methodParamValues[i] = ((Number) paramValue).intValue();
+                    }
+                }
+                case LONG ->
+                {
+                    if (paramValue instanceof Long == false)
+                    {
+                        methodParamValues[i] = ((Number) paramValue).longValue();
+                    }
+                }
+                case SHORT ->
+                {
+                    if (paramValue instanceof Short == false)
+                    {
+                        methodParamValues[i] = ((Number) paramValue).shortValue();
+                    }
+                }
+                case BYTE ->
+                {
+                    if (paramValue instanceof Byte == false)
+                    {
+                        methodParamValues[i] = ((Number)paramValue).byteValue();
+                    }
+                }
+                case CHAR -> methodParamValues[i] = paramValue instanceof Character ? paramValue : ((String) paramValue).charAt(0);
+                case FLOAT ->
+                {
+                    if (paramValue instanceof Float == false)
+                    {
+                        methodParamValues[i] = ((Number) paramValue).floatValue();
+                    }
+                }
+                case DOUBLE ->
+                {
+                    if (paramValue instanceof Double == false)
+                    {
+                        methodParamValues[i] = ((Number) paramValue).doubleValue();
+                    }
+                }
                 case BOOLEAN, NONE -> {}
             }
         }
@@ -212,7 +249,8 @@ public abstract class MethodInvokeOperand implements Operand
                                 return ConvertType.NONE;
                             }
                         }).toArray(ConvertType[]::new);
-                        this.method  = method;
+                        method.setAccessible(true);
+                        this.method = method;
                         return;
                     }
                 }
@@ -230,7 +268,7 @@ public abstract class MethodInvokeOperand implements Operand
         {
             this.ckass        = ckass;
             this.methodName   = methodName;
-            this.methodParams = methodParams;
+            this.methodParams = methodParams.toArray(Operand[]::new);
             this.fragment     = fragment;
         }
 
@@ -243,13 +281,18 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (method == null)
                     {
-                        Object[] methodParamValues = methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new);
+                        Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
                         findMethod(ckass, methodName, methodParamValues);
                         return methodInvoke(null, methodParamValues);
                     }
                 }
             }
-            return methodInvoke(null, methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
+            Object[] args = new Object[methodParams.length];
+            for (int i = 0; i < args.length; i++)
+            {
+                args[i] = methodParams[i].calculate(param);
+            }
+            return methodInvoke(null, args);
         }
     }
 
@@ -262,7 +305,7 @@ public abstract class MethodInvokeOperand implements Operand
         {
             this.instanceOperand = instanceOperand;
             this.methodName      = methodName;
-            this.methodParams    = methodParams;
+            this.methodParams    = methodParams.toArray(Operand[]::new);
             this.fragment        = fragment;
         }
 
@@ -275,14 +318,23 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (method == null)
                     {
-                        Object   instance          = instanceOperand.calculate(param);
-                        Object[] methodParamValues = methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new);
-                        findMethod(instance.getClass(), methodName, methodParamValues);
-                        return methodInvoke(instance, methodParamValues);
+                        Object   instance = instanceOperand.calculate(param);
+                        Object[] args     = new Object[methodParams.length];
+                        for (int i = 0; i < args.length; i++)
+                        {
+                            args[i] = methodParams[i].calculate(param);
+                        }
+                        findMethod(instance.getClass(), methodName, args);
+                        return methodInvoke(instance, args);
                     }
                 }
             }
-            return methodInvoke(instanceOperand.calculate(param), methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
+            Object[] args = new Object[methodParams.length];
+            for (int i = 0; i < args.length; i++)
+            {
+                args[i] = methodParams[i].calculate(param);
+            }
+            return methodInvoke(instanceOperand.calculate(param), args);
         }
     }
 
@@ -305,13 +357,18 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (method == null)
                     {
-                        Object[] methodParamValues = methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new);
+                        Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
                         findMethod(candidates, methodParamValues, fragment);
                         return methodInvoke(null, methodParamValues);
                     }
                 }
             }
-            return methodInvoke(null, methodParams.stream().map(operand -> operand.calculate(param)).toArray(Object[]::new));
+            Object[] args = new Object[methodParams.length];
+            for (int i = 0; i < args.length; i++)
+            {
+                args[i] = methodParams[i].calculate(param);
+            }
+            return methodInvoke(null, args);
         }
 
         protected void findMethod(List<Method> methods, Object[] methodParamValues, String fragment)

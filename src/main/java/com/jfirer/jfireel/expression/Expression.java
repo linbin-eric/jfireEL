@@ -65,7 +65,7 @@ public class Expression
 
     public static Expression parse(String el)
     {
-        return new Expression(el, Functional.build().setMethodInvokeByCompile(true).toFunction(), DEFAULT_HEAD);
+        return new Expression(el, Functional.build().setMethodInvokeByCompile(false).toFunction(), DEFAULT_HEAD);
     }
 
     public static Expression parse(String el, int function)
