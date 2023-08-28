@@ -9,6 +9,7 @@ import com.jfirer.jfireel.expression2.Operand;
 import lombok.Data;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +19,15 @@ import java.util.stream.Stream;
 @Data
 public abstract class MethodInvokeOperand implements Operand
 {
-    protected          String        fragment;
-    protected          String        methodName;
-    protected          Operand[]     methodParams;
-    protected          ConvertType[] convertTypes;
-    protected volatile Method        method;
+    protected            String               fragment;
+    protected            String               methodName;
+    protected            Operand[]            methodParams;
+    protected            ConvertType[]        convertTypes;
+    protected            Method               method;
+    protected            CompileMethodInvoker invoker;
+    protected volatile   boolean              methodIdentify = false;
+    private static final CompileHelper        COMPILE_HELPER = new CompileHelper();
+    private static final AtomicInteger        COUNTER        = new AtomicInteger(1);
 
     enum ConvertType
     {
@@ -261,6 +266,222 @@ public abstract class MethodInvokeOperand implements Operand
         throw new IllegalArgumentException("解析过程中发现未能发现匹配的直接方法对象。异常解析位置为" + fragment);
     }
 
+    public interface CompileMethodInvoker
+    {
+        Object invoke(Object instance, Operand[] methodParams, Map<String, Object> param);
+
+        default Integer convertInteger(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Integer)
+            {
+                return (Integer) value;
+            }
+            else
+            {
+                return ((Number) value).intValue();
+            }
+        }
+
+        default Long convertLong(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Long)
+            {
+                return (Long) value;
+            }
+            else
+            {
+                return ((Number) value).longValue();
+            }
+        }
+
+        default Short convertShort(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Short)
+            {
+                return (Short) value;
+            }
+            else
+            {
+                return ((Number) value).shortValue();
+            }
+        }
+
+        default Byte convertByte(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Byte)
+            {
+                return (Byte) value;
+            }
+            else
+            {
+                return ((Number) value).byteValue();
+            }
+        }
+
+        default Float convertFloat(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Float)
+            {
+                return (Float) value;
+            }
+            else
+            {
+                return ((Number) value).floatValue();
+            }
+        }
+
+        default Double convertDouble(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Double)
+            {
+                return (Double) value;
+            }
+            else
+            {
+                return ((Number) value).doubleValue();
+            }
+        }
+
+        default Boolean convertBoolean(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Boolean)
+            {
+                return (Boolean) value;
+            }
+            else
+            {
+                throw new IllegalArgumentException("参数类型应该是 Boolean");
+            }
+        }
+
+        default Character convertCharacter(Operand operand, Map<String, Object> param)
+        {
+            Object value = operand.calculate(param);
+            if (value == null)
+            {
+                return null;
+            }
+            else if (value instanceof Character)
+            {
+                return (Character) value;
+            }
+            else
+            {
+                throw new IllegalArgumentException("参数类型应该是 Char");
+            }
+        }
+    }
+
+    protected CompileMethodInvoker buildInvoker()
+    {
+        ClassModel classModel = new ClassModel("CompileMethodInvoker_" + method.getName() + "_" + COUNTER.incrementAndGet(), Object.class, CompileMethodInvoker.class);
+        classModel.addImport(Number.class);
+        classModel.addImport(Character.class);
+        classModel.addImport(Boolean.class);
+        MethodModel methodModel = new MethodModel(classModel);
+        methodModel.setAccessLevel(MethodModel.AccessLevel.PUBLIC);
+        methodModel.setMethodName("invoke");
+        methodModel.setParamterTypes(Object.class, Operand[].class, Map.class);
+        methodModel.setReturnType(Object.class);
+        StringBuilder body;
+        if (Modifier.isStatic(method.getModifiers()))
+        {
+            body = new StringBuilder(" return (" + SmcHelper.getReferenceName(method.getDeclaringClass(), classModel) + ")." + method.getName() + "(");
+        }
+        else
+        {
+            body = new StringBuilder(" return ((" + SmcHelper.getReferenceName(method.getDeclaringClass(), classModel) + ")$0)." + method.getName() + "(");
+        }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        for (int i = 0; i < parameterTypes.length; i++)
+        {
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType.isPrimitive())
+            {
+                switch (convertTypes[i])
+                {
+                    case INT -> body.append("((Number)$1[").append(i).append("].calculate($2)).intValue(),");
+                    case LONG -> body.append("((Number)$1[").append(i).append("].calculate($2)).longValue(),");
+                    case SHORT -> body.append("((Number)$1[").append(i).append("].calculate($2)).shortValue(),");
+                    case BYTE -> body.append("((Number)$1[").append(i).append("].calculate($2)).byteValue(),");
+                    case CHAR -> body.append("((Character)$1[").append(i).append("].calculate($2)).charValue(),");
+                    case FLOAT -> body.append("((Number)$1[").append(i).append("].calculate($2)).floatValue(),");
+                    case DOUBLE -> body.append("((Number)$1[").append(i).append("].calculate($2)).doubleValue(),");
+                    case BOOLEAN -> body.append("((Boolean)$1[").append(i).append("].calculate($2)).booleanValue(),");
+                    case NONE -> {}
+                }
+            }
+            else
+            {
+                switch (convertTypes[i])
+                {
+                    case INT -> body.append("convertInteger($1[").append("i").append("],$2),");
+                    case LONG -> body.append("convertLong($1[").append("i").append("],$2),");
+                    case SHORT -> body.append("convertShort($1[").append("i").append("],$2),");
+                    case BYTE -> body.append("convertByte($1[").append("i").append("],$2),");
+                    case CHAR -> body.append("convertCharacter($1[").append("i").append("],$2),");
+                    case FLOAT -> body.append("convertFloat($1[").append("i").append("],$2),");
+                    case DOUBLE -> body.append("convertDouble($1[").append("i").append("],$2),");
+                    case BOOLEAN -> body.append("convertBoolean($1[").append("i").append("],$2),");
+                    case NONE -> body.append("(").append(parameterType.getName()).append(")$1[").append(i).append("].calculate($2),");
+                }
+            }
+        }
+        if (parameterTypes.length != 0)
+        {
+            body.setLength(body.length() - 1);
+        }
+        body.append(");");
+        methodModel.setBody(body.toString());
+        classModel.putMethodModel(methodModel);
+        Class<?> compile = null;
+        try
+        {
+            compile = COMPILE_HELPER.compile(classModel);
+            return (CompileMethodInvoker) compile.newInstance();
+        }
+        catch (Throwable e)
+        {
+            ReflectUtil.throwException(e);
+            return null;
+        }
+    }
+
     public static class StaticMethod extends MethodInvokeOperand
     {
         private Class<?> ckass;
@@ -344,10 +565,8 @@ public abstract class MethodInvokeOperand implements Operand
 
     public static class CompileInstanceMethod extends MethodInvokeOperand
     {
-        private              Operand              instanceOperand;
-        private volatile     CompileMethodInvoker invoker;
-        private static final CompileHelper        COMPILE_HELPER = new CompileHelper();
-        private static final AtomicInteger        COUNTER        = new AtomicInteger(1);
+        private          Operand              instanceOperand;
+        private volatile CompileMethodInvoker invoker;
 
         public CompileInstanceMethod(Operand instanceOperand, String methodName, List<Operand> methodParams, String fragment)
         {
@@ -382,214 +601,6 @@ public abstract class MethodInvokeOperand implements Operand
             }
             Object instance = instanceOperand.calculate(param);
             return invoker.invoke(instance, methodParams, param);
-        }
-
-        private CompileMethodInvoker buildInvoker()
-        {
-            ClassModel classModel = new ClassModel("CompileMethodInvoker_" + method.getName() + "_" + COUNTER.incrementAndGet(), Object.class, CompileMethodInvoker.class);
-            classModel.addImport(Number.class);
-            classModel.addImport(Character.class);
-            classModel.addImport(Boolean.class);
-            MethodModel methodModel = new MethodModel(classModel);
-            methodModel.setAccessLevel(MethodModel.AccessLevel.PUBLIC);
-            methodModel.setMethodName("invoke");
-            methodModel.setParamterTypes(Object.class, Operand[].class, Map.class);
-            methodModel.setReturnType(Object.class);
-            StringBuilder body           = new StringBuilder(" return ((" + SmcHelper.getReferenceName(method.getDeclaringClass(), classModel) + ")$0)." + method.getName() + "(");
-            Class<?>[]    parameterTypes = method.getParameterTypes();
-            for (int i = 0; i < parameterTypes.length; i++)
-            {
-                Class<?> parameterType = parameterTypes[i];
-                if (parameterType.isPrimitive())
-                {
-                    switch (convertTypes[i])
-                    {
-                        case INT -> body.append("((Number)$1[").append(i).append("].calculate($2)).intValue(),");
-                        case LONG -> body.append("((Number)$1[").append(i).append("].calculate($2)).longValue(),");
-                        case SHORT -> body.append("((Number)$1[").append(i).append("].calculate($2)).shortValue(),");
-                        case BYTE -> body.append("((Number)$1[").append(i).append("].calculate($2)).byteValue(),");
-                        case CHAR -> body.append("((Character)$1[").append(i).append("].calculate($2)).charValue(),");
-                        case FLOAT -> body.append("((Number)$1[").append(i).append("].calculate($2)).floatValue(),");
-                        case DOUBLE -> body.append("((Number)$1[").append(i).append("].calculate($2)).doubleValue(),");
-                        case BOOLEAN -> body.append("((Boolean)$1[").append(i).append("].calculate($2)).booleanValue(),");
-                        case NONE -> {}
-                    }
-                }
-                else
-                {
-                    switch (convertTypes[i])
-                    {
-                        case INT -> body.append("convertInteger($1[").append("i").append("],$2),");
-                        case LONG -> body.append("convertLong($1[").append("i").append("],$2),");
-                        case SHORT -> body.append("convertShort($1[").append("i").append("],$2),");
-                        case BYTE -> body.append("convertByte($1[").append("i").append("],$2),");
-                        case CHAR -> body.append("convertCharacter($1[").append("i").append("],$2),");
-                        case FLOAT -> body.append("convertFloat($1[").append("i").append("],$2),");
-                        case DOUBLE -> body.append("convertDouble($1[").append("i").append("],$2),");
-                        case BOOLEAN -> body.append("convertBoolean($1[").append("i").append("],$2),");
-                        case NONE -> body.append("(").append(parameterType.getName()).append(")$1[").append(i).append("].calculate($2),");
-                    }
-                }
-            }
-            if (parameterTypes.length != 0)
-            {
-                body.setLength(body.length() - 1);
-            }
-            body.append(");");
-            methodModel.setBody(body.toString());
-            classModel.putMethodModel(methodModel);
-            Class<?> compile = null;
-            try
-            {
-                compile = COMPILE_HELPER.compile(classModel);
-                return ((CompileMethodInvoker) compile.newInstance());
-            }
-            catch (Throwable e)
-            {
-                ReflectUtil.throwException(e);
-                return null;
-            }
-        }
-
-        public interface CompileMethodInvoker
-        {
-            Object invoke(Object instance, Operand[] methodParams, Map<String, Object> param);
-
-            default Integer convertInteger(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Integer)
-                {
-                    return (Integer) value;
-                }
-                else
-                {
-                    return ((Number) value).intValue();
-                }
-            }
-
-            default Long convertLong(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Long)
-                {
-                    return (Long) value;
-                }
-                else
-                {
-                    return ((Number) value).longValue();
-                }
-            }
-
-            default Short convertShort(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Short)
-                {
-                    return (Short) value;
-                }
-                else
-                {
-                    return ((Number) value).shortValue();
-                }
-            }
-
-            default Byte convertByte(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Byte)
-                {
-                    return (Byte) value;
-                }
-                else
-                {
-                    return ((Number) value).byteValue();
-                }
-            }
-
-            default Float convertFloat(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Float)
-                {
-                    return (Float) value;
-                }
-                else
-                {
-                    return ((Number) value).floatValue();
-                }
-            }
-
-            default Double convertDouble(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Double)
-                {
-                    return (Double) value;
-                }
-                else
-                {
-                    return ((Number) value).doubleValue();
-                }
-            }
-
-            default Boolean convertBoolean(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Boolean)
-                {
-                    return (Boolean) value;
-                }
-                else
-                {
-                    throw new IllegalArgumentException("参数类型应该是 Boolean");
-                }
-            }
-
-            default Character convertCharacter(Operand operand, Map<String, Object> param)
-            {
-                Object value = operand.calculate(param);
-                if (value == null)
-                {
-                    return null;
-                }
-                else if (value instanceof Character)
-                {
-                    return (Character) value;
-                }
-                else
-                {
-                    throw new IllegalArgumentException("参数类型应该是 Char");
-                }
-            }
         }
     }
 
