@@ -7,6 +7,7 @@ import com.jfirer.jfireel.expression2.parse.impl.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -14,9 +15,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiFunction;
 
 @Data
+@Accessors(chain = true)
 public class ParseContext
 {
-    private static TokenParser[]                                                  parsers         = new TokenParser[]{//
+    private static TokenParser[]                                                  parsers                = new TokenParser[]{//
             new SkipIgnoreToken(),//
             new NumberParser(),//
             new BooleanParser(),//
@@ -31,17 +33,19 @@ public class ParseContext
             new LeftParenParser(),//
             new RightParenParser(),//
     };
-    private        Deque<Operand>                                                 operandStack    = new LinkedList<>();
-    private        Deque<Operator>                                                operatorStack   = new LinkedList<>();
-    private        Deque<Operand>                                                 processStack    = new LinkedList<>();
+    private        Deque<Operand>                                                 operandStack           = new LinkedList<>();
+    private        Deque<Operator>                                                operatorStack          = new LinkedList<>();
+    private        Deque<Operand>                                                 processStack           = new LinkedList<>();
     private final  String                                                         el;
     private        int                                                            index;
     @Setter(AccessLevel.NONE)
-    private        Map<String, Class<?>>                                          staticClassName = new HashMap<>();
+    private        Map<String, Class<?>>                                          staticClassName        = new HashMap<>();
     @Setter(AccessLevel.NONE)
-    private        Map<String, List<Method>>                                      directMethods   = new HashMap<>();
+    private        Map<String, List<Method>>                                      directMethods          = new HashMap<>();
     @Setter(AccessLevel.NONE)
-    private        Map<String, BiFunction<Map<String, Object>, Object[], Object>> innerCalls      = new HashMap<>();
+    private        Map<String, BiFunction<Map<String, Object>, Object[], Object>> innerCalls             = new HashMap<>();
+    private        boolean                                                        methodInvokeUseCompile = false;
+    private        boolean                                                        propertyReadUseLambda  = false;
 
     public ParseContext(String el)
     {

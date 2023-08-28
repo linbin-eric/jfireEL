@@ -53,7 +53,14 @@ public class SpotOperator implements Operator
             }
             else
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toList(), fragment));
+                if (parseContext.isMethodInvokeUseCompile())
+                {
+                    parseContext.getOperandStack().push(new MethodInvokeOperand.CompileInstanceMethod(pop, methodName, processStack.stream().toList(), fragment));
+                }
+                else
+                {
+                    parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toList(), fragment));
+                }
             }
             processStack.clear();
         }
@@ -67,7 +74,7 @@ public class SpotOperator implements Operator
             }
             else
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
+                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.isPropertyReadUseLambda()));
             }
         }
     }

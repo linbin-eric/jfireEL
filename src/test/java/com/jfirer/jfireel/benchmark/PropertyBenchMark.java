@@ -5,6 +5,7 @@ import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.util.Functional;
 import com.jfirer.jfireel.expression2.Expression2;
 import com.jfirer.jfireel.expression2.Operand;
+import com.jfirer.jfireel.expression2.ParseContext;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -27,6 +28,7 @@ public class PropertyBenchMark
     Expression lexer   = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
     Expression lexer_2 = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
     Operand    lexer_3 = Expression2.parse("home.person.age");
+    Operand    lexer_4 = new ParseContext("home.person.age").setPropertyReadUseLambda(true).parse();
 
     public static void main(String[] args) throws RunnerException
     {
@@ -55,10 +57,10 @@ public class PropertyBenchMark
         lexer.calculate(vars);
     }
 
-//    @Benchmark
-    public void testUnsafe()
+        @Benchmark
+    public void testLambda()
     {
-        lexer_2.calculate(vars);
+        lexer_4.calculate(vars);
     }
 
     @Benchmark

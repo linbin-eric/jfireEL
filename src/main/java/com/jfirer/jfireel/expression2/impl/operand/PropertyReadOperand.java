@@ -1,5 +1,6 @@
 package com.jfirer.jfireel.expression2.impl.operand;
 
+import com.jfirer.baseutil.reflect.LambdaValueAccessor;
 import com.jfirer.baseutil.reflect.ValueAccessor;
 import com.jfirer.jfireel.expression2.Operand;
 import lombok.Data;
@@ -58,10 +59,12 @@ public abstract class PropertyReadOperand implements Operand
     public static class InstancePropertyReadOperand extends PropertyReadOperand
     {
         private volatile ValueAccessor valueAccessor;
+        private          boolean       propertyReadUseLambda;
 
-        public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment)
+        public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, boolean propertyReadUseLambda)
         {
             super(typeOperand, propertyNameOperand, fragment);
+            this.propertyReadUseLambda = propertyReadUseLambda;
         }
 
         @Override
@@ -75,7 +78,7 @@ public abstract class PropertyReadOperand implements Operand
                     {
                         Object instance = typeOperand.calculate(param);
                         field         = findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
-                        valueAccessor = new ValueAccessor(field);
+                        valueAccessor = propertyReadUseLambda ? new LambdaValueAccessor(field) : new ValueAccessor(field);
                         return valueAccessor.get(instance);
                     }
                 }
