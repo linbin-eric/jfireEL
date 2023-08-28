@@ -7,6 +7,7 @@ import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
 import com.jfirer.jfireel.expression2.Operand;
 import lombok.Data;
+import lombok.Getter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -19,9 +20,10 @@ import java.util.stream.Stream;
 @Data
 public abstract class MethodInvokeOperand implements Operand
 {
-    protected            String               fragment;
-    protected            String               methodName;
-    protected            Operand[]            methodParams;
+    protected final      String               methodName;
+    protected final      Operand[]            methodParams;
+    protected final      boolean              methodInvokeUseCompile;
+    protected final      String               fragment;
     protected            ConvertType[]        convertTypes;
     protected            Method               method;
     protected            CompileMethodInvoker invoker;
@@ -98,11 +100,11 @@ public abstract class MethodInvokeOperand implements Operand
         }
     }
 
-    protected void findMethod(List<Method> methods, Object[] methodParamValues, String fragment)
+    protected void findMethod(List<Method> methods, Object[] methodParamValues)
     {
         for (Method method : methods)
         {
-            if (method.getParameterCount() == methodParamValues.length)
+            if (method.getName().equalsIgnoreCase(methodName) && method.getParameterCount() == methodParamValues.length)
             {
                 boolean allTypeMatch = true;
                 for (int i = 0; i < method.getParameterTypes().length; i++)
@@ -259,6 +261,11 @@ public abstract class MethodInvokeOperand implements Operand
                         }
                     }).toArray(ConvertType[]::new);
                     this.method  = method;
+                    if (methodInvokeUseCompile)
+                    {
+                        invoker = buildInvoker();
+                    }
+                    methodIdentify = true;
                     return;
                 }
             }
@@ -482,159 +489,114 @@ public abstract class MethodInvokeOperand implements Operand
         }
     }
 
-    public static class StaticMethod extends MethodInvokeOperand
-    {
-        private Class<?> ckass;
-
-        public StaticMethod(Class<?> ckass, String methodName, List<Operand> methodParams, String fragment)
-        {
-            this.ckass        = ckass;
-            this.methodName   = methodName;
-            this.methodParams = methodParams.toArray(Operand[]::new);
-            this.fragment     = fragment;
-        }
-
-        @Override
-        public Object calculate(Map<String, Object> param)
-        {
-            if (method == null)
-            {
-                synchronized (this)
-                {
-                    if (method == null)
-                    {
-                        Object[]     methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
-                        List<Method> list              = Stream.iterate((Class) ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
-                        findMethod(list, methodParamValues, methodName);
-                        return methodInvoke(null, methodParamValues);
-                    }
-                }
-            }
-            Object[] args = new Object[methodParams.length];
-            for (int i = 0; i < args.length; i++)
-            {
-                args[i] = methodParams[i].calculate(param);
-            }
-            return methodInvoke(null, args);
-        }
-    }
-
-    @Data
-    public static class InstanceMethod extends MethodInvokeOperand
-    {
-        private Operand instanceOperand;
-
-        public InstanceMethod(Operand instanceOperand, String methodName, List<Operand> methodParams, String fragment)
-        {
-            this.instanceOperand = instanceOperand;
-            this.methodName      = methodName;
-            this.methodParams    = methodParams.toArray(Operand[]::new);
-            this.fragment        = fragment;
-        }
-
-        @Override
-        public Object calculate(Map<String, Object> param)
-        {
-            if (method == null)
-            {
-                synchronized (this)
-                {
-                    if (method == null)
-                    {
-                        Object   instance = instanceOperand.calculate(param);
-                        Object[] args     = new Object[methodParams.length];
-                        for (int i = 0; i < args.length; i++)
-                        {
-                            args[i] = methodParams[i].calculate(param);
-                        }
-                        Class        ckass = instance.getClass();
-                        List<Method> list  = Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
-                        findMethod(list, args, methodName);
-                        return methodInvoke(instance, args);
-                    }
-                }
-            }
-            Object[] args = new Object[methodParams.length];
-            for (int i = 0; i < args.length; i++)
-            {
-                args[i] = methodParams[i].calculate(param);
-            }
-            return methodInvoke(instanceOperand.calculate(param), args);
-        }
-    }
-
-    public static class CompileInstanceMethod extends MethodInvokeOperand
-    {
-        private          Operand              instanceOperand;
-        private volatile CompileMethodInvoker invoker;
-
-        public CompileInstanceMethod(Operand instanceOperand, String methodName, List<Operand> methodParams, String fragment)
-        {
-            this.instanceOperand = instanceOperand;
-            this.methodName      = methodName;
-            this.methodParams    = methodParams.toArray(Operand[]::new);
-            this.fragment        = fragment;
-        }
-
-        @Override
-        public Object calculate(Map<String, Object> param)
-        {
-            if (invoker == null)
-            {
-                synchronized (this)
-                {
-                    if (invoker == null)
-                    {
-                        Object   instance = instanceOperand.calculate(param);
-                        Object[] args     = new Object[methodParams.length];
-                        for (int i = 0; i < args.length; i++)
-                        {
-                            args[i] = methodParams[i].calculate(param);
-                        }
-                        Class        ckass = instance.getClass();
-                        List<Method> list  = Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
-                        findMethod(list, args, methodName);
-                        invoker = buildInvoker();
-                        return methodInvoke(instance, args);
-                    }
-                }
-            }
-            Object instance = instanceOperand.calculate(param);
-            return invoker.invoke(instance, methodParams, param);
-        }
-    }
-
-    @Data
     public static class DirectMethod extends MethodInvokeOperand
     {
         private final List<Method> candidates;
 
-        public DirectMethod(List<Method> candidates)
+        public DirectMethod(List<Method> candidates, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
         {
+            super(methodName, methodParams, methodInvokeUseCompile, fragment);
             this.candidates = candidates;
         }
 
         @Override
         public Object calculate(Map<String, Object> param)
         {
-            if (method == null)
+            if (methodIdentify == false)
             {
                 synchronized (this)
                 {
-                    if (method == null)
+                    if (methodIdentify == false)
                     {
                         Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
-                        findMethod(candidates, methodParamValues, fragment);
+                        findMethod(candidates, methodParamValues);
                         return methodInvoke(null, methodParamValues);
                     }
                 }
             }
-            Object[] args = new Object[methodParams.length];
-            for (int i = 0; i < args.length; i++)
+            if (methodInvokeUseCompile)
             {
-                args[i] = methodParams[i].calculate(param);
+                return invoker.invoke(null, methodParams, param);
             }
-            return methodInvoke(null, args);
+            else
+            {
+                Object[] args = new Object[methodParams.length];
+                for (int i = 0; i < args.length; i++)
+                {
+                    args[i] = methodParams[i].calculate(param);
+                }
+                return methodInvoke(null, args);
+            }
         }
     }
+
+    public static class StaticMethod extends DirectMethod
+    {
+        public StaticMethod(Class ckass, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
+        {
+            super(Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), methodName, methodParams, methodInvokeUseCompile, fragment);
+        }
+    }
+
+    public static class InstanceMethod extends MethodInvokeOperand
+    {
+        private Operand instanceOperand;
+
+        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
+        {
+            super(methodName, methodParams, methodInvokeUseCompile, fragment);
+            this.instanceOperand = instanceOperand;
+        }
+
+        @Override
+        public Object calculate(Map<String, Object> param)
+        {
+            if (methodIdentify == false)
+            {
+                synchronized (this)
+                {
+                    if (methodIdentify == false)
+                    {
+                        Object   instance = instanceOperand.calculate(param);
+                        Object[] args     = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
+                        findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
+                        return methodInvoke(instance, args);
+                    }
+                }
+            }
+            if (methodInvokeUseCompile)
+            {
+                return invoker.invoke(instanceOperand.calculate(param), methodParams, param);
+            }
+            else
+            {
+                Object[] args = new Object[methodParams.length];
+                for (int i = 0; i < args.length; i++)
+                {
+                    args[i] = methodParams[i].calculate(param);
+                }
+                return methodInvoke(instanceOperand.calculate(param), args);
+            }
+        }
+    }
+
+    public static class UnFinishDirectMethod extends MethodInvokeOperand
+    {
+        @Getter
+        private List<Method> candidates;
+
+        public UnFinishDirectMethod(List<Method> candidates, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
+        {
+            super(methodName, methodParams, methodInvokeUseCompile, fragment);
+            this.candidates = candidates;
+        }
+
+        @Override
+        public Object calculate(Map<String, Object> param)
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+
 }

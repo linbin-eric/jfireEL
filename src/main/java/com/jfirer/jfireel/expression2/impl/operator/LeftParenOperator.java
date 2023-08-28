@@ -39,7 +39,7 @@ public class LeftParenOperator implements Operator
     public void push(ParseContext parseContext)
     {
         Deque<Operand> operandStack = parseContext.getOperandStack();
-        if (operandStack.peek() instanceof MethodInvokeOperand.DirectMethod)
+        if (operandStack.peek() instanceof MethodInvokeOperand.UnFinishDirectMethod)
         {
             type = DIRECT_METHOD;
         }
@@ -90,8 +90,8 @@ public class LeftParenOperator implements Operator
                 Deque<Operand> processStack = parseContext.getProcessStack();
                 List<Operand>  list         = processStack.stream().toList();
                 processStack.clear();
-                MethodInvokeOperand.DirectMethod peek = (MethodInvokeOperand.DirectMethod) parseContext.getOperandStack().peek();
-                peek.setMethodParams(list.toArray(Operand[]::new));
+                MethodInvokeOperand.UnFinishDirectMethod peek = (MethodInvokeOperand.UnFinishDirectMethod) parseContext.getOperandStack().pop();
+                parseContext.getOperandStack().push(new MethodInvokeOperand.DirectMethod(peek.getCandidates(), peek.getMethodName(), list.toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), peek.getFragment()));
             }
             case INNER_CALL ->
             {

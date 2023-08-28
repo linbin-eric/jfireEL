@@ -43,7 +43,8 @@ public class DirectMethodParser implements TokenParser
             index = mark;
             if (methodNameSet.contains(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.DirectMethod(parseContext.getDirectMethods().get(el.substring(parseContext.getIndex(), index))));
+                String methodName = el.substring(parseContext.getIndex(), index);
+                parseContext.getOperandStack().push(new MethodInvokeOperand.UnFinishDirectMethod(parseContext.getDirectMethods().get(methodName), methodName, null, false, el.substring(0, index)));
                 parseContext.setIndex(index);
                 return true;
             }

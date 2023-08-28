@@ -49,18 +49,11 @@ public class SpotOperator implements Operator
             String  methodName = ((VariableOperand) processStack.pop()).getVariable();
             if (pop instanceof StaticClassOperand staticClassOperand)
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(staticClassOperand.getStaticClass(), methodName, processStack.stream().toList(), fragment));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(staticClassOperand.getStaticClass(), methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment));
             }
             else
             {
-                if (parseContext.isMethodInvokeUseCompile())
-                {
-                    parseContext.getOperandStack().push(new MethodInvokeOperand.CompileInstanceMethod(pop, methodName, processStack.stream().toList(), fragment));
-                }
-                else
-                {
-                    parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toList(), fragment));
-                }
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment));
             }
             processStack.clear();
         }
