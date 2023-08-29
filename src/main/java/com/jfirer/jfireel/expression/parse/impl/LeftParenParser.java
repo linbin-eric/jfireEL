@@ -1,24 +1,25 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.node.impl.SymBolNode;
-import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.Symbol;
+import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.operator.LeftParenOperator;
+import com.jfirer.jfireel.expression.parse.TokenParser;
 
-import java.util.Deque;
-
-public class LeftParenParser extends NodeParser
+public class LeftParenParser implements TokenParser
 {
-
     @Override
-    public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
+    public boolean parse(ParseContext parseContext)
     {
-        if ('(' != getChar(offset, el))
+        String el    = parseContext.getEl();
+        int    index = parseContext.getIndex();
+        if (el.charAt(index) == '(')
         {
-            return next.parse(el, offset, nodes, function);
+            new LeftParenOperator(el.substring(0, index)).push(parseContext);
+            parseContext.setIndex(index + 1);
+            return true;
         }
-        offset += 1;
-        nodes.push(new SymBolNode(Symbol.LEFT_PAREN));
-        return offset;
+        else
+        {
+            return false;
+        }
     }
 }

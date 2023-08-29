@@ -1,69 +1,64 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
-import com.jfirer.jfireel.expression.node.CalculateNode;
-import com.jfirer.jfireel.expression.node.impl.NumberNode;
-import com.jfirer.jfireel.expression.parse.Invoker;
-import com.jfirer.jfireel.expression.token.Operator;
-import com.jfirer.jfireel.expression.util.CharType;
+import com.jfirer.jfireel.expression.CharType;
+import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.operand.NumberOperand;
+import com.jfirer.jfireel.expression.parse.TokenParser;
 
-import java.util.Deque;
-
-public class NumberParser extends NodeParser
+public class NumberParser implements TokenParser
 {
-
-    private boolean match(String el, int offset, Deque<CalculateNode> nodes, int function)
+    @Override
+    public boolean parse(ParseContext parseContext)
     {
-        if ('-' == getChar(offset, el))
+        String el    = parseContext.getEl();
+        int    index = parseContext.getIndex();
+        char   c     = el.charAt(index);
+        if (c == '-')
         {
-            // 这种情况下，-是一个操作符
-            if (nodes.peek() != null && Operator.isOperator(nodes.peek().token()) == false)
+            if (CharType.isDigital(el.charAt(index + 1)))
             {
-                return false;
-            }
-            // 这种情况下，-代表是一个负数
-            if (CharType.isDigital(getChar(offset + 1, el)))
-            {
-                return true;
+                int preIndex = index - 1;
+                while (CharType.isIgnore(el.charAt(preIndex)))
+                {
+                    preIndex -= 1;
+                }
+                if (CharType.isDigital(el.charAt(preIndex)))
+                {
+                    return false;
+                }
+                else
+                {
+                    extractNum(parseContext);
+                    return true;
+                }
             }
             else
             {
-                throw new IllegalArgumentException("无法识别的-符号，不是负数也不是操作符,问题区间:" + el.substring(0, offset));
+                return false;
             }
+        }
+        else if (CharType.isDigital(c))
+        {
+            extractNum(parseContext);
+            return true;
         }
         else
         {
-            return CharType.isDigital(getChar(offset, el));
+            return false;
         }
     }
 
-    @Override
-    public int parse(String el, int offset, Deque<CalculateNode> nodes, int function, Invoker next)
+    private static void extractNum(ParseContext parseContext)
     {
-        if (match(el, offset, nodes, function) == false)
+        int    index = parseContext.getIndex();
+        String el    = parseContext.getEl();
+        index += 1;
+        while (index < el.length() && (CharType.isDigital(el.charAt(index)) || el.charAt(index) == '.'))
         {
-            return next.parse(el, offset, nodes, function);
+            index++;
         }
-        int  index = offset;
-        char c     = getChar(offset, el);
-        if (c == '-')
-        {
-            offset += 1;
-        }
-        boolean hasDot = false;
-        while (CharType.isDigital(c = getChar(offset, el)) || (hasDot == false && c == '.'))
-        {
-            offset++;
-            if (c == '.')
-            {
-                hasDot = true;
-            }
-        }
-        if (c == '.')
-        {
-            throw new IllegalArgumentException("非法的负数格式,问题区间:" + el.substring(index, offset));
-        }
-        String literals = el.substring(index, offset);
-        nodes.push(new NumberNode(literals));
-        return offset;
+        String numStr = el.substring(parseContext.getIndex(), index);
+        parseContext.getOperandStack().push(new NumberOperand(numStr, el.substring(0, index)));
+        parseContext.setIndex(index);
     }
 }

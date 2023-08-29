@@ -2,10 +2,8 @@ package com.jfirer.jfireel.benchmark;
 
 import com.jfirer.jfireel.TestSupport;
 import com.jfirer.jfireel.expression.Expression;
-import com.jfirer.jfireel.expression.util.Functional;
-import com.jfirer.jfireel.expression2.Expression2;
-import com.jfirer.jfireel.expression2.Operand;
-import com.jfirer.jfireel.expression2.ParseContext;
+import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.ParseContext;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -25,10 +23,8 @@ public class PropertyBenchMark
 {
     public    Map<String, Object> vars = new HashMap<String, Object>();
     protected TestSupport.Person  person;
-    Expression lexer   = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
-    Expression lexer_2 = Expression.parse("home.person.age", Functional.build().setRecognizeEveryTime(false).toFunction());
-    Operand    lexer_3 = Expression2.parse("home.person.age");
-    Operand    lexer_4 = new ParseContext("home.person.age").setPropertyReadUseLambda(true).parse();
+    Operand lexer_3 = Expression.parse("home.person.age");
+    Operand lexer_4 = new ParseContext("home.person.age").setPropertyReadUseLambda(true).parse();
 
     public static void main(String[] args) throws RunnerException
     {
@@ -52,19 +48,13 @@ public class PropertyBenchMark
     }
 
     @Benchmark
-    public void test()
-    {
-        lexer.calculate(vars);
-    }
-
-        @Benchmark
     public void testLambda()
     {
         lexer_4.calculate(vars);
     }
 
     @Benchmark
-    public void testNew()
+    public void test()
     {
         lexer_3.calculate(vars);
     }

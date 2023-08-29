@@ -2,10 +2,8 @@ package com.jfirer.jfireel.benchmark;
 
 import com.jfirer.jfireel.TestSupport;
 import com.jfirer.jfireel.expression.Expression;
-import com.jfirer.jfireel.expression.util.Functional;
-import com.jfirer.jfireel.expression2.Expression2;
-import com.jfirer.jfireel.expression2.Operand;
-import com.jfirer.jfireel.expression2.ParseContext;
+import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.ParseContext;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.exception.ScriptEvalError;
@@ -28,9 +26,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class MethodMark
 {
-    public Expression          lexer             = Expression.parse("home.bool(person.getAge()+'12'!=value)");
-    public Expression          lexer_compile     = Expression.parse("home.bool(person.getAge()+'12'!=value)", Functional.build().setMethodInvokeByCompile(true).toFunction());
-    public Operand             lexer_new         = Expression2.parse("home.bool(person.getAge()+'12'!=value )");
+    public Operand             lexer_new         = Expression.parse("home.bool(person.getAge()+'12'!=value )");
     public Operand             lexer_new_compile = new ParseContext("home.bool(person.getAge()+'12'!=value )").setMethodInvokeUseCompile(true).parse();
     public Map<String, Object> vars              = new HashMap<String, Object>();
     public TestSupport.Person  person;
@@ -87,18 +83,6 @@ public class MethodMark
     public void testJfireEl_new_compile()
     {
         lexer_new_compile.calculate(vars);
-    }
-
-    @Benchmark
-    public void testJfireEl()
-    {
-        lexer.calculate(vars);
-    }
-
-    @Benchmark
-    public void testJfireEl_compile()
-    {
-        lexer_compile.calculate(vars);
     }
 
     //    @Benchmark

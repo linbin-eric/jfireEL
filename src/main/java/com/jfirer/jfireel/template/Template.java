@@ -1,126 +1,118 @@
 package com.jfirer.jfireel.template;
 
-import com.jfirer.jfireel.exception.IllegalFormatException;
-import com.jfirer.jfireel.template.execution.Execution;
-import com.jfirer.jfireel.template.execution.impl.StringExecution;
-import com.jfirer.jfireel.template.parser.Invoker;
-import com.jfirer.jfireel.template.parser.Parser;
-import com.jfirer.jfireel.template.parser.impl.*;
+import com.jfirer.jfireel.expression.Expression;
+import com.jfirer.jfireel.expression.Operand;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class Template
 {
-    private static final ThreadLocal<StringBuilder> LOCAL = new ThreadLocal<StringBuilder>()
-    {
-        @Override
-        protected StringBuilder initialValue()
-        {
-            return new StringBuilder();
-        }
-    };
-    private static final Invoker                    DEFAULT_HEAD;
-
     static
     {
-        Parser[] parsers = new Parser[]{ //
-                new ExecutionBeginParser(), //
-                new ExecutionEndParser(), //
-                new IfParser(), //
-                new ElseParser(), //
-                new ForEachParser(), //
-                new EndBraceParser(), //
-                new ExpressionParser(), //
-                new LiteralsParser(), //
-        };
-        Invoker pred = new Invoker()
-        {
+        Expression.registerInnerCall("out", (map, array) -> {
+            StringBuilder out = (StringBuilder) map.get("outputStr");
+            out.append(array[0].calculate(map));
+            return null;
+        });
+    }
 
-            @Override
-            public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache)
-            {
-                return offset;
-            }
-        };
-        for (int i = parsers.length - 1; i > -1; i--)
-        {
-            final Parser  parser = parsers[i];
-            final Invoker next   = pred;
-            Invoker invoker = new Invoker()
-            {
+    private static final int     IN_CODE_AREA = 1;
+    private static final int     IN_TEXT      = 2;
+    private static final int     IN_VARIABLE  = 3;
+    private final        Operand operand;
 
-                @Override
-                public int scan(String sentence, int offset, Deque<Execution> executions, Template template, StringBuilder cache)
+    private Template(Operand operand)
+    {
+        this.operand = operand;
+    }
+
+    public static Template parse(String content)
+    {
+        StringBuilder builder = new StringBuilder();
+        int           type    = IN_TEXT;
+        int           length  = content.length();
+        int           index   = 0;
+        int           mark    = 0;
+        while (index < length)
+        {
+            char c = content.charAt(index);
+            switch (type)
+            {
+                case IN_CODE_AREA ->
                 {
-                    return parser.parse(sentence, offset, executions, template, cache, next);
+                    if (c == '%' && index + 1 < length && content.charAt(index + 1) == '>')
+                    {
+                        builder.append(content.substring(mark, index));
+                        mark = index += 2;
+                        type = IN_TEXT;
+                    }
+                    else
+                    {
+                        index += 1;
+                    }
                 }
-            };
-            pred = invoker;
-        }
-        DEFAULT_HEAD = pred;
-    }
-
-    private final Execution[]      runtimeExecutions;
-    private final Invoker          head       = DEFAULT_HEAD;
-    private       Deque<Execution> executions = new LinkedList<Execution>();
-    private       ScanMode         mode       = ScanMode.LITERALS;
-
-    private Template(String sentence)
-    {
-        StringBuilder cache  = new StringBuilder();
-        int           offset = 0;
-        int           length = sentence.length();
-        mode = ScanMode.LITERALS;
-        while (offset < length)
-        {
-            int result = head.scan(sentence, offset, executions, this, cache);
-            if (result == offset)
-            {
-                throw new IllegalFormatException("没有解析器可以识别", sentence.substring(0, offset));
+                case IN_TEXT ->
+                {
+                    if (c == '$' && index + 1 < length && content.charAt(index + 1) == '{')
+                    {
+                        if (mark != index)
+                        {
+                            builder.append("out('").append(content.substring(mark, index)).append("');\r\n");
+                        }
+                        mark = index += 2;
+                        type = IN_VARIABLE;
+                    }
+                    else if (c == '<' && index + 1 < length && content.charAt(index + 1) == '%')
+                    {
+                        if (mark != index)
+                        {
+                            builder.append("out('").append(content.substring(mark, index)).append("');\r\n");
+                        }
+                        mark = index += 2;
+                        type = IN_CODE_AREA;
+                    }
+                    else
+                    {
+                        index += 1;
+                    }
+                }
+                case IN_VARIABLE ->
+                {
+                    if (c == '}')
+                    {
+                        builder.append("out(").append(content.substring(mark, index)).append(");\r\n");
+                        mark = index += 1;
+                        type = IN_TEXT;
+                    }
+                    else
+                    {
+                        index += 1;
+                    }
+                }
             }
-            offset = result;
         }
-        if (cache.length() != 0)
+        if (type != IN_TEXT)
         {
-            Execution execution = new StringExecution(cache.toString());
-            executions.push(execution);
+            throw new IllegalStateException("解析模板不正确，模板没有被正确结束");
         }
-        Deque<Execution> array = new LinkedList<Execution>();
-        while (executions.isEmpty() == false)
+        if (mark != index)
         {
-            array.push(executions.pollFirst());
+            builder.append("out('").append(content.substring(mark, index)).append("');\r\n");
         }
-        runtimeExecutions = array.toArray(new Execution[0]);
-        executions = null;
-        mode = null;
+        return new Template(Expression.parseMutli(builder.toString()));
     }
 
-    public static Template parse(String sentence)
+    public String render(Map<String, Object> params)
     {
-        return new Template(sentence);
+        StringBuilder stringBuilder = new StringBuilder();
+        params.put("outputStr", stringBuilder);
+        operand.calculate(params);
+        return stringBuilder.toString();
     }
 
-    public ScanMode getMode()
+    public void render(Map<String, Object> params, StringBuilder builder)
     {
-        return mode;
-    }
-
-    public void setMode(ScanMode mode)
-    {
-        this.mode = mode;
-    }
-
-    public String render(Map<String, Object> variables)
-    {
-        StringBuilder cache = LOCAL.get();
-        for (Execution execution : runtimeExecutions)
-        {
-            execution.execute(variables, cache);
-        }
-        String result = cache.toString();
-        cache.setLength(0);
-        return result;
+        params.put("outputStr", builder);
+        operand.calculate(params);
     }
 }

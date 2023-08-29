@@ -1,20 +1,20 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.impl.operator.RightParenOperator;
+import com.jfirer.jfireel.expression.impl.operand.NullOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
-public class RightParenParser implements TokenParser
+public class NullParser implements TokenParser
 {
     @Override
     public boolean parse(ParseContext parseContext)
     {
         String el    = parseContext.getEl();
         int    index = parseContext.getIndex();
-        if (el.charAt(index) == ')')
+        if (el.charAt(index) == 'n' && index + 4 < el.length() && el.substring(index, index + 4).equalsIgnoreCase("null"))
         {
-            new RightParenOperator(el.substring(0, index+1)).push(parseContext);
-            parseContext.setIndex(index + 1);
+            parseContext.getOperandStack().push(new NullOperand());
+            parseContext.setIndex(index + 4);
             return true;
         }
         else
