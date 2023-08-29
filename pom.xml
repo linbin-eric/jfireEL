@@ -109,14 +109,14 @@
     </dependencies>
     <distributionManagement>
         <repository>
-            <id>nexus</id>
+            <id>nexus3</id>
             <name>nexus</name>
-            <url>http://homenas.club:49159/repository/maven-releases/</url>
+            <url>http://yynas.cn:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>nexus-snapshot</id>
+            <id>nexus3</id>
             <name>nexus</name>
-            <url>http://homenas.club:49159/repository/maven-snapshots/</url>
+            <url>http://yynas.cn:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <profiles>
