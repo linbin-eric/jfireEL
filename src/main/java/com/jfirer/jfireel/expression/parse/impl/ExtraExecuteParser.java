@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import com.jfirer.jfireel.expression.impl.operator.InOperator;
+import com.jfirer.jfireel.expression.impl.operator.ReturnOperator;
 import com.jfirer.jfireel.expression.impl.operator.VarOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -57,7 +58,7 @@ public class ExtraExecuteParser implements TokenParser
         }
         else if (el.charAt(index) == 'r' && index + 6 < el.length() && el.substring(index, index + 6).equals("return"))
         {
-            parseContext.getOperandStack().push(ControlFlagOperand.RETURN_OPERAND);
+            new ReturnOperator(el.substring(0, index)).push(parseContext);
             parseContext.setIndex(index + 6);
             return true;
         }

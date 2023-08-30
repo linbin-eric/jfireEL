@@ -29,7 +29,7 @@ public class BasicOperatorParser implements TokenParser
             case ',' -> operator = new CommaOperator(fragment);
             case '[' -> operator = new LeftBracketOperator();
             case ']' -> operator = new RightBracketOperator();
-            case ';' -> operator = new SemicolonOperator();
+            case ';' -> operator = new SemicolonOperator(el.substring(0, index));
             case '}' -> operator = new RightAngleBracketOperator(fragment);
         }
         if (operator != null)

@@ -27,7 +27,8 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -36,6 +37,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -48,7 +53,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -57,6 +62,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -69,7 +78,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -78,6 +87,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -90,7 +103,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -99,6 +112,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -111,7 +128,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -120,6 +137,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -132,7 +153,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -141,6 +162,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -153,7 +178,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -162,6 +187,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -174,7 +203,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -183,6 +212,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -195,7 +228,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -204,6 +237,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;
@@ -216,7 +253,7 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    return ControlFlag.RETURN;
+                    return value;
                 }
                 else if (value == ControlFlag.BREAK)
                 {
@@ -225,6 +262,10 @@ public class ForOperand implements Operand
                 else if (value == ControlFlag.CONTINUE)
                 {
                     continue;
+                }
+                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+                {
+                    return returnWithValue.value();
                 }
             }
             return null;

@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.impl.operand;
 
 import com.jfirer.jfireel.expression.ControlFlag;
 import com.jfirer.jfireel.expression.Operand;
+import lombok.Data;
 
 import java.util.Map;
 
@@ -36,5 +37,21 @@ public abstract class ControlFlagOperand implements Operand
         {
             return ControlFlag.CONTINUE;
         }
+    }
+
+    @Data
+    public static class ReturnWithResultOperand extends ControlFlagOperand
+    {
+        private final Operand value;
+
+        @Override
+        public Object calculate(Map<String, Object> param)
+        {
+            return new ReturnWithValue(value.calculate(param));
+        }
+    }
+
+    record ReturnWithValue(Object value)
+    {
     }
 }

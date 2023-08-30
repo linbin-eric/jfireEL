@@ -2,11 +2,15 @@ package com.jfirer.jfireel.expression.impl.operator;
 
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import lombok.Data;
 
 import java.util.Deque;
 
+@Data
 public class SemicolonOperator implements Operator
 {
+    private final String fragment;
+
     @Override
     public int priority()
     {
@@ -17,6 +21,13 @@ public class SemicolonOperator implements Operator
     public void push(ParseContext parseContext)
     {
         Deque<Operator> operatorStack = parseContext.getOperatorStack();
+        if (operatorStack.isEmpty() == false && operatorStack.peek() instanceof ReturnOperator)
+        {
+            if (fragment.trim().endsWith("return"))
+            {
+                ((ReturnOperator) operatorStack.peek()).setWithValue(false);
+            }
+        }
         while (!operatorStack.isEmpty())
         {
             operatorStack.pop().onPop(parseContext);

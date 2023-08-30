@@ -14,14 +14,19 @@ public class MutliOperand implements Operand
     @Override
     public Object calculate(Map<String, Object> param)
     {
+        Object calculate = null;
         for (Operand each : operands)
         {
-            Object calculate = each.calculate(param);
+            calculate = each.calculate(param);
             if (calculate == ControlFlag.RETURN || calculate == ControlFlag.BREAK || calculate == ControlFlag.CONTINUE)
             {
                 return calculate;
             }
+            else if (calculate instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
+            {
+                return returnWithValue.value();
+            }
         }
-        return null;
+        return calculate;
     }
 }

@@ -401,15 +401,15 @@ public class BracketTest extends TestSupport
     public void test47()
     {
         Operand operand = Expression.parseMutli("""
-                                                         if(1+age>5)
-                                                         {
-                                                            var name ='f1';
-                                                         }
-                                                         else
-                                                         { 
-                                                            var name = 'f2';
-                                                         }
-                                                         """);
+                                                        if(1+age>5)
+                                                        {
+                                                           var name ='f1';
+                                                        }
+                                                        else
+                                                        { 
+                                                           var name = 'f2';
+                                                        }
+                                                        """);
         Map<String, Object> param = new HashMap<>();
         param.put("age", 3);
         operand.calculate(param);
@@ -423,28 +423,28 @@ public class BracketTest extends TestSupport
     public void test48()
     {
         Operand operand = Expression.parseMutli("""
-                                                              var value;
-                                                              for(i in array)
-                                                              {
-                                                         if(i<5)
-                                                                 {
-                                                                     value = i;
-                                                                 }
-                                                                 else
-                                                                 {
-                                                                     break;
-                                                                 }
-                                                              }
-                                                              var result;
-                                                              if(value==4)
-                                                              {
-                                                                 result = true;
-                                                              }
-                                                              else
-                                                              {
-                                                                 result=false;
-                                                              }
-                                                              """);
+                                                             var value;
+                                                             for(i in array)
+                                                             {
+                                                        if(i<5)
+                                                                {
+                                                                    value = i;
+                                                                }
+                                                                else
+                                                                {
+                                                                    break;
+                                                                }
+                                                             }
+                                                             var result;
+                                                             if(value==4)
+                                                             {
+                                                                result = true;
+                                                             }
+                                                             else
+                                                             {
+                                                                result=false;
+                                                             }
+                                                             """);
         Map<String, Object> param = new HashMap<>();
         param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
         operand.calculate(param);
@@ -455,29 +455,29 @@ public class BracketTest extends TestSupport
     public void test49()
     {
         Operand operand = Expression.parseMutli("""
-                                                         var value;
-                                                         for(i in array)
-                                                         {
-                                                            if(i<5)
-                                                            {
-                                                                value = i;
-                                                                return;
-                                                            }
-                                                            else
-                                                            {
-                                                                break;
-                                                            }
-                                                         }
-                                                         var result;
-                                                         if(value==4)
-                                                         {
-                                                            result = true;
-                                                         }
-                                                         else
-                                                         {
-                                                            result=false;
-                                                         }
-                                                         """);
+                                                        var value;
+                                                        for(i in array)
+                                                        {
+                                                           if(i<5)
+                                                           {
+                                                               value = i;
+                                                               return;
+                                                           }
+                                                           else
+                                                           {
+                                                               break;
+                                                           }
+                                                        }
+                                                        var result;
+                                                        if(value==4)
+                                                        {
+                                                           result = true;
+                                                        }
+                                                        else
+                                                        {
+                                                           result=false;
+                                                        }
+                                                        """);
         Map<String, Object> param = new HashMap<>();
         param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
         operand.calculate(param);
@@ -593,5 +593,19 @@ public class BracketTest extends TestSupport
     public void test61()
     {
         assertEquals(BracketTest.class, Expression.parse("@(com.jfirer.jfireel.BracketTest)").calculate());
+    }
+
+    @Test
+    public void test62()
+    {
+        String content = """
+                if(i<5){
+                var name =5;
+                return name;
+                }""";
+        Operand             operand = Expression.parseMutli(content);
+        Map<String, Object> map     = new HashMap<>();
+        map.put("i", 3);
+        assertEquals(5, ((Integer) operand.calculate(map)).intValue());
     }
 }
