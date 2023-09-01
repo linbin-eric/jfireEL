@@ -11,7 +11,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class BracketTest extends TestSupport
+public class FunctionTest extends TestSupport
 {
     @Test
     public void test1()
@@ -133,7 +133,7 @@ public class BracketTest extends TestSupport
     {
         ParseContext parseContext = new ParseContext("EnumTest$Name.dd");
         parseContext.getStaticClassName().put("EnumTest$Name", Name.class);
-        assertEquals(BracketTest.Name.dd, parseContext.parse().calculate());
+        assertEquals(FunctionTest.Name.dd, parseContext.parse().calculate());
     }
 
     @Test
@@ -333,8 +333,8 @@ public class BracketTest extends TestSupport
     @Test
     public void test41()
     {
-        ParseContext parseContext = new ParseContext("BracketTest.age");
-        parseContext.getStaticClassName().put(BracketTest.class.getSimpleName(), BracketTest.class);
+        ParseContext parseContext = new ParseContext("FunctionTest.age");
+        parseContext.getStaticClassName().put(FunctionTest.class.getSimpleName(), FunctionTest.class);
         Operand operand = parseContext.parse();
         int     result  = ((Number) operand.calculate()).intValue();
         assertEquals(age, result);
@@ -364,7 +364,7 @@ public class BracketTest extends TestSupport
     @Test
     public void test44()
     {
-        assertEquals(age, ((Number) Expression.parse("@(com.jfirer.jfireel.BracketTest).age").calculate()).intValue());
+        assertEquals(age, ((Number) Expression.parse("@(com.jfirer.jfireel.FunctionTest).age").calculate()).intValue());
     }
 
     @Test
@@ -592,7 +592,7 @@ public class BracketTest extends TestSupport
     @Test
     public void test61()
     {
-        assertEquals(BracketTest.class, Expression.parse("@(com.jfirer.jfireel.BracketTest)").calculate());
+        assertEquals(FunctionTest.class, Expression.parse("@(com.jfirer.jfireel.FunctionTest)").calculate());
     }
 
     @Test
@@ -618,5 +618,20 @@ public class BracketTest extends TestSupport
         Operand             operand = Expression.parseMutli(content);
         operand.calculate(map);
         assertEquals("yl", ((String) map.get("name")));
+    }
+
+    @Test
+    public void test64()
+    {
+        String content = """
+                @(java.lang.String).valueOf('ni \\'ss\\'') """;
+        Operand operand = Expression.parse(content);
+        String  value   = (String) operand.calculate();
+        assertEquals("ni 'ss'", value);
+        content= """
+                @(java.lang.String).valueOf("ni \\"ss\\"")""";
+        operand = Expression.parse(content);
+          value   = (String) operand.calculate();
+        assertEquals("ni \"ss\"", value);
     }
 }
