@@ -608,4 +608,15 @@ public class BracketTest extends TestSupport
         map.put("i", 3);
         assertEquals(5, ((Integer) operand.calculate(map)).intValue());
     }
+
+    @Test
+    public void test63()
+    {
+        String content = """
+                var name="yl";""";
+        Map<String, Object> map     = new HashMap<>();
+        Operand             operand = Expression.parseMutli(content);
+        operand.calculate(map);
+        assertEquals("yl", ((String) map.get("name")));
+    }
 }
