@@ -12,7 +12,7 @@ public class LiteralParser implements TokenParser
         int    index = parseContext.getIndex();
         String el    = parseContext.getEl();
         char   c     = el.charAt(index);
-        if (c == '\'')
+        if (c == '\'' )
         {
             index += 1;
             while ((el.charAt(index) != '\'' || el.charAt(index - 1) == '\\') && index < el.length())

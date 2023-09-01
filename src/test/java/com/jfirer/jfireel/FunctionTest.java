@@ -628,10 +628,10 @@ public class FunctionTest extends TestSupport
         Operand operand = Expression.parse(content);
         String  value   = (String) operand.calculate();
         assertEquals("ni 'ss'", value);
-        content= """
+        content = """
                 @(java.lang.String).valueOf("ni \\"ss\\"")""";
         operand = Expression.parse(content);
-          value   = (String) operand.calculate();
+        value   = (String) operand.calculate();
         assertEquals("ni \"ss\"", value);
     }
 }
