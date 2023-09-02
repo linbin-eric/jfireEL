@@ -613,7 +613,7 @@ public class FunctionTest extends TestSupport
     public void test63()
     {
         String content = """
-                var name="yl";""";
+                var name='yl';""";
         Map<String, Object> map     = new HashMap<>();
         Operand             operand = Expression.parseMutli(content);
         operand.calculate(map);
@@ -624,14 +624,35 @@ public class FunctionTest extends TestSupport
     public void test64()
     {
         String content = """
-                @(java.lang.String).valueOf('ni \\'ss\\'') """;
+                @(java.lang.String).valueOf('ni /'ss/'') """;
         Operand operand = Expression.parse(content);
         String  value   = (String) operand.calculate();
         assertEquals("ni 'ss'", value);
         content = """
-                @(java.lang.String).valueOf("ni \\"ss\\"")""";
+                @(java.lang.String).valueOf("ni 'ss'") """;
+        operand = Expression.parse(content);
+        value   = (String) operand.calculate();
+        assertEquals("ni 'ss'", value);
+        content = """
+                @(java.lang.String).valueOf("ni /"ss/"") """;
         operand = Expression.parse(content);
         value   = (String) operand.calculate();
         assertEquals("ni \"ss\"", value);
+        content = """
+                @(java.lang.String).valueOf(`ni /`ss/``) """;
+        operand = Expression.parse(content);
+        value   = (String) operand.calculate();
+        assertEquals("ni `ss`", value);
     }
+
+    @Test
+    public void test65()
+    {
+        String content = """
+                @(java.lang.String).valueOf('ni \\') """;
+        Operand operand = Expression.parse(content);
+        String  value   = (String) operand.calculate();
+        assertEquals("ni \\", value);
+    }
+
 }
