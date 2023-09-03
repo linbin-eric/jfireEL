@@ -655,4 +655,39 @@ public class FunctionTest extends TestSupport
         assertEquals("ni \\", value);
     }
 
+    public class Person
+    {
+        int age;
+
+        public Person(int age)
+        {
+            this.age = age;
+        }
+    }
+
+    public class Home
+    {
+        Person[] persons;
+    }
+
+    @Test
+    public void test66()
+    {
+        String content = """
+                var sum=0;
+                               
+                for(each in home.persons)
+                {
+                sum=sum+each.age;
+                }""";
+        Operand             operand = Expression.parseMutli(content);
+        Map<String, Object> param   = new HashMap<>();
+        Person[]            persons = new Person[]{new Person(1), new Person(2)};
+        Home                home    = new Home();
+        home.persons = persons;
+        param.put("home", home);
+        operand.calculate(param);
+        int i = ((Number) param.get("sum")).intValue();
+        assertEquals(3, i);
+    }
 }
