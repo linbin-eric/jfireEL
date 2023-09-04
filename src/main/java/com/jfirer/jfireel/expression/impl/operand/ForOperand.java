@@ -27,7 +27,6 @@ public class ForOperand implements Operand
                 Object value = body.calculate(param);
                 if (value == ControlFlag.RETURN)
                 {
-                    
                     return value;
                 }
                 else if (value == ControlFlag.BREAK)

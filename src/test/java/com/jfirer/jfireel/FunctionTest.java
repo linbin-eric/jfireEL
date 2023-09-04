@@ -690,4 +690,13 @@ public class FunctionTest extends TestSupport
         int i = ((Number) param.get("sum")).intValue();
         assertEquals(3, i);
     }
+    @Test
+    public void test67(){
+        String content = """
+                ((C09C.startsWith("M918")||C09C.startsWith("M919")||C09C.startsWith("M920")||C09C.startsWith("M921")||C09C.startsWith("M922")||C09C.startsWith("M923")||C09C.startsWith("M924")||C09C.startsWith("M925")||C09C.startsWith("M926")||C09C.startsWith("M927")||C09C.startsWith("M928")||C09C.startsWith("M929")||C09C.startsWith("M930")||C09C.startsWith("M931")||C09C.startsWith("M932")||C09C.startsWith("M933")||C09C.startsWith("M934")||C09C.startsWith("M8812"))&&C09C.endsWith("3"))==false""";
+        Operand operand = Expression.parse(content);
+        Map<String,Object> param = new HashMap<>();
+        param.put("C09C", "M91900/2");
+        assertTrue((Boolean) operand.calculate(param));
+    }
 }
