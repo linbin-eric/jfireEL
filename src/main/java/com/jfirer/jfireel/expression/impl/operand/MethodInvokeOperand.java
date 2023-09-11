@@ -7,29 +7,33 @@ import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
 import com.jfirer.jfireel.expression.Operand;
 import lombok.Data;
-import lombok.Getter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @Data
 public abstract class MethodInvokeOperand implements Operand
 {
-    protected final      String               methodName;
-    protected final      Operand[]            methodParams;
-    protected final      boolean              methodInvokeUseCompile;
-    protected final      String               fragment;
-    protected            ConvertType[]        convertTypes;
-    protected            Method               method;
-    protected            CompileMethodInvoker invoker;
-    protected volatile   boolean              methodIdentify = false;
-    private static final CompileHelper        COMPILE_HELPER = new CompileHelper();
-    private static final AtomicInteger        COUNTER        = new AtomicInteger(1);
+    protected final      String                                    methodName;
+    protected final      Operand[]                                 methodParams;
+    protected final      boolean                                   methodInvokeUseCompile;
+    protected final      String                                    fragment;
+    protected final      Map<Method, MethodInvokeHelper>           refenceCalls;
+    protected            ConvertType[]                             convertTypes;
+    protected            Method                                    method;
+    protected            MethodInvokeHelper                        compileInvoker;
+    protected            MethodInvokeHelper                        lambdaInvoker;
+    protected volatile   boolean                                   methodIdentify = false;
+    private static final CompileHelper                             COMPILE_HELPER = new CompileHelper();
+    private static final AtomicInteger                             COUNTER        = new AtomicInteger(1);
+    private static final ConcurrentMap<Method, MethodInvokeHelper> INVOKER_MAP    = new ConcurrentHashMap<>();
 
     enum ConvertType
     {
@@ -261,9 +265,13 @@ public abstract class MethodInvokeOperand implements Operand
                         }
                     }).toArray(ConvertType[]::new);
                     this.method  = method;
-                    if (methodInvokeUseCompile)
+                    if (refenceCalls.containsKey(method))
                     {
-                        invoker = buildInvoker();
+                        lambdaInvoker = refenceCalls.get(method);
+                    }
+                    else if (methodInvokeUseCompile)
+                    {
+                        compileInvoker = findInvoker(method);
                     }
                     methodIdentify = true;
                     return;
@@ -273,7 +281,7 @@ public abstract class MethodInvokeOperand implements Operand
         throw new IllegalArgumentException("解析过程中发现未能发现匹配的直接方法对象。异常解析位置为" + fragment);
     }
 
-    public interface CompileMethodInvoker
+    public interface MethodInvokeHelper
     {
         Object invoke(Object instance, Operand[] methodParams, Map<String, Object> param);
 
@@ -414,9 +422,14 @@ public abstract class MethodInvokeOperand implements Operand
         }
     }
 
-    protected CompileMethodInvoker buildInvoker()
+    protected MethodInvokeHelper findInvoker(Method method)
     {
-        ClassModel classModel = new ClassModel("CompileMethodInvoker_" + method.getName() + "_" + COUNTER.incrementAndGet(), Object.class, CompileMethodInvoker.class);
+        return INVOKER_MAP.computeIfAbsent(method, this::buildInvoker);
+    }
+
+    protected MethodInvokeHelper buildInvoker(Method method)
+    {
+        ClassModel classModel = new ClassModel("CompileMethodInvoker_" + method.getName() + "_" + COUNTER.incrementAndGet(), Object.class, MethodInvokeHelper.class);
         classModel.addImport(Number.class);
         classModel.addImport(Character.class);
         classModel.addImport(Boolean.class);
@@ -480,7 +493,7 @@ public abstract class MethodInvokeOperand implements Operand
         try
         {
             compile = COMPILE_HELPER.compile(classModel);
-            return (CompileMethodInvoker) compile.newInstance();
+            return (MethodInvokeHelper) compile.newInstance();
         }
         catch (Throwable e)
         {
@@ -489,14 +502,14 @@ public abstract class MethodInvokeOperand implements Operand
         }
     }
 
-    public static class DirectMethod extends MethodInvokeOperand
+    public static class StaticMethod extends MethodInvokeOperand
     {
         private final List<Method> candidates;
 
-        public DirectMethod(List<Method> candidates, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
+        public StaticMethod(Class ckass, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
         {
-            super(methodName, methodParams, methodInvokeUseCompile, fragment);
-            this.candidates = candidates;
+            super(methodName, methodParams, methodInvokeUseCompile, fragment, refenceCalls);
+            candidates = Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
         }
 
         @Override
@@ -516,7 +529,11 @@ public abstract class MethodInvokeOperand implements Operand
             }
             if (methodInvokeUseCompile)
             {
-                return invoker.invoke(null, methodParams, param);
+                return compileInvoker.invoke(null, methodParams, param);
+            }
+            else if (lambdaInvoker != null)
+            {
+                return lambdaInvoker.invoke(null, methodParams, param);
             }
             else
             {
@@ -530,21 +547,13 @@ public abstract class MethodInvokeOperand implements Operand
         }
     }
 
-    public static class StaticMethod extends DirectMethod
-    {
-        public StaticMethod(Class ckass, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
-        {
-            super(Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), methodName, methodParams, methodInvokeUseCompile, fragment);
-        }
-    }
-
     public static class InstanceMethod extends MethodInvokeOperand
     {
         private Operand instanceOperand;
 
-        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
+        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
         {
-            super(methodName, methodParams, methodInvokeUseCompile, fragment);
+            super(methodName, methodParams, methodInvokeUseCompile, fragment, refenceCalls);
             this.instanceOperand = instanceOperand;
         }
 
@@ -566,7 +575,11 @@ public abstract class MethodInvokeOperand implements Operand
             }
             if (methodInvokeUseCompile)
             {
-                return invoker.invoke(instanceOperand.calculate(param), methodParams, param);
+                return compileInvoker.invoke(instanceOperand.calculate(param), methodParams, param);
+            }
+            else if (lambdaInvoker != null)
+            {
+                return lambdaInvoker.invoke(instanceOperand.calculate(param), methodParams, param);
             }
             else
             {
@@ -579,24 +592,4 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
     }
-
-    public static class UnFinishDirectMethod extends MethodInvokeOperand
-    {
-        @Getter
-        private List<Method> candidates;
-
-        public UnFinishDirectMethod(List<Method> candidates, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment)
-        {
-            super(methodName, methodParams, methodInvokeUseCompile, fragment);
-            this.candidates = candidates;
-        }
-
-        @Override
-        public Object calculate(Map<String, Object> param)
-        {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-
 }

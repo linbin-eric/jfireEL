@@ -7,7 +7,9 @@ import com.jfirer.jfireel.template.Template;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -132,7 +134,7 @@ public class FunctionTest extends TestSupport
     public void test14()
     {
         ParseContext parseContext = new ParseContext("EnumTest$Name.dd");
-        parseContext.getStaticClassName().put("EnumTest$Name", Name.class);
+        parseContext.getClassName().put("EnumTest$Name", Name.class);
         assertEquals(FunctionTest.Name.dd, parseContext.parse().calculate());
     }
 
@@ -334,7 +336,7 @@ public class FunctionTest extends TestSupport
     public void test41()
     {
         ParseContext parseContext = new ParseContext("FunctionTest.age");
-        parseContext.getStaticClassName().put(FunctionTest.class.getSimpleName(), FunctionTest.class);
+        parseContext.getClassName().put(FunctionTest.class.getSimpleName(), FunctionTest.class);
         Operand operand = parseContext.parse();
         int     result  = ((Number) operand.calculate()).intValue();
         assertEquals(age, result);
@@ -665,7 +667,7 @@ public class FunctionTest extends TestSupport
         }
     }
 
-    public class Home
+    public class Home2
     {
         Person[] persons;
     }
@@ -683,20 +685,40 @@ public class FunctionTest extends TestSupport
         Operand             operand = Expression.parseMutli(content);
         Map<String, Object> param   = new HashMap<>();
         Person[]            persons = new Person[]{new Person(1), new Person(2)};
-        Home                home    = new Home();
+        Home2               home    = new Home2();
         home.persons = persons;
         param.put("home", home);
         operand.calculate(param);
         int i = ((Number) param.get("sum")).intValue();
         assertEquals(3, i);
     }
+
     @Test
-    public void test67(){
+    public void test67()
+    {
         String content = """
                 ((C09C.startsWith("M918")||C09C.startsWith("M919")||C09C.startsWith("M920")||C09C.startsWith("M921")||C09C.startsWith("M922")||C09C.startsWith("M923")||C09C.startsWith("M924")||C09C.startsWith("M925")||C09C.startsWith("M926")||C09C.startsWith("M927")||C09C.startsWith("M928")||C09C.startsWith("M929")||C09C.startsWith("M930")||C09C.startsWith("M931")||C09C.startsWith("M932")||C09C.startsWith("M933")||C09C.startsWith("M934")||C09C.startsWith("M8812"))&&C09C.endsWith("3"))==false""";
-        Operand operand = Expression.parse(content);
-        Map<String,Object> param = new HashMap<>();
+        Operand             operand = Expression.parse(content);
+        Map<String, Object> param   = new HashMap<>();
         param.put("C09C", "M91900/2");
         assertTrue((Boolean) operand.calculate(param));
+    }
+
+    @Test
+    public void test68() throws NoSuchMethodException
+    {
+        String value = person.age + "12";
+        vars.put("value", value);
+        ParseContext  parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)");
+        Method        bool         = Home.class.getDeclaredMethod("bool", boolean.class);
+        AtomicBoolean called       = new AtomicBoolean(false);
+        parseContext.registerRefenceCalls(bool, (instance, operands, map) -> {
+            called.set(true);
+            return ((Home) instance).bool((Boolean) operands[0].calculate(map));
+        });
+        Operand operand = parseContext.parse();
+        assertFalse((Boolean) operand.calculate(vars));
+        assertFalse((Boolean) operand.calculate(vars));
+        assertTrue(called.get());
     }
 }

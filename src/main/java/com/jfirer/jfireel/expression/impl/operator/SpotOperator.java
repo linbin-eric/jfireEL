@@ -5,7 +5,7 @@ import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
 import com.jfirer.jfireel.expression.impl.operand.PropertyReadOperand;
-import com.jfirer.jfireel.expression.impl.operand.StaticClassOperand;
+import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
 import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
 import lombok.Data;
 
@@ -47,13 +47,13 @@ public class SpotOperator implements Operator
         {
             Operand pop        = processStack.pop();
             String  methodName = ((VariableOperand) processStack.pop()).getVariable();
-            if (pop instanceof StaticClassOperand staticClassOperand)
+            if (pop instanceof ClassOperand classOperand)
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(staticClassOperand.getStaticClass(), methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(classOperand.getCkass(), methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment, parseContext.getRefenceCalls()));
             }
             else
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment,parseContext.getRefenceCalls()));
             }
             processStack.clear();
         }
@@ -61,7 +61,7 @@ public class SpotOperator implements Operator
         {
             Operand         typeOperand     = processStack.pop();
             VariableOperand variableOperand = (VariableOperand) processStack.pop();
-            if (typeOperand instanceof StaticClassOperand)
+            if (typeOperand instanceof ClassOperand)
             {
                 parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
             }

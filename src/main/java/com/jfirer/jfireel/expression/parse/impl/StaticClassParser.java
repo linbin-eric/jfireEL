@@ -2,7 +2,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.CharType;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.impl.operand.StaticClassOperand;
+import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
 import com.jfirer.jfireel.expression.impl.operator.SpotOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -15,7 +15,7 @@ public class StaticClassParser implements TokenParser
     {
         int                   index           = parseContext.getIndex();
         String                el              = parseContext.getEl();
-        Map<String, Class<?>> staticClassName = parseContext.getStaticClassName();
+        Map<String, Class<?>> staticClassName = parseContext.getClassName();
         if (el.charAt(index) == '@' && index + 1 < el.length() && el.charAt(index + 1) == '(')
         {
             index += 2;
@@ -30,7 +30,7 @@ public class StaticClassParser implements TokenParser
             String className = el.substring(parseContext.getIndex() + 2, index);
             try
             {
-                parseContext.getOperandStack().push(new StaticClassOperand(Class.forName(className)));
+                parseContext.getOperandStack().push(new ClassOperand(Class.forName(className)));
             }
             catch (ClassNotFoundException e)
             {
@@ -48,7 +48,7 @@ public class StaticClassParser implements TokenParser
             }
             if (staticClassName.containsKey(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
-                parseContext.getOperandStack().push(new StaticClassOperand(staticClassName.get(el.substring(parseContext.getIndex(), index))));
+                parseContext.getOperandStack().push(new ClassOperand(staticClassName.get(el.substring(parseContext.getIndex(), index))));
                 parseContext.setIndex(index);
                 return true;
             }

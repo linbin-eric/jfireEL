@@ -6,15 +6,15 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class StaticClassOperand implements Operand
+public class ClassOperand implements Operand
 {
-    private final Class<?> staticClass;
+    private final Class<?> ckass;
 
-    public StaticClassOperand(Class<?> staticClass) {this.staticClass = staticClass;}
+    public ClassOperand(Class<?> ckass) {this.ckass = ckass;}
 
     @Override
     public Object calculate(Map<String, Object> param)
     {
-        return staticClass;
+        return ckass;
     }
 }

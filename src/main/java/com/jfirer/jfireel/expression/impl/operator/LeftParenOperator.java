@@ -15,7 +15,6 @@ public class LeftParenOperator implements Operator
     public static final int    PURE_LEFT_BRACKETS = 1;
     public static final int    STATIC_METHOD      = 2;
     public static final int    INSTANCE_METHOD    = 3;
-    public static final int    DIRECT_METHOD      = 4;
     public static final int    IF                 = 5;
     public static final int    ELSE_IF            = 6;
     public static final int    FOR                = 7;
@@ -39,18 +38,14 @@ public class LeftParenOperator implements Operator
     public void push(ParseContext parseContext)
     {
         Deque<Operand> operandStack = parseContext.getOperandStack();
-        if (operandStack.peek() instanceof MethodInvokeOperand.UnFinishDirectMethod)
-        {
-            type = DIRECT_METHOD;
-        }
-        else if (operandStack.peek() instanceof InnerCallOperand)
+        if (operandStack.peek() instanceof InnerCallOperand)
         {
             type = INNER_CALL;
         }
         else if (parseContext.getOperatorStack().peek() instanceof SpotOperator)
         {
             Operand tmp = operandStack.pop();
-            if (operandStack.peek() instanceof StaticClassOperand)
+            if (operandStack.peek() instanceof ClassOperand)
             {
                 type = STATIC_METHOD;
             }
@@ -85,14 +80,6 @@ public class LeftParenOperator implements Operator
     {
         switch (type)
         {
-            case DIRECT_METHOD ->
-            {
-                Deque<Operand> processStack = parseContext.getProcessStack();
-                List<Operand>  list         = processStack.stream().toList();
-                processStack.clear();
-                MethodInvokeOperand.UnFinishDirectMethod peek = (MethodInvokeOperand.UnFinishDirectMethod) parseContext.getOperandStack().pop();
-                parseContext.getOperandStack().push(new MethodInvokeOperand.DirectMethod(peek.getCandidates(), peek.getMethodName(), list.toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), peek.getFragment()));
-            }
             case INNER_CALL ->
             {
                 Deque<Operand> processStack = parseContext.getProcessStack();

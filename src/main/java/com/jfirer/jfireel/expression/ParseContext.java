@@ -1,6 +1,7 @@
 package com.jfirer.jfireel.expression;
 
 import com.jfirer.jfireel.expression.impl.operand.LeftAngleBracketOperand;
+import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
 import com.jfirer.jfireel.expression.impl.operand.MutliOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 import com.jfirer.jfireel.expression.parse.impl.*;
@@ -10,22 +11,23 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 @Data
 @Accessors(chain = true)
 public class ParseContext
 {
-    private static TokenParser[]                                                  parsers                = new TokenParser[]{//
+    private static TokenParser[]                                                   parsers                = new TokenParser[]{//
             new SkipIgnoreToken(),//
             new NumberParser(),//
             new BooleanParser(),//
             new NullParser(),//
             new ExtraExecuteParser(),//
             new InnnerCallParser(),//
-            new DirectMethodParser(),//
             new StaticClassParser(),//
             new VariableParser(),//
             new LiteralParser(),//
@@ -33,47 +35,39 @@ public class ParseContext
             new LeftParenParser(),//
             new RightParenParser(),//
     };
-    private        Deque<Operand>                                                 operandStack           = new LinkedList<>();
-    private        Deque<Operator>                                                operatorStack          = new LinkedList<>();
-    private        Deque<Operand>                                                 processStack           = new LinkedList<>();
-    private final  String                                                         el;
-    private        int                                                            index;
+    private        Deque<Operand>                                                  operandStack           = new LinkedList<>();
+    private        Deque<Operator>                                                 operatorStack          = new LinkedList<>();
+    private        Deque<Operand>                                                  processStack           = new LinkedList<>();
+    private final  String                                                          el;
+    private        int                                                             index;
     @Setter(AccessLevel.NONE)
-    private        Map<String, Class<?>>                                          staticClassName        = new HashMap<>();
+    private        Map<String, Class<?>>                                           className  = new HashMap<>();
     @Setter(AccessLevel.NONE)
-    private        Map<String, List<Method>>                                      directMethods          = new HashMap<>();
-    @Setter(AccessLevel.NONE)
-    private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls             = new HashMap<>();
-    private        boolean                                                        methodInvokeUseCompile = false;
-    private        boolean                                                        propertyReadUseLambda  = false;
+    private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls = new HashMap<>();
+    private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             refenceCalls           = new HashMap<>();
+    private        boolean                                                         methodInvokeUseCompile = false;
+    private        boolean                                                         propertyReadUseLambda  = false;
 
     public ParseContext(String el)
     {
         this.el = el;
     }
 
-    public ParseContext(String el, Map<String, Class<?>> staticClassName, Map<String, List<Method>> directMethods, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls)
+    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls)
     {
         this.el = el;
-        this.staticClassName.putAll(staticClassName);
-        this.directMethods.putAll(directMethods);
+        this.className.putAll(className);
         this.innerCalls.putAll(innerCalls);
     }
 
     public void registerClass(String name, Class<?> ckass)
     {
-        staticClassName.put(name, ckass);
+        className.put(name, ckass);
     }
 
-    public void registerMethod(String name, Method method)
+    public void registerRefenceCalls(Method method, MethodInvokeOperand.MethodInvokeHelper helper)
     {
-        List<Method> methods = directMethods.computeIfAbsent(name, s -> new CopyOnWriteArrayList<>());
-        methods.add(method);
-    }
-
-    public void registerMethod(Method method)
-    {
-        registerMethod(method.getName(), method);
+        refenceCalls.put(method, helper);
     }
 
     public Operand parse()

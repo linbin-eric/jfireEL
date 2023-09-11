@@ -19,6 +19,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ public class MethodMark
 {
     public Operand             lexer_new         = Expression.parse("home.bool(person.getAge()+'12'!=value )");
     public Operand             lexer_new_compile = new ParseContext("home.bool(person.getAge()+'12'!=value )").setMethodInvokeUseCompile(true).parse();
+    public Operand             lexer_new_lambda;
     public Map<String, Object> vars              = new HashMap<String, Object>();
     public TestSupport.Person  person;
     public TestSupport.Home    home;
@@ -35,6 +37,25 @@ public class MethodMark
     StandardEvaluationContext                 societyContext;
     GroupTemplate                             gt;
     String                                    key = "return @home.bool(@person.getAge()+'12'!=value);";
+
+    public MethodMark()
+    {
+        ParseContext parseContext = new ParseContext("home.bool(person.getAge()+'12'!=value )");
+        Method       bool         = null;
+        Method       getAge;
+        try
+        {
+            bool   = TestSupport.Home.class.getDeclaredMethod("bool", boolean.class);
+            getAge = TestSupport.Person.class.getDeclaredMethod("getAge");
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new RuntimeException(e);
+        }
+        parseContext.registerRefenceCalls(bool, (instance, operands, map) -> ((TestSupport.Home) instance).bool((Boolean) operands[0].calculate(map)));
+        parseContext.registerRefenceCalls(getAge, (instance, operands, map) -> ((TestSupport.Person) instance).getAge());
+        lexer_new_lambda = parseContext.parse();
+    }
 
     public static void main(String[] args) throws RunnerException
     {
@@ -83,6 +104,12 @@ public class MethodMark
     public void testJfireEl_new_compile()
     {
         lexer_new_compile.calculate(vars);
+    }
+
+    @Benchmark
+    public void testJfireEL_new_lambda()
+    {
+        lexer_new_lambda.calculate(vars);
     }
 
     //    @Benchmark
