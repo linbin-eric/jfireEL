@@ -1,0 +1,23 @@
+package com.jfirer.jfireel.expression.impl.operand;
+
+import com.jfirer.jfireel.expression.Operand;
+import lombok.Data;
+
+import java.util.Map;
+
+@Data
+public class ArrayOperand implements Operand
+{
+    Operand[] array;
+
+    @Override
+    public Object calculate(Map<String, Object> param)
+    {
+        Object[] instance = new Object[array.length];
+        for (int i = 0; i < array.length; i++)
+        {
+            instance[i] = array[i].calculate(param);
+        }
+        return instance;
+    }
+}
