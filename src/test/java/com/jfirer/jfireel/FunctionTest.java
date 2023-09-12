@@ -721,4 +721,12 @@ public class FunctionTest extends TestSupport
         assertFalse((Boolean) operand.calculate(vars));
         assertTrue(called.get());
     }
+
+    @Test
+    public void test69(){
+        String content = """
+                var array =['1','2'];
+                return array[1];""";
+        assertEquals("2", Expression.parseMutli(content).calculate());
+    }
 }

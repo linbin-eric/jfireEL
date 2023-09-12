@@ -8,13 +8,13 @@ import java.util.Map;
 @Data
 public class ArrayOperand implements Operand
 {
-    Operand[] array;
+    private final Operand[] array;
 
     @Override
     public Object calculate(Map<String, Object> param)
     {
         Object[] instance = new Object[array.length];
-        for (int i = 0; i < array.length; i++)
+        for (int i = 0; i < instance.length; i++)
         {
             instance[i] = array[i].calculate(param);
         }

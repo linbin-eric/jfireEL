@@ -1,7 +1,9 @@
 package com.jfirer.jfireel.expression.impl.operator;
 
+import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.operand.LeftBracketOperand;
 
 import java.util.Deque;
 
@@ -21,6 +23,13 @@ public class RightBracketOperator implements Operator
         {
             operatorStack.pop().onPop(parseContext);
         }
+        Deque<Operand> processStack = parseContext.getProcessStack();
+        Deque<Operand> operandStack = parseContext.getOperandStack();
+        while (operandStack.peek() instanceof LeftBracketOperand == false)
+        {
+            processStack.push(operandStack.pop());
+        }
+        operandStack.pop();
         operatorStack.pop().onPop(parseContext);
     }
 
