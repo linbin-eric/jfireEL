@@ -46,6 +46,5 @@ public class CommaOperator implements Operator
     @Override
     public void onPop(ParseContext parseContext)
     {
-        parseContext.getProcessStack().push(parseContext.getOperandStack().pop());
     }
 }

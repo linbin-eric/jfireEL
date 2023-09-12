@@ -13,8 +13,7 @@ import java.util.List;
 public class LeftParenOperator implements Operator
 {
     public static final int    PURE_LEFT_BRACKETS = 1;
-    public static final int    STATIC_METHOD      = 2;
-    public static final int    INSTANCE_METHOD    = 3;
+    public static final int    METHOD             = 2;
     public static final int    IF                 = 5;
     public static final int    ELSE_IF            = 6;
     public static final int    FOR                = 7;
@@ -44,16 +43,7 @@ public class LeftParenOperator implements Operator
         }
         else if (parseContext.getOperatorStack().peek() instanceof SpotOperator)
         {
-            Operand tmp = operandStack.pop();
-            if (operandStack.peek() instanceof ClassOperand)
-            {
-                type = STATIC_METHOD;
-            }
-            else
-            {
-                type = INSTANCE_METHOD;
-            }
-            operandStack.push(tmp);
+            type = METHOD;
             ((SpotOperator) parseContext.getOperatorStack().peek()).setType(SpotOperator.METHOD);
         }
         else if (operandStack.peek() instanceof IfOperand)
@@ -73,6 +63,7 @@ public class LeftParenOperator implements Operator
             type = PURE_LEFT_BRACKETS;
         }
         parseContext.getOperatorStack().push(this);
+        parseContext.getOperandStack().push(new LeftParenOperand());
     }
 
     @Override
@@ -88,7 +79,7 @@ public class LeftParenOperator implements Operator
                 InnerCallOperand peek = (InnerCallOperand) parseContext.getOperandStack().peek();
                 peek.setMethodParams(list.toArray(Operand[]::new));
             }
-            case STATIC_METHOD, INSTANCE_METHOD ->
+            case METHOD ->
             {
                 if (parseContext.getOperatorStack().peek() instanceof SpotOperator)
                 {
@@ -101,39 +92,39 @@ public class LeftParenOperator implements Operator
             }
             case IF ->
             {
-                Deque<Operand> operandStack = parseContext.getOperandStack();
-                Operand        condition    = operandStack.pop();
-                if (operandStack.peek() instanceof IfOperand == false)
+                Deque<Operand> processStack = parseContext.getProcessStack();
+                if (processStack.size() != 1)
                 {
                     throw new IllegalStateException("解析表达式异常，if后面的条件位置不匹配。异常位置" + fragment);
                 }
-                ((IfOperand) operandStack.peek()).setCondition(condition);
+                Operand condition = processStack.pop();
+                ((IfOperand) parseContext.getOperandStack().peek()).setCondition(condition);
             }
             case ELSE_IF ->
             {
-                Deque<Operand> operandStack = parseContext.getOperandStack();
-                Operand        condition    = operandStack.pop();
-                if (operandStack.peek() instanceof ElseIfOperand == false)
+                Deque<Operand> processStack = parseContext.getProcessStack();
+                if (processStack.size() != 1)
                 {
                     throw new IllegalStateException("解析表达式异常，else if后面的条件位置不匹配。异常位置" + fragment);
                 }
-                ((ElseIfOperand) operandStack.peek()).setCondition(condition);
+                Operand condition = processStack.pop();
+                ((ElseIfOperand) parseContext.getOperandStack().peek()).setCondition(condition);
             }
             case FOR ->
             {
-                Deque<Operand> operandStack = parseContext.getOperandStack();
-                if (operandStack.peek() instanceof InOperand == false)
+                Deque<Operand> processStack = parseContext.getProcessStack();
+                if (processStack.peek() instanceof InOperand == false || processStack.size() != 1)
                 {
                     throw new IllegalStateException("解析表达式异常，for后面的条件位置不匹配。异常位置" + fragment);
                 }
-                InOperand  pop  = (InOperand) operandStack.pop();
-                ForOperand peek = (ForOperand) operandStack.peek();
+                InOperand  pop  = (InOperand) processStack.pop();
+                ForOperand peek = (ForOperand) parseContext.getOperandStack().peek();
                 peek.setItemName(pop.getItemName());
                 peek.setItemsContainer(pop.getItemsContainer());
             }
             case PURE_LEFT_BRACKETS ->
             {
-                ;
+                parseContext.getOperandStack().push(parseContext.getProcessStack().pop());
             }
         }
     }

@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression.impl.operator;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.operand.LeftParenOperand;
 import lombok.Data;
 
 import java.util.Deque;
@@ -30,19 +31,12 @@ public class RightParenOperator implements Operator
         {
             throw new IllegalStateException("表达式存在异常，)没有对应匹配的(，异常位置" + fragment);
         }
-        LeftParenOperator leftParenOperator = (LeftParenOperator) operatorStack.peek();
-        if (leftParenOperator.getType() == LeftParenOperator.STATIC_METHOD //
-            || leftParenOperator.getType() == LeftParenOperator.INSTANCE_METHOD//
-            || leftParenOperator.getType() == LeftParenOperator.INNER_CALL//
-        )
+        Deque<Operand> operandStack = parseContext.getOperandStack();
+        while (operandStack.peek() instanceof LeftParenOperand == false)
         {
-            String sub = fragment.substring(leftParenOperator.getFragment().length() + 1, fragment.length());
-            if (sub.trim().equals(")") == false)
-            {
-                Operand pop = parseContext.getOperandStack().pop();
-                parseContext.getProcessStack().push(pop);
-            }
+            parseContext.getProcessStack().push(operandStack.pop());
         }
+        operandStack.pop();
         operatorStack.pop().onPop(parseContext);
     }
 
