@@ -41,9 +41,9 @@ public class ParseContext
     private final  String                                                          el;
     private        int                                                             index;
     @Setter(AccessLevel.NONE)
-    private        Map<String, Class<?>>                                           className  = new HashMap<>();
+    private        Map<String, Class<?>>                                           className              = new HashMap<>();
     @Setter(AccessLevel.NONE)
-    private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls = new HashMap<>();
+    private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls             = new HashMap<>();
     private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             refenceCalls           = new HashMap<>();
     private        boolean                                                         methodInvokeUseCompile = false;
     private        boolean                                                         propertyReadUseLambda  = false;
@@ -53,11 +53,12 @@ public class ParseContext
         this.el = el;
     }
 
-    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls)
+    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> refenceCalls)
     {
         this.el = el;
         this.className.putAll(className);
         this.innerCalls.putAll(innerCalls);
+        this.refenceCalls.putAll(refenceCalls);
     }
 
     public void registerClass(String name, Class<?> ckass)

@@ -4,7 +4,7 @@ import com.jfirer.jfireel.expression.ControlFlag;
 import com.jfirer.jfireel.expression.Operand;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 @Data
@@ -244,9 +244,9 @@ public class ForOperand implements Operand
             }
             return null;
         }
-        else if (calculate instanceof List<?> list)
+        else if (calculate instanceof Collection<?> collection)
         {
-            for (Object o : list)
+            for (Object o : collection)
             {
                 param.put(itemName, o);
                 Object value = body.calculate(param);

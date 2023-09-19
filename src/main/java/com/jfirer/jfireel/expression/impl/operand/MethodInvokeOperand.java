@@ -265,6 +265,7 @@ public abstract class MethodInvokeOperand implements Operand
                         }
                     }).toArray(ConvertType[]::new);
                     this.method  = method;
+                    method.setAccessible(true);
                     if (refenceCalls.containsKey(method))
                     {
                         lambdaInvoker = refenceCalls.get(method);
@@ -278,7 +279,7 @@ public abstract class MethodInvokeOperand implements Operand
                 }
             }
         }
-        throw new IllegalArgumentException("解析过程中发现未能发现匹配的直接方法对象。异常解析位置为" + fragment);
+        throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:"+methodName+"。异常解析位置为" + fragment);
     }
 
     public interface MethodInvokeHelper
@@ -567,6 +568,10 @@ public abstract class MethodInvokeOperand implements Operand
                     if (methodIdentify == false)
                     {
                         Object   instance = instanceOperand.calculate(param);
+                        if (instance == null)
+                        {
+                            throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为"+fragment);
+                        }
                         Object[] args     = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
                         findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
                         return methodInvoke(instance, args);
