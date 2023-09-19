@@ -58,6 +58,10 @@ public class LeftParenOperator implements Operator
         {
             type = ELSE_IF;
         }
+        else if (operandStack.peek() instanceof VariableOperand)
+        {
+            throw new IllegalStateException("解析异常，(的左边无法匹配，异常位置:" + fragment);
+        }
         else
         {
             type = PURE_LEFT_BRACKETS;
