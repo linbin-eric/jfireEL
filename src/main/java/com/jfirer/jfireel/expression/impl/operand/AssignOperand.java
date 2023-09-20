@@ -12,13 +12,13 @@ public class AssignOperand implements Operand
     protected final Operand value;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
-        if (param.containsKey(name)==false)
+        if (contextParam.containsKey(name) == false)
         {
             throw new IllegalArgumentException("变量名:" + name + "不存在上下文中，请检查");
         }
-        param.put(name, value.calculate(param));
+        contextParam.put(name, value.calculate(contextParam));
         return null;
     }
 
@@ -30,9 +30,9 @@ public class AssignOperand implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            param.put(name, value.calculate(param));
+            contextParam.put(name, value.calculate(contextParam));
             return null;
         }
     }

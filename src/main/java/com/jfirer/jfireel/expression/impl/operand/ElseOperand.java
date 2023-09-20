@@ -11,7 +11,7 @@ public class ElseOperand implements Operand
     private Operand body;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         throw new UnsupportedOperationException();
     }

@@ -13,16 +13,16 @@ public class QuestionOperand implements Operand
     private final Operand right;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
-        Object calculate = condition.calculate(param);
+        Object calculate = condition.calculate(contextParam);
         if ((Boolean) calculate)
         {
-            return left.calculate(param);
+            return left.calculate(contextParam);
         }
         else
         {
-            return right.calculate(param);
+            return right.calculate(contextParam);
         }
     }
 }

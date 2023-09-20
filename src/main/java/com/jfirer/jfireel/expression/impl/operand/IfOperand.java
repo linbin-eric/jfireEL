@@ -28,12 +28,12 @@ public class IfOperand implements Operand
     }
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
-        Boolean calculate = (Boolean) condition.calculate(param);
+        Boolean calculate = (Boolean) condition.calculate(contextParam);
         if (calculate)
         {
-            return body.calculate(param);
+            return body.calculate(contextParam);
         }
         else
         {
@@ -41,15 +41,15 @@ public class IfOperand implements Operand
             {
                 for (ElseIfOperand elseIfOperand : elseIfOperands)
                 {
-                    if ((Boolean) elseIfOperand.getCondition().calculate(param))
+                    if ((Boolean) elseIfOperand.getCondition().calculate(contextParam))
                     {
-                        return elseIfOperand.getBody().calculate(param);
+                        return elseIfOperand.getBody().calculate(contextParam);
                     }
                 }
             }
             if (elseOperand != null)
             {
-                return elseOperand.getBody().calculate(param);
+                return elseOperand.getBody().calculate(contextParam);
             }
             return null;
         }

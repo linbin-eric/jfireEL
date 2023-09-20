@@ -12,12 +12,12 @@ public class MutliOperand implements Operand
     private final Operand[] operands;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         Object calculate = null;
         for (Operand each : operands)
         {
-            calculate = each.calculate(param);
+            calculate = each.calculate(contextParam);
             if (calculate == ControlFlag.RETURN || calculate == ControlFlag.BREAK || calculate == ControlFlag.CONTINUE)
             {
                 return calculate;

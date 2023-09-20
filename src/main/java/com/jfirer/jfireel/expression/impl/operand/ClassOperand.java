@@ -13,7 +13,7 @@ public class ClassOperand implements Operand
     public ClassOperand(Class<?> ckass) {this.ckass = ckass;}
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         return ckass;
     }

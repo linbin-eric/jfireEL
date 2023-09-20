@@ -11,7 +11,7 @@ public class BooleanOperand implements Operand
     private final boolean value;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         return value;
     }

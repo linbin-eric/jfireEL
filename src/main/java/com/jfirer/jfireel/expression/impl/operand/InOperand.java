@@ -12,7 +12,7 @@ public class InOperand implements Operand
     private final Operand itemsContainer;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         throw new UnsupportedOperationException();
     }

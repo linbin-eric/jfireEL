@@ -39,7 +39,7 @@ public class NumberOperand implements Operand
     }
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         return value;
     }

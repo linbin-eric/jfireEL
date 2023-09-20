@@ -14,22 +14,22 @@ public class ContainerOperand implements Operand
     private final Operand index;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
-        Object instance = container.calculate(param);
+        Object instance = container.calculate(contextParam);
         if (instance instanceof List<?> list)
         {
-            Number calculate = (Number) index.calculate(param);
+            Number calculate = (Number) index.calculate(contextParam);
             return list.get(calculate.intValue());
         }
         else if (instance instanceof Map<?, ?> map)
         {
-            Object key = index.calculate(param);
+            Object key = index.calculate(contextParam);
             return map.get(key);
         }
         else
         {
-            Number calculate = (Number) index.calculate(param);
+            Number calculate = (Number) index.calculate(contextParam);
             return Array.get(instance, calculate.intValue());
         }
     }

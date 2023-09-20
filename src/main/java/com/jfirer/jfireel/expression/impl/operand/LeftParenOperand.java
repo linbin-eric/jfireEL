@@ -7,7 +7,7 @@ import java.util.Map;
 public class LeftParenOperand implements Operand
 {
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         throw new UnsupportedOperationException();
     }

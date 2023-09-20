@@ -25,11 +25,11 @@ public abstract class MethodInvokeOperand implements Operand
     protected final      Operand[]                                 methodParams;
     protected final      boolean                                   methodInvokeUseCompile;
     protected final      String                                    fragment;
-    protected final      Map<Method, MethodInvokeHelper>           refenceCalls;
+    protected final      Map<Method, MethodInvokeHelper>           methodInvokeAccelerators;
     protected            ConvertType[]                             convertTypes;
     protected            Method                                    method;
     protected            MethodInvokeHelper                        compileInvoker;
-    protected            MethodInvokeHelper                        lambdaInvoker;
+    protected            MethodInvokeHelper                        accelerateInvoker;
     protected volatile   boolean                                   methodIdentify = false;
     private static final CompileHelper                             COMPILE_HELPER = new CompileHelper();
     private static final AtomicInteger                             COUNTER        = new AtomicInteger(1);
@@ -266,9 +266,9 @@ public abstract class MethodInvokeOperand implements Operand
                     }).toArray(ConvertType[]::new);
                     this.method  = method;
                     method.setAccessible(true);
-                    if (refenceCalls.containsKey(method))
+                    if (methodInvokeAccelerators.containsKey(method))
                     {
-                        lambdaInvoker = refenceCalls.get(method);
+                        accelerateInvoker = methodInvokeAccelerators.get(method);
                     }
                     else if (methodInvokeUseCompile)
                     {
@@ -279,16 +279,16 @@ public abstract class MethodInvokeOperand implements Operand
                 }
             }
         }
-        throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:"+methodName+"。异常解析位置为" + fragment);
+        throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
     }
 
     public interface MethodInvokeHelper
     {
-        Object invoke(Object instance, Operand[] methodParams, Map<String, Object> param);
+        Object invoke(Object instance, Operand[] methodParams, Map<String, Object> contextParam);
 
-        default Integer convertInteger(Operand operand, Map<String, Object> param)
+        default Integer convertInteger(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -303,9 +303,9 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
 
-        default Long convertLong(Operand operand, Map<String, Object> param)
+        default Long convertLong(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -320,9 +320,9 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
 
-        default Short convertShort(Operand operand, Map<String, Object> param)
+        default Short convertShort(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -337,9 +337,9 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
 
-        default Byte convertByte(Operand operand, Map<String, Object> param)
+        default Byte convertByte(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -354,9 +354,9 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
 
-        default Float convertFloat(Operand operand, Map<String, Object> param)
+        default Float convertFloat(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -371,9 +371,9 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
 
-        default Double convertDouble(Operand operand, Map<String, Object> param)
+        default Double convertDouble(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -388,9 +388,9 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
 
-        default Boolean convertBoolean(Operand operand, Map<String, Object> param)
+        default Boolean convertBoolean(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -405,9 +405,9 @@ public abstract class MethodInvokeOperand implements Operand
             }
         }
 
-        default Character convertCharacter(Operand operand, Map<String, Object> param)
+        default Character convertCharacter(Operand operand, Map<String, Object> contextParam)
         {
-            Object value = operand.calculate(param);
+            Object value = operand.calculate(contextParam);
             if (value == null)
             {
                 return null;
@@ -514,7 +514,7 @@ public abstract class MethodInvokeOperand implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
             if (methodIdentify == false)
             {
@@ -522,7 +522,7 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (methodIdentify == false)
                     {
-                        Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
+                        Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
                         findMethod(candidates, methodParamValues);
                         return methodInvoke(null, methodParamValues);
                     }
@@ -530,18 +530,18 @@ public abstract class MethodInvokeOperand implements Operand
             }
             if (methodInvokeUseCompile)
             {
-                return compileInvoker.invoke(null, methodParams, param);
+                return compileInvoker.invoke(null, methodParams, contextParam);
             }
-            else if (lambdaInvoker != null)
+            else if (accelerateInvoker != null)
             {
-                return lambdaInvoker.invoke(null, methodParams, param);
+                return accelerateInvoker.invoke(null, methodParams, contextParam);
             }
             else
             {
                 Object[] args = new Object[methodParams.length];
                 for (int i = 0; i < args.length; i++)
                 {
-                    args[i] = methodParams[i].calculate(param);
+                    args[i] = methodParams[i].calculate(contextParam);
                 }
                 return methodInvoke(null, args);
             }
@@ -559,7 +559,7 @@ public abstract class MethodInvokeOperand implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
             if (methodIdentify == false)
             {
@@ -567,12 +567,12 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (methodIdentify == false)
                     {
-                        Object   instance = instanceOperand.calculate(param);
+                        Object instance = instanceOperand.calculate(contextParam);
                         if (instance == null)
                         {
-                            throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为"+fragment);
+                            throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
                         }
-                        Object[] args     = Arrays.stream(methodParams).map(operand -> operand.calculate(param)).toArray(Object[]::new);
+                        Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
                         findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
                         return methodInvoke(instance, args);
                     }
@@ -580,20 +580,20 @@ public abstract class MethodInvokeOperand implements Operand
             }
             if (methodInvokeUseCompile)
             {
-                return compileInvoker.invoke(instanceOperand.calculate(param), methodParams, param);
+                return compileInvoker.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
             }
-            else if (lambdaInvoker != null)
+            else if (accelerateInvoker != null)
             {
-                return lambdaInvoker.invoke(instanceOperand.calculate(param), methodParams, param);
+                return accelerateInvoker.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
             }
             else
             {
                 Object[] args = new Object[methodParams.length];
                 for (int i = 0; i < args.length; i++)
                 {
-                    args[i] = methodParams[i].calculate(param);
+                    args[i] = methodParams[i].calculate(contextParam);
                 }
-                return methodInvoke(instanceOperand.calculate(param), args);
+                return methodInvoke(instanceOperand.calculate(contextParam), args);
             }
         }
     }

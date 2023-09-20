@@ -15,7 +15,7 @@ public abstract class ControlFlagOperand implements Operand
     static class ReturnOperand extends ControlFlagOperand
     {
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
             return ControlFlag.RETURN;
         }
@@ -24,7 +24,7 @@ public abstract class ControlFlagOperand implements Operand
     static class BreakOperand extends ControlFlagOperand
     {
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
             return ControlFlag.BREAK;
         }
@@ -33,7 +33,7 @@ public abstract class ControlFlagOperand implements Operand
     static class ContinueOperand extends ControlFlagOperand
     {
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
             return ControlFlag.CONTINUE;
         }
@@ -45,9 +45,9 @@ public abstract class ControlFlagOperand implements Operand
         private final Operand value;
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            return new ReturnWithValue(value.calculate(param));
+            return new ReturnWithValue(value.calculate(contextParam));
         }
     }
 

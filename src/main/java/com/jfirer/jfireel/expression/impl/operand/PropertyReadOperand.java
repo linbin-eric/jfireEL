@@ -43,7 +43,7 @@ public abstract class PropertyReadOperand implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
             try
             {
@@ -68,7 +68,7 @@ public abstract class PropertyReadOperand implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
             if (valueAccessor == null)
             {
@@ -76,14 +76,14 @@ public abstract class PropertyReadOperand implements Operand
                 {
                     if (valueAccessor == null)
                     {
-                        Object instance = typeOperand.calculate(param);
+                        Object instance = typeOperand.calculate(contextParam);
                         field         = findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
                         valueAccessor = propertyReadUseLambda ? new LambdaValueAccessor(field) : new ValueAccessor(field);
                         return valueAccessor.get(instance);
                     }
                 }
             }
-            return valueAccessor.get(typeOperand.calculate(param));
+            return valueAccessor.get(typeOperand.calculate(contextParam));
         }
     }
 }

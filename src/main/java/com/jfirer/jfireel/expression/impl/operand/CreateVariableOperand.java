@@ -11,9 +11,9 @@ public class CreateVariableOperand implements Operand
     protected final String variableName;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
-        param.put(variableName, null);
+        contextParam.put(variableName, null);
         return null;
     }
 }

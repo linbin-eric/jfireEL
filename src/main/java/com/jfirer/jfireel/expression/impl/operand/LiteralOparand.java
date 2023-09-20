@@ -11,7 +11,7 @@ public class LiteralOparand implements Operand
     private final String literal;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         return literal;
     }

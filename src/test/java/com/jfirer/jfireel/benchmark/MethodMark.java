@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class MethodMark
 {
-    public Operand             lexer_new         = Expression.parse("home.bool(person.getAge()+'12'!=value )");
-    public Operand             lexer_new_compile = new ParseContext("home.bool(person.getAge()+'12'!=value )").setMethodInvokeUseCompile(true).parse();
+    public Operand             lexer_new         = Expression.parse("person.getAge()");
+    public Operand             lexer_new_compile = new ParseContext("person.getAge()").setMethodInvokeUseCompile(true).parse();
     public Operand             lexer_new_lambda;
     public Map<String, Object> vars              = new HashMap<String, Object>();
     public TestSupport.Person  person;
@@ -36,11 +36,11 @@ public class MethodMark
     org.springframework.expression.Expression exp;
     StandardEvaluationContext                 societyContext;
     GroupTemplate                             gt;
-    String                                    key = "return @home.bool(@person.getAge()+'12'!=value);";
+    String                                    key = "return @person.getAge();";
 
     public MethodMark()
     {
-        ParseContext parseContext = new ParseContext("home.bool(person.getAge()+'12'!=value )");
+        ParseContext parseContext = new ParseContext("person.getAge()");
         Method       bool         = null;
         Method       getAge;
         try
@@ -52,8 +52,8 @@ public class MethodMark
         {
             throw new RuntimeException(e);
         }
-        parseContext.registerRefenceCalls(bool, (instance, operands, map) -> ((TestSupport.Home) instance).bool((Boolean) operands[0].calculate(map)));
-        parseContext.registerRefenceCalls(getAge, (instance, operands, map) -> ((TestSupport.Person) instance).getAge());
+        parseContext.registerAccelerateInvoker(bool, (instance, operands, map) -> ((TestSupport.Home) instance).bool((Boolean) operands[0].calculate(map)));
+        parseContext.registerAccelerateInvoker(getAge, (instance, operands, map) -> ((TestSupport.Person) instance).getAge());
         lexer_new_lambda = parseContext.parse();
     }
 

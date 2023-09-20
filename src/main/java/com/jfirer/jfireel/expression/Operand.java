@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface Operand
 {
-    Object calculate(Map<String, Object> param);
+    Object calculate(Map<String, Object> contextParam);
 
     ThreadLocal<Map<String, Object>> DEFAULT = ThreadLocal.withInitial(HashMap::new);
 

@@ -712,7 +712,7 @@ public class FunctionTest extends TestSupport
         ParseContext  parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)");
         Method        bool         = Home.class.getDeclaredMethod("bool", boolean.class);
         AtomicBoolean called       = new AtomicBoolean(false);
-        parseContext.registerRefenceCalls(bool, (instance, operands, map) -> {
+        parseContext.registerAccelerateInvoker(bool, (instance, operands, map) -> {
             called.set(true);
             return ((Home) instance).bool((Boolean) operands[0].calculate(map));
         });

@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
 @Accessors(chain = true)
 public class ParseContext
 {
-    private static TokenParser[]                                                   parsers                = new TokenParser[]{//
+    private static TokenParser[]                                                   parsers                  = new TokenParser[]{//
             new SkipIgnoreToken(),//
             new NumberParser(),//
             new BooleanParser(),//
@@ -35,30 +35,30 @@ public class ParseContext
             new LeftParenParser(),//
             new RightParenParser(),//
     };
-    private        Deque<Operand>                                                  operandStack           = new LinkedList<>();
-    private        Deque<Operator>                                                 operatorStack          = new LinkedList<>();
-    private        Deque<Operand>                                                  processStack           = new LinkedList<>();
+    private        Deque<Operand>                                                  operandStack             = new LinkedList<>();
+    private        Deque<Operator>                                                 operatorStack            = new LinkedList<>();
+    private        Deque<Operand>                                                  processStack             = new LinkedList<>();
     private final  String                                                          el;
     private        int                                                             index;
     @Setter(AccessLevel.NONE)
-    private        Map<String, Class<?>>                                           className              = new HashMap<>();
+    private        Map<String, Class<?>>                                           className                = new HashMap<>();
     @Setter(AccessLevel.NONE)
-    private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls             = new HashMap<>();
-    private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             refenceCalls           = new HashMap<>();
-    private        boolean                                                         methodInvokeUseCompile = false;
-    private        boolean                                                         propertyReadUseLambda  = false;
+    private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls               = new HashMap<>();
+    private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             methodInvokeAccelerators = new HashMap<>();
+    private        boolean                                                         methodInvokeUseCompile   = false;
+    private        boolean                                                         propertyReadUseLambda    = false;
 
     public ParseContext(String el)
     {
         this.el = el;
     }
 
-    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> refenceCalls)
+    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators)
     {
         this.el = el;
         this.className.putAll(className);
         this.innerCalls.putAll(innerCalls);
-        this.refenceCalls.putAll(refenceCalls);
+        this.methodInvokeAccelerators.putAll(methodInvokeAccelerators);
     }
 
     public void registerClass(String name, Class<?> ckass)
@@ -66,9 +66,9 @@ public class ParseContext
         className.put(name, ckass);
     }
 
-    public void registerRefenceCalls(Method method, MethodInvokeOperand.MethodInvokeHelper helper)
+    public void registerAccelerateInvoker(Method method, MethodInvokeOperand.MethodInvokeHelper helper)
     {
-        refenceCalls.put(method, helper);
+        methodInvokeAccelerators.put(method, helper);
     }
 
     public Operand parse()

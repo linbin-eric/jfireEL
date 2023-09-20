@@ -25,9 +25,9 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue = left.calculate(param);
+            Object leftValue = left.calculate(contextParam);
             if (leftValue instanceof Boolean b)
             {
                 if (!b.booleanValue())
@@ -36,7 +36,7 @@ public abstract class BasicOperandImpl implements Operand
                 }
                 else
                 {
-                    Object rightValue = right.calculate(param);
+                    Object rightValue = right.calculate(contextParam);
                     if (rightValue instanceof Boolean b2)
                     {
                         return b2.booleanValue();
@@ -62,9 +62,9 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue = left.calculate(param);
+            Object leftValue = left.calculate(contextParam);
             if (leftValue instanceof Boolean b)
             {
                 if (b.booleanValue())
@@ -73,7 +73,7 @@ public abstract class BasicOperandImpl implements Operand
                 }
                 else
                 {
-                    Object rightValue = right.calculate(param);
+                    Object rightValue = right.calculate(contextParam);
                     if (rightValue instanceof Boolean b2)
                     {
                         return b2.booleanValue();
@@ -101,10 +101,10 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof String || rightValue instanceof String)
             {
                 StringBuilder builder = BUILDER.get();
@@ -210,10 +210,10 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -312,10 +312,10 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -414,10 +414,10 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -516,10 +516,10 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -619,10 +619,10 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -735,9 +735,9 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            return !(Boolean) eqOperand.calculate(param);
+            return !(Boolean) eqOperand.calculate(contextParam);
         }
     }
 
@@ -749,10 +749,10 @@ public abstract class BasicOperandImpl implements Operand
 
         }
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -851,10 +851,10 @@ public abstract class BasicOperandImpl implements Operand
 
         }
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -953,10 +953,10 @@ public abstract class BasicOperandImpl implements Operand
 
         }
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
@@ -1055,10 +1055,10 @@ public abstract class BasicOperandImpl implements Operand
 
         }
         @Override
-        public Object calculate(Map<String, Object> param)
+        public Object calculate(Map<String, Object> contextParam)
         {
-            Object leftValue  = left.calculate(param);
-            Object rightValue = right.calculate(param);
+            Object leftValue  = left.calculate(contextParam);
+            Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)

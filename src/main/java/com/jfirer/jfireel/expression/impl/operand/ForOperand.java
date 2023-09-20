@@ -16,15 +16,15 @@ public class ForOperand implements Operand
     private final String  fragment;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
-        Object calculate = itemsContainer.calculate(param);
+        Object calculate = itemsContainer.calculate(contextParam);
         if (calculate instanceof int[] array)
         {
             for (int i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -48,8 +48,8 @@ public class ForOperand implements Operand
         {
             for (byte i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -73,8 +73,8 @@ public class ForOperand implements Operand
         {
             for (short i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -98,8 +98,8 @@ public class ForOperand implements Operand
         {
             for (long i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -123,8 +123,8 @@ public class ForOperand implements Operand
         {
             for (float i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -148,8 +148,8 @@ public class ForOperand implements Operand
         {
             for (double i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -173,8 +173,8 @@ public class ForOperand implements Operand
         {
             for (char i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -198,8 +198,8 @@ public class ForOperand implements Operand
         {
             for (boolean i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -223,8 +223,8 @@ public class ForOperand implements Operand
         {
             for (Object i : array)
             {
-                param.put(itemName, i);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, i);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;
@@ -248,8 +248,8 @@ public class ForOperand implements Operand
         {
             for (Object o : collection)
             {
-                param.put(itemName, o);
-                Object value = body.calculate(param);
+                contextParam.put(itemName, o);
+                Object value = body.calculate(contextParam);
                 if (value == ControlFlag.RETURN)
                 {
                     return value;

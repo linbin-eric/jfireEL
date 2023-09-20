@@ -13,8 +13,8 @@ public class InnerCallOperand implements Operand
     private       Operand[]                                         methodParams;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
-        return function.apply(param, methodParams);
+        return function.apply(contextParam, methodParams);
     }
 }

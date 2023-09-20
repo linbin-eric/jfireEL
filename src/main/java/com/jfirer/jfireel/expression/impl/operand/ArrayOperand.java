@@ -11,12 +11,12 @@ public class ArrayOperand implements Operand
     private final Operand[] array;
 
     @Override
-    public Object calculate(Map<String, Object> param)
+    public Object calculate(Map<String, Object> contextParam)
     {
         Object[] instance = new Object[array.length];
         for (int i = 0; i < instance.length; i++)
         {
-            instance[i] = array[i].calculate(param);
+            instance[i] = array[i].calculate(contextParam);
         }
         return instance;
     }
