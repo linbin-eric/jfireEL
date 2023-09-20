@@ -10,12 +10,14 @@ import lombok.Data;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Data
 @Accessors(chain = true)
@@ -45,6 +47,7 @@ public class ParseContext
     @Setter(AccessLevel.NONE)
     private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls               = new HashMap<>();
     private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             methodInvokeAccelerators = new HashMap<>();
+    private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
     private        boolean                                                         methodInvokeUseCompile   = false;
     private        boolean                                                         propertyReadUseLambda    = false;
 
@@ -53,12 +56,13 @@ public class ParseContext
         this.el = el;
     }
 
-    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators)
+    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators)
     {
         this.el = el;
         this.className.putAll(className);
         this.innerCalls.putAll(innerCalls);
         this.methodInvokeAccelerators.putAll(methodInvokeAccelerators);
+        this.propertyReadAccelerators.putAll(propertyReadAccelerators);
     }
 
     public void registerClass(String name, Class<?> ckass)
@@ -66,7 +70,12 @@ public class ParseContext
         className.put(name, ckass);
     }
 
-    public void registerAccelerateInvoker(Method method, MethodInvokeOperand.MethodInvokeHelper helper)
+    public void registerPropertyReadAccelerator(Field field, Function<Object, Object> accelerator)
+    {
+        propertyReadAccelerators.put(field, accelerator);
+    }
+
+    public void registerMethodInvokeAccelerator(Method method, MethodInvokeOperand.MethodInvokeHelper helper)
     {
         methodInvokeAccelerators.put(method, helper);
     }

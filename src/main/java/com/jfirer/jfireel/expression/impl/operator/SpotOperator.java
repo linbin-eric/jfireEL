@@ -3,9 +3,9 @@ package com.jfirer.jfireel.expression.impl.operator;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
 import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
 import com.jfirer.jfireel.expression.impl.operand.PropertyReadOperand;
-import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
 import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
 import lombok.Data;
 
@@ -53,7 +53,7 @@ public class SpotOperator implements Operator
             }
             else
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment,parseContext.getMethodInvokeAccelerators()));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment, parseContext.getMethodInvokeAccelerators()));
             }
             processStack.clear();
         }
@@ -63,11 +63,11 @@ public class SpotOperator implements Operator
             VariableOperand variableOperand = (VariableOperand) processStack.pop();
             if (typeOperand instanceof ClassOperand)
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
+                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
             }
             else
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.isPropertyReadUseLambda()));
+                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.isPropertyReadUseLambda(), parseContext.getPropertyReadAccelerators()));
             }
         }
     }

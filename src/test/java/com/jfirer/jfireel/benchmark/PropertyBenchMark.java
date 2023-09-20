@@ -23,8 +23,9 @@ public class PropertyBenchMark
 {
     public    Map<String, Object> vars = new HashMap<String, Object>();
     protected TestSupport.Person  person;
-    Operand lexer_3 = Expression.parse("home.person.age");
-    Operand lexer_4 = new ParseContext("home.person.age").setPropertyReadUseLambda(true).parse();
+    Operand lexer_3 = Expression.parse("home.person");
+    Operand lexer_4 = new ParseContext("home.person").setPropertyReadUseLambda(true).parse();
+    Operand lexer_accel;
 
     public static void main(String[] args) throws RunnerException
     {
@@ -39,6 +40,16 @@ public class PropertyBenchMark
     @Setup
     public void before()
     {
+        ParseContext parseContext = new ParseContext("home.person");
+        try
+        {
+            parseContext.registerPropertyReadAccelerator(TestSupport.Home.class.getDeclaredField("person"), v -> ((TestSupport.Home) v).getPerson());
+        }
+        catch (NoSuchFieldException e)
+        {
+            throw new RuntimeException(e);
+        }
+        lexer_accel = parseContext.parse();
         TestSupport.Home home = new TestSupport.Home();
         person      = new TestSupport.Person();
         person.age  = 14;
@@ -57,5 +68,11 @@ public class PropertyBenchMark
     public void test()
     {
         lexer_3.calculate(vars);
+    }
+
+    @Benchmark
+    public void testAcc()
+    {
+        lexer_accel.calculate(vars);
     }
 }

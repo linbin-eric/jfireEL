@@ -52,8 +52,8 @@ public class MethodMark
         {
             throw new RuntimeException(e);
         }
-        parseContext.registerAccelerateInvoker(bool, (instance, operands, map) -> ((TestSupport.Home) instance).bool((Boolean) operands[0].calculate(map)));
-        parseContext.registerAccelerateInvoker(getAge, (instance, operands, map) -> ((TestSupport.Person) instance).getAge());
+        parseContext.registerMethodInvokeAccelerator(bool, (instance, operands, map) -> ((TestSupport.Home) instance).bool((Boolean) operands[0].calculate(map)));
+        parseContext.registerMethodInvokeAccelerator(getAge, (instance, operands, map) -> ((TestSupport.Person) instance).getAge());
         lexer_new_lambda = parseContext.parse();
     }
 
