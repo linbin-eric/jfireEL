@@ -13,12 +13,10 @@ import java.util.function.Supplier;
 @Data
 public abstract class PropertyReadOperand implements Operand
 {
-    protected final    Operand                              typeOperand;
-    protected final    VariableOperand                      propertyNameOperand;
-    protected final    String                               fragment;
-    protected final    Map<Field, Function<Object, Object>> propertyReadAccelerators;
-    protected volatile Field                                field;
-    protected          Function<Object, Object>             propertyReadAccelerator;
+    protected final Operand                              typeOperand;
+    protected final VariableOperand                      propertyNameOperand;
+    protected final String                               fragment;
+    protected final Map<Field, Function<Object, Object>> propertyReadAccelerators;
 
     protected Field findField(Class<?> ckass, String fieldName, String fragment)
     {
@@ -44,7 +42,7 @@ public abstract class PropertyReadOperand implements Operand
         {
             super(typeOperand, propertyNameOperand, fragment, propertyReadAccelerators);
             Class<?> ckass = ((ClassOperand) typeOperand).getCkass();
-            field = findField(ckass, propertyNameOperand.getVariable(), fragment);
+            Field    field = findField(ckass, propertyNameOperand.getVariable(), fragment);
             field.setAccessible(true);
             Function<Object, Object> function = propertyReadAccelerators.get(field);
             if (function != null)
@@ -93,8 +91,8 @@ public abstract class PropertyReadOperand implements Operand
                 {
                     if (propertyGetter == null)
                     {
-                        Object instance = typeOperand.calculate(contextParam);
-                        field = findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
+                        Object                   instance = typeOperand.calculate(contextParam);
+                        Field                    field    = findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
                         Function<Object, Object> function = propertyReadAccelerators.get(field);
                         if (function != null)
                         {

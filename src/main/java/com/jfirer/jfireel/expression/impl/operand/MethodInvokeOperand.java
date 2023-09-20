@@ -28,12 +28,11 @@ public abstract class MethodInvokeOperand implements Operand
     protected final      Map<Method, MethodInvokeHelper>           methodInvokeAccelerators;
     protected            ConvertType[]                             convertTypes;
     protected            Method                                    method;
-    protected            MethodInvokeHelper                        compileInvoker;
-    protected            MethodInvokeHelper                        accelerateInvoker;
     protected volatile   boolean                                   methodIdentify = false;
     private static final CompileHelper                             COMPILE_HELPER = new CompileHelper();
     private static final AtomicInteger                             COUNTER        = new AtomicInteger(1);
     private static final ConcurrentMap<Method, MethodInvokeHelper> INVOKER_MAP    = new ConcurrentHashMap<>();
+    protected            MethodInvokeHelper                        invokeHelper;
 
     enum ConvertType
     {
@@ -264,16 +263,28 @@ public abstract class MethodInvokeOperand implements Operand
                             return ConvertType.NONE;
                         }
                     }).toArray(ConvertType[]::new);
-                    this.method  = method;
                     method.setAccessible(true);
-                    if (methodInvokeAccelerators.containsKey(method))
+                    MethodInvokeHelper methodInvokeAccelerator = methodInvokeAccelerators.get(method);
+                    if (methodInvokeAccelerator != null)
                     {
-                        accelerateInvoker = methodInvokeAccelerators.get(method);
+                        invokeHelper = methodInvokeAccelerator;
                     }
                     else if (methodInvokeUseCompile)
                     {
-                        compileInvoker = findInvoker(method);
+                        invokeHelper = buildInvoker(method);
                     }
+                    else
+                    {
+                        invokeHelper = (obj, methodParams, contextParam) -> {
+                            Object[] _args = new Object[methodParams.length];
+                            for (int i = 0; i < _args.length; i++)
+                            {
+                                _args[i] = methodParams[i].calculate(contextParam);
+                            }
+                            return methodInvoke(obj, _args);
+                        };
+                    }
+                    this.method    = method;
                     methodIdentify = true;
                     return;
                 }
@@ -528,23 +539,7 @@ public abstract class MethodInvokeOperand implements Operand
                     }
                 }
             }
-            if (methodInvokeUseCompile)
-            {
-                return compileInvoker.invoke(null, methodParams, contextParam);
-            }
-            else if (accelerateInvoker != null)
-            {
-                return accelerateInvoker.invoke(null, methodParams, contextParam);
-            }
-            else
-            {
-                Object[] args = new Object[methodParams.length];
-                for (int i = 0; i < args.length; i++)
-                {
-                    args[i] = methodParams[i].calculate(contextParam);
-                }
-                return methodInvoke(null, args);
-            }
+            return invokeHelper.invoke(null, methodParams, contextParam);
         }
     }
 
@@ -578,23 +573,7 @@ public abstract class MethodInvokeOperand implements Operand
                     }
                 }
             }
-            if (methodInvokeUseCompile)
-            {
-                return compileInvoker.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
-            }
-            else if (accelerateInvoker != null)
-            {
-                return accelerateInvoker.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
-            }
-            else
-            {
-                Object[] args = new Object[methodParams.length];
-                for (int i = 0; i < args.length; i++)
-                {
-                    args[i] = methodParams[i].calculate(contextParam);
-                }
-                return methodInvoke(instanceOperand.calculate(contextParam), args);
-            }
+            return invokeHelper.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
         }
     }
 }
