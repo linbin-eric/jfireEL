@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression;
 import com.jfirer.jfireel.expression.impl.operand.LeftAngleBracketOperand;
 import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
 import com.jfirer.jfireel.expression.impl.operand.MutliOperand;
+import com.jfirer.jfireel.expression.impl.operand.ResultOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 import com.jfirer.jfireel.expression.parse.impl.*;
 import lombok.AccessLevel;
@@ -158,7 +159,7 @@ public class ParseContext
         {
             throw new IllegalStateException("当前表达式解析出现异常，代码中{}没有完全配对");
         }
-        return new MutliOperand(processStack.toArray(Operand[]::new));
+        return new ResultOperand(new MutliOperand(processStack.toArray(Operand[]::new)));
     }
 }
 

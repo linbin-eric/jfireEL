@@ -24,7 +24,7 @@ public class MutliOperand implements Operand
             }
             else if (calculate instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
             {
-                return returnWithValue.value();
+                return calculate;
             }
         }
         return calculate;

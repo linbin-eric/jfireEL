@@ -723,10 +723,21 @@ public class FunctionTest extends TestSupport
     }
 
     @Test
-    public void test69(){
+    public void test69()
+    {
         String content = """
                 var array =['1','2'];
                 return array[1];""";
         assertEquals("2", Expression.parseMutli(content).calculate());
+    }
+
+    @Test
+    public void test70()
+    {
+        String content = """
+                if(1>0){return true;}
+                return false;""";
+        Boolean calculate = (Boolean) Expression.parseMutli(content).calculate();
+        assertTrue(calculate);
     }
 }
