@@ -73,13 +73,11 @@ public abstract class PropertyReadOperand implements Operand
 
     public static class InstancePropertyReadOperand extends PropertyReadOperand
     {
-        private          boolean                  propertyReadUseLambda;
         private volatile Function<Object, Object> propertyGetter;
 
-        public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, boolean propertyReadUseLambda, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+        public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment,  Map<Field, Function<Object, Object>> propertyReadAccelerators)
         {
             super(typeOperand, propertyNameOperand, fragment, propertyReadAccelerators);
-            this.propertyReadUseLambda = propertyReadUseLambda;
         }
 
         @Override
@@ -100,7 +98,7 @@ public abstract class PropertyReadOperand implements Operand
                         }
                         else
                         {
-                            ValueAccessor valueAccessor = propertyReadUseLambda ? new LambdaValueAccessor(field) : new ValueAccessor(field);
+                            ValueAccessor valueAccessor =  new ValueAccessor(field);
                             propertyGetter = v -> valueAccessor.get(v);
                         }
                         return propertyGetter.apply(instance);

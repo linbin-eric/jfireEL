@@ -48,8 +48,6 @@ public class ParseContext
     private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls               = new HashMap<>();
     private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             methodInvokeAccelerators = new HashMap<>();
     private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
-    private        boolean                                                         methodInvokeUseCompile   = false;
-    private        boolean                                                         propertyReadUseLambda    = false;
 
     public ParseContext(String el)
     {

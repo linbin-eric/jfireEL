@@ -24,7 +24,6 @@ public class PropertyBenchMark
     public    Map<String, Object> vars = new HashMap<String, Object>();
     protected TestSupport.Person  person;
     Operand lexer_3 = Expression.parse("home.person");
-    Operand lexer_4 = new ParseContext("home.person").setPropertyReadUseLambda(true).parse();
     Operand lexer_accel;
 
     public static void main(String[] args) throws RunnerException
@@ -56,12 +55,6 @@ public class PropertyBenchMark
         home.person = person;
         vars.put("person", person);
         vars.put("home", home);
-    }
-
-    @Benchmark
-    public void testLambda()
-    {
-        lexer_4.calculate(vars);
     }
 
     @Benchmark

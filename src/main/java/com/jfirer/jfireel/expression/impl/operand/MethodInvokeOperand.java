@@ -23,7 +23,6 @@ public abstract class MethodInvokeOperand implements Operand
 {
     protected final      String                                    methodName;
     protected final      Operand[]                                 methodParams;
-    protected final      boolean                                   methodInvokeUseCompile;
     protected final      String                                    fragment;
     protected final      Map<Method, MethodInvokeHelper>           methodInvokeAccelerators;
     protected            ConvertType[]                             convertTypes;
@@ -268,10 +267,6 @@ public abstract class MethodInvokeOperand implements Operand
                     if (methodInvokeAccelerator != null)
                     {
                         invokeHelper = methodInvokeAccelerator;
-                    }
-                    else if (methodInvokeUseCompile)
-                    {
-                        invokeHelper = buildInvoker(method);
                     }
                     else
                     {
@@ -518,9 +513,9 @@ public abstract class MethodInvokeOperand implements Operand
     {
         private final List<Method> candidates;
 
-        public StaticMethod(Class ckass, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
+        public StaticMethod(Class ckass, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
         {
-            super(methodName, methodParams, methodInvokeUseCompile, fragment, refenceCalls);
+            super(methodName, methodParams, fragment, refenceCalls);
             candidates = Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
         }
 
@@ -547,9 +542,9 @@ public abstract class MethodInvokeOperand implements Operand
     {
         private Operand instanceOperand;
 
-        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, boolean methodInvokeUseCompile, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
+        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
         {
-            super(methodName, methodParams, methodInvokeUseCompile, fragment, refenceCalls);
+            super(methodName, methodParams,  fragment, refenceCalls);
             this.instanceOperand = instanceOperand;
         }
 

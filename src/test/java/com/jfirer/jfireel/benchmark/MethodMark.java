@@ -27,10 +27,9 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class MethodMark
 {
-    public Operand             lexer_new         = Expression.parse("person.getAge()");
-    public Operand             lexer_new_compile = new ParseContext("person.getAge()").setMethodInvokeUseCompile(true).parse();
+    public Operand             lexer_new = Expression.parse("person.getAge()");
     public Operand             lexer_new_lambda;
-    public Map<String, Object> vars              = new HashMap<String, Object>();
+    public Map<String, Object> vars      = new HashMap<String, Object>();
     public TestSupport.Person  person;
     public TestSupport.Home    home;
     org.springframework.expression.Expression exp;
@@ -98,12 +97,6 @@ public class MethodMark
     public void testJfireEl_new()
     {
         lexer_new.calculate(vars);
-    }
-
-    @Benchmark
-    public void testJfireEl_new_compile()
-    {
-        lexer_new_compile.calculate(vars);
     }
 
     @Benchmark

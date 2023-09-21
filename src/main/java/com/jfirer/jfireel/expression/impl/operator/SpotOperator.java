@@ -49,11 +49,11 @@ public class SpotOperator implements Operator
             String  methodName = ((VariableOperand) processStack.pop()).getVariable();
             if (pop instanceof ClassOperand classOperand)
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(classOperand.getCkass(), methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment, parseContext.getMethodInvokeAccelerators()));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(classOperand.getCkass(), methodName, processStack.stream().toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
             }
             else
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), parseContext.isMethodInvokeUseCompile(), fragment, parseContext.getMethodInvokeAccelerators()));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
             }
             processStack.clear();
         }
@@ -67,7 +67,7 @@ public class SpotOperator implements Operator
             }
             else
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.isPropertyReadUseLambda(), parseContext.getPropertyReadAccelerators()));
+                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(),  parseContext.getPropertyReadAccelerators()));
             }
         }
     }
