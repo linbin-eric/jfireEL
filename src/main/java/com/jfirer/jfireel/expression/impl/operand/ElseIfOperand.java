@@ -8,8 +8,8 @@ import java.util.Map;
 @Data
 public class ElseIfOperand implements Operand
 {
-    private Operand condition;
-    private Operand body;
+    private Operand                condition;
+    private MethodStructureOperand body;
 
     @Override
     public Object calculate(Map<String, Object> contextParam)

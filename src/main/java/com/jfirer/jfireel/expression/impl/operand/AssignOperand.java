@@ -8,17 +8,17 @@ import java.util.Map;
 @Data
 public class AssignOperand implements Operand
 {
-    protected final String  name;
+    protected final String  variableName;
     protected final Operand value;
 
     @Override
     public Object calculate(Map<String, Object> contextParam)
     {
-        if (contextParam.containsKey(name) == false)
+        if (contextParam.containsKey(variableName) == false)
         {
-            throw new IllegalArgumentException("变量名:" + name + "不存在上下文中，请检查");
+            throw new IllegalArgumentException("变量名:" + variableName + "不存在上下文中，请检查");
         }
-        contextParam.put(name, value.calculate(contextParam));
+        contextParam.put(variableName, value.calculate(contextParam));
         return null;
     }
 
@@ -32,7 +32,7 @@ public class AssignOperand implements Operand
         @Override
         public Object calculate(Map<String, Object> contextParam)
         {
-            contextParam.put(name, value.calculate(contextParam));
+            contextParam.put(variableName, value.calculate(contextParam));
             return null;
         }
     }

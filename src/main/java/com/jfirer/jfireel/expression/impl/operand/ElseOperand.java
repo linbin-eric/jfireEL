@@ -8,7 +8,7 @@ import java.util.Map;
 @Data
 public class ElseOperand implements Operand
 {
-    private Operand body;
+    private MethodStructureOperand body;
 
     @Override
     public Object calculate(Map<String, Object> contextParam)

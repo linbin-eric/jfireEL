@@ -39,11 +39,11 @@ public class RightAngleBracketOperator implements Operator
         }
         if (top instanceof IfOperand ifOperand)
         {
-            ifOperand.setBody(new MutliOperand(array));
+            ifOperand.setBody(new MethodStructureOperand(array, false));
         }
         else if (top instanceof ElseIfOperand elseIfOperand)
         {
-            elseIfOperand.setBody(new MutliOperand(array));
+            elseIfOperand.setBody(new MethodStructureOperand(array, false));
             operandStack.pop();
             if (operandStack.peek() instanceof IfOperand ifOperand)
             {
@@ -56,7 +56,7 @@ public class RightAngleBracketOperator implements Operator
         }
         else if (top instanceof ElseOperand elseOperand)
         {
-            elseOperand.setBody(new MutliOperand(array));
+            elseOperand.setBody(new MethodStructureOperand(array, false));
             operandStack.pop();
             if (operandStack.peek() instanceof IfOperand ifOperand)
             {
@@ -69,7 +69,7 @@ public class RightAngleBracketOperator implements Operator
         }
         else if (top instanceof ForOperand forOperand)
         {
-            forOperand.setBody(new MutliOperand(array));
+            forOperand.setBody(new MethodStructureOperand(array, false));
         }
     }
 

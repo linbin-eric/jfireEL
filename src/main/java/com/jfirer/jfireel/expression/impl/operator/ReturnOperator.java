@@ -4,6 +4,7 @@ import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.ControlFlagOperand;
+import com.jfirer.jfireel.expression.impl.operand.ReturnWithValueOperand;
 import lombok.Data;
 
 import java.util.Deque;
@@ -38,7 +39,7 @@ public class ReturnOperator implements Operator
         Deque<Operand> operandStack = parseContext.getOperandStack();
         if (withValue)
         {
-            parseContext.getOperandStack().push(new ControlFlagOperand.ReturnWithResultOperand(operandStack.pop()));
+            parseContext.getOperandStack().push(new ReturnWithValueOperand(operandStack.pop()));
         }
         else
         {

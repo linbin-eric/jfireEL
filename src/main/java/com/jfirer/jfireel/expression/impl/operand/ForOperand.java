@@ -1,7 +1,7 @@
 package com.jfirer.jfireel.expression.impl.operand;
 
-import com.jfirer.jfireel.expression.ControlFlag;
 import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.ProcessControlResult;
 import lombok.Data;
 
 import java.util.Collection;
@@ -10,10 +10,10 @@ import java.util.Map;
 @Data
 public class ForOperand implements Operand
 {
-    private       String  itemName;
-    private       Operand itemsContainer;
-    private       Operand body;
-    private final String  fragment;
+    private       String                 itemName;
+    private       Operand                itemsContainer;
+    private       MethodStructureOperand body;
+    private final String                 fragment;
 
     @Override
     public Object calculate(Map<String, Object> contextParam)
@@ -25,23 +25,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof byte[] array)
@@ -50,23 +46,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof short[] array)
@@ -75,23 +67,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof long[] array)
@@ -100,23 +88,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof float[] array)
@@ -125,23 +109,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof double[] array)
@@ -150,23 +130,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof char[] array)
@@ -175,23 +151,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof boolean[] array)
@@ -200,23 +172,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof Object[] array)
@@ -225,23 +193,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, i);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else if (calculate instanceof Collection<?> collection)
@@ -250,23 +214,19 @@ public class ForOperand implements Operand
             {
                 contextParam.put(itemName, o);
                 Object value = body.calculate(contextParam);
-                if (value == ControlFlag.RETURN)
+                if (value instanceof ProcessControlResult processControlResult)
                 {
-                    return value;
-                }
-                else if (value == ControlFlag.BREAK)
-                {
-                    return null;
-                }
-                else if (value == ControlFlag.CONTINUE)
-                {
-                    continue;
-                }
-                else if (value instanceof ControlFlagOperand.ReturnWithValue returnWithValue)
-                {
-                    return returnWithValue.value();
+                    contextParam.remove(itemName);
+                    switch (processControlResult.getFlag())
+                    {
+                        case RETURN -> {return value;}
+                        case BREAK -> {return null;}
+                        case CONTINUE -> {;}
+                        case RETURN_WITH_VALUE -> {return value;}
+                    }
                 }
             }
+            contextParam.remove(itemName);
             return null;
         }
         else

@@ -406,19 +406,19 @@ public class FunctionTest extends TestSupport
                                                         if(1+age>5)
                                                         {
                                                            var name ='f1';
+                                                           return name;
                                                         }
                                                         else
                                                         { 
                                                            var name = 'f2';
+                                                           return name;
                                                         }
                                                         """);
         Map<String, Object> param = new HashMap<>();
         param.put("age", 3);
-        operand.calculate(param);
-        assertEquals("f2", param.get("name"));
+        assertEquals("f2", operand.calculate(param));
         param.put("age", 5);
-        operand.calculate(param);
-        assertEquals("f1", param.get("name"));
+        assertEquals("f1", operand.calculate(param));
     }
 
     @Test
@@ -446,11 +446,11 @@ public class FunctionTest extends TestSupport
                                                              {
                                                                 result=false;
                                                              }
+                                                             return result;
                                                              """);
         Map<String, Object> param = new HashMap<>();
         param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
-        operand.calculate(param);
-        assertTrue((Boolean) param.get("result"));
+        assertTrue((Boolean) operand.calculate(param));
     }
 
     @Test
@@ -615,11 +615,11 @@ public class FunctionTest extends TestSupport
     public void test63()
     {
         String content = """
-                var name='yl';""";
+                var name='yl';
+                return name;""";
         Map<String, Object> map     = new HashMap<>();
         Operand             operand = Expression.parseMutli(content);
-        operand.calculate(map);
-        assertEquals("yl", ((String) map.get("name")));
+        assertEquals("yl", ((String) operand.calculate(map)));
     }
 
     @Test
@@ -681,15 +681,15 @@ public class FunctionTest extends TestSupport
                 for(each in home.persons)
                 {
                 sum=sum+each.age;
-                }""";
+                }
+                return sum;""";
         Operand             operand = Expression.parseMutli(content);
         Map<String, Object> param   = new HashMap<>();
         Person[]            persons = new Person[]{new Person(1), new Person(2)};
         Home2               home    = new Home2();
         home.persons = persons;
         param.put("home", home);
-        operand.calculate(param);
-        int i = ((Number) param.get("sum")).intValue();
+        int i = ((Number) operand.calculate(param)).intValue();
         assertEquals(3, i);
     }
 
