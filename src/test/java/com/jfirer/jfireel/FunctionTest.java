@@ -740,4 +740,12 @@ public class FunctionTest extends TestSupport
         Boolean calculate = (Boolean) Expression.parseMutli(content).calculate();
         assertTrue(calculate);
     }
+
+    @Test
+    public void test71(){
+        String content= """
+                if(1<2){;}else{return 2;}""";
+        Object calculate = Expression.parseMutli(content).calculate();
+        assertNull(calculate);
+    }
 }
