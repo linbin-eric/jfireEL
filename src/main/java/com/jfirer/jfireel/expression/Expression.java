@@ -62,67 +62,81 @@ public class Expression
         int           indent  = 0;
         for (char c : content.toCharArray())
         {
-            if (CharType.isIgnore(c) == false)
+            if (c == '\r' || c == '\n' || c == '\t')
             {
-                if (c == ';')
+                continue;
+            }
+            if (c == ';')
+            {
+                builder.append(";\r\n");
+            }
+            else if (c == '{')
+            {
+                if (builder.length() > 0)
                 {
-                    builder.append(";\r\n");
-                }
-                else if (c == '{')
-                {
-                    if (builder.length() > 0)
+                    char pre = builder.charAt(builder.length() - 1);
+                    if (pre == '\r' || pre == '\n')
                     {
-                        char pre = builder.charAt(builder.length() - 1);
-                        if (pre == '\r' || pre == '\n')
-                        {
-                            ;
-                        }
-                        else{
-                            builder.append("\r\n");
-                        }
+                        ;
                     }
-                    for (int i = 0; i < indent; i++)
+                    else
                     {
-                        builder.append(' ');
-                    }
-                    builder.append("{\r\n");
-                    indent += 4;
-                    for (int i = 0; i < indent; i++)
-                    {
-                        builder.append(' ');
+                        builder.append("\r\n");
                     }
                 }
-                else if (c == '}')
+                for (int i = 0; i < indent; i++)
                 {
-                    if (builder.length() > 0)
+                    builder.append(' ');
+                }
+                builder.append("{\r\n");
+                indent += 4;
+                for (int i = 0; i < indent; i++)
+                {
+                    builder.append(' ');
+                }
+            }
+            else if (c == '}')
+            {
+                if (builder.length() > 0)
+                {
+                    char pre = builder.charAt(builder.length() - 1);
+                    if (pre == '\r' || pre == '\n')
                     {
-                        char pre = builder.charAt(builder.length() - 1);
-                        if (pre == '\r' || pre == '\n')
-                        {
-                            ;
-                        }
-                        else{
-                            builder.append("\r\n");
-                        }
+                        ;
                     }
-                    indent -= 4;
-                    for (int i = 0; i < indent; i++)
+                    else
                     {
-                        builder.append(' ');
-                    }
-                    builder.append("}\r\n");
-                    for (int i = 0; i < indent; i++)
-                    {
-                        builder.append(' ');
+                        builder.append("\r\n");
                     }
                 }
-                else
+                indent -= 4;
+                for (int i = 0; i < indent; i++)
                 {
-                    builder.append(c);
+                    builder.append(' ');
                 }
+                builder.append("}\r\n");
+                for (int i = 0; i < indent; i++)
+                {
+                    builder.append(' ');
+                }
+            }
+            else
+            {
+                builder.append(c);
             }
         }
         String s = builder.toString();
-        if(s.endsWith("\r\n    "))
+        if (s.endsWith("\r\n    "))
+        {
+            return s.substring(0, s.length() - 5);
+        }
+        else if (s.endsWith("\r\n"))
+        {
+            return s.substring(0, s.length() - 2);
+        }
+        else
+        {
+            return s;
+        }
     }
 }
