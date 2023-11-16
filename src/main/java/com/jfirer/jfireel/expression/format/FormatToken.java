@@ -6,10 +6,11 @@ public interface FormatToken
     {
         switch (str)
         {
-            case "(", "if", "else" -> {return new NotFrontSpaceToken(str);}
+            case "(", "if", "else", "." -> {return new NotFrontSpaceToken(str);}
             case ";" -> {return new NewLineToken(str);}
             case "{" -> {return new SingleLineAndAddIndentToken(str, 4);}
             case "}" -> {return new MinusIndentAndSingleLineToken(str, 4);}
+            case ")" -> {return new RightParenToken();}
             default -> {return new RegularToken(str);}
         }
     }

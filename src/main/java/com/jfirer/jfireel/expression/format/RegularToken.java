@@ -12,7 +12,8 @@ public class RegularToken implements FormatToken
     @Override
     public void out(StringBuilder builder, FormatContext context)
     {
-        if (context.isFirst())
+        int index = builder.length() - 1;
+        if (context.isFirst() || (index >= 0 && (builder.charAt(index) == '.' || builder.charAt(index) == ',')))
         {
             builder.append(str);
             context.setFirst(false);

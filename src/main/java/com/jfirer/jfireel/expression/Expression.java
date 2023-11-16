@@ -61,7 +61,7 @@ public class Expression
      */
     public static String format(String content)
     {
-        ParseContext parseContext = new ParseContext(content);
+        ParseContext parseContext = new ParseContext(content, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators);
         parseContext.parseMutli();
         List<FormatToken> formatTokens = parseContext.getFormatTokens();
         StringBuilder     builder      = new StringBuilder();
