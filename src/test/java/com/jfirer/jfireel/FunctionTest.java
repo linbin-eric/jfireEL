@@ -754,8 +754,8 @@ public class FunctionTest extends TestSupport
     public void test72()
     {
         String content = """
-                if(1<2){;}else{return 2;}""";
+                if(1<2){if(2>1){var i = 1  +2  ;}}else{return 2;}""";
         String format = Expression.format(content);
-        System.out.println(format);
+        System.out.print(format);
     }
 }

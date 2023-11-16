@@ -1,9 +1,12 @@
 package com.jfirer.jfireel.expression;
 
+import com.jfirer.jfireel.expression.format.FormatContext;
+import com.jfirer.jfireel.expression.format.FormatToken;
 import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
@@ -58,85 +61,12 @@ public class Expression
      */
     public static String format(String content)
     {
-        StringBuilder builder = new StringBuilder();
-        int           indent  = 0;
-        for (char c : content.toCharArray())
-        {
-            if (c == '\r' || c == '\n' || c == '\t')
-            {
-                continue;
-            }
-            if (c == ';')
-            {
-                builder.append(";\r\n");
-            }
-            else if (c == '{')
-            {
-                if (builder.length() > 0)
-                {
-                    char pre = builder.charAt(builder.length() - 1);
-                    if (pre == '\r' || pre == '\n')
-                    {
-                        ;
-                    }
-                    else
-                    {
-                        builder.append("\r\n");
-                    }
-                }
-                for (int i = 0; i < indent; i++)
-                {
-                    builder.append(' ');
-                }
-                builder.append("{\r\n");
-                indent += 4;
-                for (int i = 0; i < indent; i++)
-                {
-                    builder.append(' ');
-                }
-            }
-            else if (c == '}')
-            {
-                if (builder.length() > 0)
-                {
-                    char pre = builder.charAt(builder.length() - 1);
-                    if (pre == '\r' || pre == '\n')
-                    {
-                        ;
-                    }
-                    else
-                    {
-                        builder.append("\r\n");
-                    }
-                }
-                indent -= 4;
-                for (int i = 0; i < indent; i++)
-                {
-                    builder.append(' ');
-                }
-                builder.append("}\r\n");
-                for (int i = 0; i < indent; i++)
-                {
-                    builder.append(' ');
-                }
-            }
-            else
-            {
-                builder.append(c);
-            }
-        }
-        String s = builder.toString();
-        if (s.endsWith("\r\n    "))
-        {
-            return s.substring(0, s.length() - 5);
-        }
-        else if (s.endsWith("\r\n"))
-        {
-            return s.substring(0, s.length() - 2);
-        }
-        else
-        {
-            return s;
-        }
+        ParseContext parseContext = new ParseContext(content);
+        parseContext.parseMutli();
+        List<FormatToken> formatTokens = parseContext.getFormatTokens();
+        StringBuilder     builder      = new StringBuilder();
+        FormatContext     context      = new FormatContext();
+        formatTokens.forEach(token -> token.out(builder, context));
+        return builder.toString().trim();
     }
 }

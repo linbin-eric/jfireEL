@@ -1,5 +1,6 @@
 package com.jfirer.jfireel.expression;
 
+import com.jfirer.jfireel.expression.format.FormatToken;
 import com.jfirer.jfireel.expression.impl.operand.LeftAngleBracketOperand;
 import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
 import com.jfirer.jfireel.expression.impl.operand.MethodStructureOperand;
@@ -12,10 +13,7 @@ import lombok.experimental.Accessors;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -78,6 +76,8 @@ public class ParseContext
         methodInvokeAccelerators.put(method, helper);
     }
 
+    List<FormatToken> formatTokens = new LinkedList<>();
+
     public Operand parse()
     {
         try
@@ -96,6 +96,11 @@ public class ParseContext
                 if (oldVersionOfIndex == index)
                 {
                     throw new IllegalStateException("无法解析表达式，当前解析进度为:" + el.substring(0, oldVersionOfIndex));
+                }
+                String trim = el.substring(oldVersionOfIndex, index).trim();
+                if (trim.equals("") == false)
+                {
+                    formatTokens.add(FormatToken.of(trim));
                 }
             }
             while (operatorStack.isEmpty() == false)
@@ -136,6 +141,11 @@ public class ParseContext
                 {
                     throw new IllegalStateException("无法解析表达式，当前解析进度为:" + el.substring(0, oldVersionOfIndex));
                 }
+                String trim = el.substring(oldVersionOfIndex, index).trim();
+                if (trim.equals("") == false)
+                {
+                    formatTokens.add(FormatToken.of(trim));
+                }
             }
             while (operatorStack.isEmpty() == false)
             {
@@ -160,6 +170,8 @@ public class ParseContext
         }
         return new MethodStructureOperand(processStack.toArray(Operand[]::new), true);
     }
+
+
 }
 
 
