@@ -20,7 +20,7 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 3);
             return true;
         }
-        if (el.charAt(index) == 'i' && index + 1 < el.length() && el.charAt(index + 1) == 'n')
+        if (el.charAt(index) == 'i' && index + 1 < el.length() && el.charAt(index + 1) == 'n' && index+2<el.length() && el.charAt(index+2)==' ')
         {
             new InOperator().push(parseContext);
             parseContext.setIndex(index + 2);
