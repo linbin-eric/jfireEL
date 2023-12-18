@@ -106,6 +106,10 @@ public abstract class BasicOperandImpl implements Operand
             Object rightValue = right.calculate(contextParam);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
+                if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
+                {
+                    return mathBigDecimal(leftValue, rightValue);
+                }
                 if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer || leftValue instanceof Long)
                 {
                     long l = ((Number) leftValue).longValue();
@@ -149,6 +153,8 @@ public abstract class BasicOperandImpl implements Operand
             }
         }
 
+        protected abstract Object mathBigDecimal(Object leftValue, Object rightValue);
+
         protected abstract Object math(double v, double v1);
 
         protected abstract Object math(double v, long l);
@@ -167,6 +173,12 @@ public abstract class BasicOperandImpl implements Operand
         public PlusOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).add(new BigDecimal(rightValue.toString()));
         }
 
         @Override
@@ -203,10 +215,6 @@ public abstract class BasicOperandImpl implements Operand
                 builder.setLength(0);
                 return result;
             }
-            else if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).add(new BigDecimal(rightValue.toString()));
-            }
             else
             {
                 throw new IllegalArgumentException();
@@ -219,6 +227,12 @@ public abstract class BasicOperandImpl implements Operand
         public MinusOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).subtract(new BigDecimal(rightValue.toString()));
         }
 
         @Override
@@ -248,10 +262,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).subtract(new BigDecimal(rightValue.toString()));
-            }
             throw new IllegalStateException("操作数解析出现异常，- 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
@@ -261,6 +271,12 @@ public abstract class BasicOperandImpl implements Operand
         public TimesOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).multiply(new BigDecimal(rightValue.toString()));
         }
 
         @Override
@@ -290,10 +306,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).multiply(new BigDecimal(rightValue.toString()));
-            }
             throw new IllegalStateException("操作数解析出现异常，* 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
@@ -303,6 +315,12 @@ public abstract class BasicOperandImpl implements Operand
         public DivisionOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()));
         }
 
         @Override
@@ -332,10 +350,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()));
-            }
             throw new IllegalStateException("操作数解析出现异常，/ 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
@@ -345,6 +359,12 @@ public abstract class BasicOperandImpl implements Operand
         public RemainOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).remainder(new BigDecimal(rightValue.toString()));
         }
 
         @Override
@@ -374,10 +394,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).remainder(new BigDecimal(rightValue.toString()));
-            }
             throw new IllegalStateException("操作数解析出现异常，% 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
@@ -388,6 +404,12 @@ public abstract class BasicOperandImpl implements Operand
         {
             super(left, right, fragment);
             String msg = "操作数解析出现异常，= 操作符要求左右参数都是可比较对象。异常解析位置为" + fragment;
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) == 0;
         }
 
         @Override
@@ -427,10 +449,6 @@ public abstract class BasicOperandImpl implements Operand
                 {
                     return false;
                 }
-                if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-                {
-                    return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) == 0;
-                }
                 else
                 {
                     return leftValue.equals(rightValue);
@@ -464,6 +482,12 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) >= 0;
+        }
+
+        @Override
         protected Object math(double v, double v1)
         {
             return v >= v1;
@@ -490,10 +514,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) >= 0;
-            }
             throw new IllegalStateException("操作数解析出现异常，>= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
@@ -503,6 +523,12 @@ public abstract class BasicOperandImpl implements Operand
         public GtOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) > 0;
         }
 
         @Override
@@ -532,10 +558,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) > 0;
-            }
             throw new IllegalStateException("操作数解析出现异常，> 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
@@ -545,6 +567,12 @@ public abstract class BasicOperandImpl implements Operand
         public LeOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) <= 0;
         }
 
         @Override
@@ -574,10 +602,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) <= 0;
-            }
             throw new IllegalStateException("操作数解析出现异常，<= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
@@ -587,6 +611,12 @@ public abstract class BasicOperandImpl implements Operand
         public LtOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
+        }
+
+        @Override
+        protected Object mathBigDecimal(Object leftValue, Object rightValue)
+        {
+            return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) < 0;
         }
 
         @Override
@@ -616,10 +646,6 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object processOther(Object leftValue, Object rightValue)
         {
-            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
-            {
-                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) < 0;
-            }
             throw new IllegalStateException("操作数解析出现异常，< 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }

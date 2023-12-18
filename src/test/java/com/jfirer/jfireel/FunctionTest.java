@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -757,5 +758,16 @@ public class FunctionTest extends TestSupport
                 if(1<2){if(2>1){var i = 1  +2  ;}}else{return 2;}""";
         String format = Expression.format(content);
         System.out.print(format);
+    }
+
+    @Test
+    public void test73()
+    {
+        String              content = "a*2==2.24";
+        Map<String, Object> param   = new HashMap<>();
+        param.put("a", new BigDecimal("1.12"));
+        Operand operand   = Expression.parse(content);
+        Boolean calculate = (Boolean) operand.calculate(param);
+        assertTrue(calculate);
     }
 }
