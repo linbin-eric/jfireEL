@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.impl.operand;
 
 import com.jfirer.jfireel.expression.Operand;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 public abstract class BasicOperandImpl implements Operand
@@ -91,40 +92,11 @@ public abstract class BasicOperandImpl implements Operand
         }
     }
 
-    interface MathOp1
+    protected abstract static class MathOperand extends BasicOperandImpl
     {
-        Object math(long l, long r);
-    }
-
-    interface MathOp2
-    {
-        Object math(double l, double r);
-    }
-
-    interface MathOp3
-    {
-        Object math(long l, double r);
-    }
-
-    interface MathOp4
-    {
-        Object math(double l, long r);
-    }
-
-    protected abstract class MathOperand extends BasicOperandImpl
-    {
-        MathOp1 op1;
-        MathOp2 op2;
-        MathOp3 op3;
-        MathOp4 op4;
-
-        public MathOperand(Operand left, Operand right, String fragment, MathOp1 mathOp1, MathOp2 mathOp2, MathOp3 mathOp3, MathOp4 mathOp4)
+        public MathOperand(Operand left, Operand right, String fragment)
         {
             super(left, right, fragment);
-            this.op1 = mathOp1;
-            this.op2 = mathOp2;
-            this.op3 = mathOp3;
-            this.op4 = mathOp4;
         }
 
         @Override
@@ -139,11 +111,11 @@ public abstract class BasicOperandImpl implements Operand
                     long l = ((Number) leftValue).longValue();
                     if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer || rightValue instanceof Long)
                     {
-                        return op1.math(l, ((Number) rightValue).longValue());
+                        return math(l, ((Number) rightValue).longValue());
                     }
                     else if (rightValue instanceof Float || rightValue instanceof Double)
                     {
-                        return op3.math(l, ((Number) rightValue).doubleValue());
+                        return math(l, ((Number) rightValue).doubleValue());
                     }
                     else
                     {
@@ -155,11 +127,11 @@ public abstract class BasicOperandImpl implements Operand
                     double v = ((Number) leftValue).doubleValue();
                     if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer || rightValue instanceof Long)
                     {
-                        return op4.math(v, ((Number) rightValue).longValue());
+                        return math(v, ((Number) rightValue).longValue());
                     }
                     else if (rightValue instanceof Float || rightValue instanceof Double)
                     {
-                        return op2.math(v, ((Number) rightValue).doubleValue());
+                        return math(v, ((Number) rightValue).doubleValue());
                     }
                     else
                     {
@@ -177,12 +149,20 @@ public abstract class BasicOperandImpl implements Operand
             }
         }
 
+        protected abstract Object math(double v, double v1);
+
+        protected abstract Object math(double v, long l);
+
+        protected abstract Object math(long l, double v);
+
+        protected abstract Object math(long l, long l1);
+
         protected abstract Object processOther(Object leftValue, Object rightValue);
     }
 
-    public static class PlusOperand extends BasicOperandImpl
+    public static class PlusOperand extends MathOperand
     {
-        private static final ThreadLocal<StringBuilder> BUILDER = ThreadLocal.withInitial(() -> new StringBuilder());
+        private static final ThreadLocal<StringBuilder> BUILDER = ThreadLocal.withInitial(StringBuilder::new);
 
         public PlusOperand(Operand left, Operand right, String fragment)
         {
@@ -190,10 +170,32 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
+            return v + v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v + l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l + v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l + l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
             if (leftValue instanceof String || rightValue instanceof String)
             {
                 StringBuilder builder = BUILDER.get();
@@ -201,53 +203,18 @@ public abstract class BasicOperandImpl implements Operand
                 builder.setLength(0);
                 return result;
             }
-            else if (leftValue instanceof Number && rightValue instanceof Number)
+            else if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer || leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer || rightValue instanceof Long)
-                    {
-                        return i + ((Number) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float || rightValue instanceof Double)
-                    {
-                        return i + ((Number) rightValue).doubleValue();
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                else if (leftValue instanceof Float || leftValue instanceof Double)
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer || rightValue instanceof Long)
-                    {
-                        return i + ((Number) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float || rightValue instanceof Double)
-                    {
-                        return i + ((Number) rightValue).doubleValue();
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                else
-                {
-                    throw new IllegalArgumentException();
-                }
+                return new BigDecimal(leftValue.toString()).add(new BigDecimal(rightValue.toString()));
             }
             else
             {
-                throw new IllegalStateException("操作数解析出现异常，+ 操作符要求左右参数都是 String,Number。异常解析位置为" + fragment);
+                throw new IllegalArgumentException();
             }
         }
     }
 
-    public static class MinusOperand extends BasicOperandImpl
+    public static class MinusOperand extends MathOperand
     {
         public MinusOperand(Operand left, Operand right, String fragment)
         {
@@ -255,57 +222,41 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v - v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v - l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l - v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l - l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer || leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer || rightValue instanceof Long)
-                    {
-                        return i - ((Number) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float || rightValue instanceof Double)
-                    {
-                        return i - ((Number) rightValue).doubleValue();
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                else if (leftValue instanceof Float || leftValue instanceof Double)
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer || rightValue instanceof Long)
-                    {
-                        return i - ((Number) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float || rightValue instanceof Double)
-                    {
-                        return i - ((Number) rightValue).doubleValue();
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                else
-                {
-                    throw new IllegalArgumentException();
-                }
+                return new BigDecimal(leftValue.toString()).subtract(new BigDecimal(rightValue.toString()));
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，- 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，- 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 
-    public static class TimesOperand extends BasicOperandImpl
+    public static class TimesOperand extends MathOperand
     {
         public TimesOperand(Operand left, Operand right, String fragment)
         {
@@ -313,101 +264,41 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v * v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v * l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l * v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l * l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i * ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i * ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i * ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i * ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i * ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i * ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i * ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i * ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i * ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i * ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i * ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i * ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i * ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i * ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i * ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i * ((Number) rightValue).doubleValue();
-                    }
-                }
+                return new BigDecimal(leftValue.toString()).multiply(new BigDecimal(rightValue.toString()));
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，* 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，* 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 
-    public static class DivisionOperand extends BasicOperandImpl
+    public static class DivisionOperand extends MathOperand
     {
         public DivisionOperand(Operand left, Operand right, String fragment)
         {
@@ -415,101 +306,41 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v / v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v / l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l / v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l / l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i / ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i / ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i / ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i / ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i / ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i / ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i / ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i / ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i / ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i / ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i / ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i / ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i / ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i / ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i / ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i / ((Number) rightValue).doubleValue();
-                    }
-                }
+                return new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()));
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，/ 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，/ 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 
-    public static class RemainOperand extends BasicOperandImpl
+    public static class RemainOperand extends MathOperand
     {
         public RemainOperand(Operand left, Operand right, String fragment)
         {
@@ -517,101 +348,41 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v % v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v % l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l % v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l % l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i % ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i % ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i % ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i % ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i % ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i % ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i % ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i % ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i % ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i % ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i % ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i % ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i % ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i % ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i % ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i % ((Number) rightValue).doubleValue();
-                    }
-                }
+                return new BigDecimal(leftValue.toString()).remainder(new BigDecimal(rightValue.toString()));
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，% 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，% 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 
-    public static class EqOperand extends BasicOperandImpl
+    public static class EqOperand extends MathOperand
     {
         public EqOperand(Operand left, Operand right, String fragment)
         {
@@ -620,94 +391,33 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
-            {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i == ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i == ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i == ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i == ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i == ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i == ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i == ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i == ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i == ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i == ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i == ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i == ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i == ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i == ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i == ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i == ((Number) rightValue).doubleValue();
-                    }
-                }
-            }
-            else if (leftValue == null)
+            return v == v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v == l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l == v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l == l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue == null)
             {
                 return rightValue == null;
             }
@@ -716,6 +426,10 @@ public abstract class BasicOperandImpl implements Operand
                 if (rightValue == null)
                 {
                     return false;
+                }
+                if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
+                {
+                    return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) == 0;
                 }
                 else
                 {
@@ -742,7 +456,7 @@ public abstract class BasicOperandImpl implements Operand
         }
     }
 
-    public static class GeOperand extends BasicOperandImpl
+    public static class GeOperand extends MathOperand
     {
         public GeOperand(Operand left, Operand right, String fragment)
         {
@@ -750,101 +464,41 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v >= v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v >= l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l >= v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l >= l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i >= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i >= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i >= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i >= ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i >= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i >= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i >= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i >= ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i >= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i >= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i >= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i >= ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i >= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i >= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i >= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i >= ((Number) rightValue).doubleValue();
-                    }
-                }
+                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) >= 0;
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，>= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，>= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 
-    public static class GtOperand extends BasicOperandImpl
+    public static class GtOperand extends MathOperand
     {
         public GtOperand(Operand left, Operand right, String fragment)
         {
@@ -852,101 +506,41 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v > v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v > l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l > v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l > l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i > ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i > ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i > ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i > ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i > ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i > ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i > ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i > ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i > ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i > ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i > ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i > ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i > ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i > ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i > ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i > ((Number) rightValue).doubleValue();
-                    }
-                }
+                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) > 0;
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，> 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，> 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 
-    public static class LeOperand extends BasicOperandImpl
+    public static class LeOperand extends MathOperand
     {
         public LeOperand(Operand left, Operand right, String fragment)
         {
@@ -954,101 +548,41 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v <= v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v <= l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l <= v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l <= l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i <= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i <= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i <= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i <= ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i <= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i <= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i <= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i <= ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i <= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i <= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i <= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i <= ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i <= ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i <= ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i <= ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i <= ((Number) rightValue).doubleValue();
-                    }
-                }
+                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) <= 0;
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，<= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，<= 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 
-    public static class LtOperand extends BasicOperandImpl
+    public static class LtOperand extends MathOperand
     {
         public LtOperand(Operand left, Operand right, String fragment)
         {
@@ -1056,97 +590,37 @@ public abstract class BasicOperandImpl implements Operand
         }
 
         @Override
-        public Object calculate(Map<String, Object> contextParam)
+        protected Object math(double v, double v1)
         {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            if (leftValue instanceof Number && rightValue instanceof Number)
+            return v < v1;
+        }
+
+        @Override
+        protected Object math(double v, long l)
+        {
+            return v < l;
+        }
+
+        @Override
+        protected Object math(long l, double v)
+        {
+            return l < v;
+        }
+
+        @Override
+        protected Object math(long l, long l1)
+        {
+            return l < l1;
+        }
+
+        @Override
+        protected Object processOther(Object leftValue, Object rightValue)
+        {
+            if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
             {
-                if (leftValue instanceof Byte || leftValue instanceof Short || leftValue instanceof Integer)
-                {
-                    int i = ((Number) leftValue).intValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i < ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i < ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i < ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i < ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long i = ((Number) leftValue).longValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i < ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i < ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i < ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i < ((Number) rightValue).doubleValue();
-                    }
-                }
-                else if (leftValue instanceof Float)
-                {
-                    float i = ((Number) leftValue).floatValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i < ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i < ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i < ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i < ((Number) rightValue).doubleValue();
-                    }
-                }
-                else
-                {
-                    double i = ((Number) leftValue).doubleValue();
-                    if (rightValue instanceof Byte || rightValue instanceof Short || rightValue instanceof Integer)
-                    {
-                        return i < ((Number) rightValue).intValue();
-                    }
-                    else if (rightValue instanceof Long)
-                    {
-                        return i < ((Long) rightValue).longValue();
-                    }
-                    else if (rightValue instanceof Float)
-                    {
-                        return i < ((Float) rightValue).floatValue();
-                    }
-                    else
-                    {
-                        return i < ((Number) rightValue).doubleValue();
-                    }
-                }
+                return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) < 0;
             }
-            else
-            {
-                throw new IllegalStateException("操作数解析出现异常，< 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
-            }
+            throw new IllegalStateException("操作数解析出现异常，< 操作符要求左右参数都是 Number。异常解析位置为" + fragment);
         }
     }
 }

@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,10 @@ public abstract class MethodInvokeOperand implements Operand
             {
                 case INT ->
                 {
+                    if (paramValue instanceof BigDecimal)
+                    {
+                        methodParamValues[i] = ((BigDecimal) paramValue).intValue();
+                    }
                     if (paramValue instanceof Integer == false)
                     {
                         methodParamValues[i] = ((Number) paramValue).intValue();
@@ -54,21 +59,33 @@ public abstract class MethodInvokeOperand implements Operand
                 }
                 case LONG ->
                 {
-                    if (paramValue instanceof Long == false)
+                    if (paramValue instanceof BigDecimal)
+                    {
+                        methodParamValues[i] = ((BigDecimal) paramValue).longValue();
+                    }
+                    if (!(paramValue instanceof Long))
                     {
                         methodParamValues[i] = ((Number) paramValue).longValue();
                     }
                 }
                 case SHORT ->
                 {
-                    if (paramValue instanceof Short == false)
+                    if (paramValue instanceof BigDecimal)
+                    {
+                        methodParamValues[i] = ((BigDecimal) paramValue).shortValue();
+                    }
+                    if (!(paramValue instanceof Short))
                     {
                         methodParamValues[i] = ((Number) paramValue).shortValue();
                     }
                 }
                 case BYTE ->
                 {
-                    if (paramValue instanceof Byte == false)
+                    if (paramValue instanceof BigDecimal)
+                    {
+                        methodParamValues[i] = ((BigDecimal) paramValue).byteValue();
+                    }
+                    if (!(paramValue instanceof Byte))
                     {
                         methodParamValues[i] = ((Number) paramValue).byteValue();
                     }
@@ -76,14 +93,22 @@ public abstract class MethodInvokeOperand implements Operand
                 case CHAR -> methodParamValues[i] = paramValue instanceof Character ? paramValue : ((String) paramValue).charAt(0);
                 case FLOAT ->
                 {
-                    if (paramValue instanceof Float == false)
+                    if (paramValue instanceof BigDecimal)
+                    {
+                        methodParamValues[i] = ((BigDecimal) paramValue).floatValue();
+                    }
+                    if (!(paramValue instanceof Float))
                     {
                         methodParamValues[i] = ((Number) paramValue).floatValue();
                     }
                 }
                 case DOUBLE ->
                 {
-                    if (paramValue instanceof Double == false)
+                    if (paramValue instanceof BigDecimal)
+                    {
+                        methodParamValues[i] = ((BigDecimal) paramValue).doubleValue();
+                    }
+                    if (!(paramValue instanceof Double))
                     {
                         methodParamValues[i] = ((Number) paramValue).doubleValue();
                     }
@@ -117,7 +142,7 @@ public abstract class MethodInvokeOperand implements Operand
                     {
                         if (parameterType == float.class || parameterType == double.class)
                         {
-                            if (methodParamValues[i] != null && (methodParamValue.getClass() == Float.class || methodParamValue.getClass() == Double.class))
+                            if (methodParamValues[i] != null && (methodParamValue.getClass() == Float.class || methodParamValue.getClass() == Double.class || methodParamValue.getClass() == BigDecimal.class))
                             {
                                 ;
                             }
@@ -153,7 +178,7 @@ public abstract class MethodInvokeOperand implements Operand
                         }
                         else
                         {
-                            if (methodParamValue != null && (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class))
+                            if (methodParamValue != null && (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class || methodParamValue.getClass() == BigDecimal.class))
                             {
                                 ;
                             }
@@ -167,7 +192,7 @@ public abstract class MethodInvokeOperand implements Operand
                     {
                         if (parameterType == Float.class || parameterType == Double.class)
                         {
-                            if (methodParamValue == null || (methodParamValue.getClass() == Float.class || methodParamValue == Double.class))
+                            if (methodParamValue == null || (methodParamValue.getClass() == Float.class || methodParamValue == Double.class || methodParamValue.getClass() == BigDecimal.class))
                             {
                                 ;
                             }
@@ -178,7 +203,7 @@ public abstract class MethodInvokeOperand implements Operand
                         }
                         else
                         {
-                            if (methodParamValue == null || (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class))
+                            if (methodParamValue == null || (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class || methodParamValue.getClass() == BigDecimal.class))
                             {
                                 ;
                             }
@@ -299,6 +324,10 @@ public abstract class MethodInvokeOperand implements Operand
             {
                 return null;
             }
+            else if (value instanceof BigDecimal)
+            {
+                return ((BigDecimal) value).intValue();
+            }
             else if (value instanceof Integer)
             {
                 return (Integer) value;
@@ -315,6 +344,10 @@ public abstract class MethodInvokeOperand implements Operand
             if (value == null)
             {
                 return null;
+            }
+            else if (value instanceof BigDecimal)
+            {
+                return ((BigDecimal) value).longValue();
             }
             else if (value instanceof Long)
             {
@@ -333,6 +366,10 @@ public abstract class MethodInvokeOperand implements Operand
             {
                 return null;
             }
+            else if (value instanceof BigDecimal)
+            {
+                return ((BigDecimal) value).shortValue();
+            }
             else if (value instanceof Short)
             {
                 return (Short) value;
@@ -349,6 +386,10 @@ public abstract class MethodInvokeOperand implements Operand
             if (value == null)
             {
                 return null;
+            }
+            else if (value instanceof BigDecimal)
+            {
+                return ((BigDecimal) value).byteValue();
             }
             else if (value instanceof Byte)
             {
@@ -367,6 +408,10 @@ public abstract class MethodInvokeOperand implements Operand
             {
                 return null;
             }
+            else if (value instanceof BigDecimal)
+            {
+                return ((BigDecimal) value).floatValue();
+            }
             else if (value instanceof Float)
             {
                 return (Float) value;
@@ -383,6 +428,10 @@ public abstract class MethodInvokeOperand implements Operand
             if (value == null)
             {
                 return null;
+            }
+            else if (value instanceof BigDecimal)
+            {
+                return ((BigDecimal) value).doubleValue();
             }
             else if (value instanceof Double)
             {
@@ -544,7 +593,7 @@ public abstract class MethodInvokeOperand implements Operand
 
         public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
         {
-            super(methodName, methodParams,  fragment, refenceCalls);
+            super(methodName, methodParams, fragment, refenceCalls);
             this.instanceOperand = instanceOperand;
         }
 
@@ -563,7 +612,7 @@ public abstract class MethodInvokeOperand implements Operand
                             throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
                         }
                         Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
+                        findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
                         return methodInvoke(instance, args);
                     }
                 }
