@@ -27,13 +27,14 @@ public class NumberParser implements TokenParser
                     extractNum(parseContext);
                     return true;
                 }
-                c= el.charAt(preIndex);
-                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '(' || c == '[' || c == '{')
+                c = el.charAt(preIndex);
+                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '(' || c == '[' || c == '{' || c == '=')
                 {
                     extractNum(parseContext);
                     return true;
                 }
-                else{
+                else
+                {
                     return false;
                 }
             }
