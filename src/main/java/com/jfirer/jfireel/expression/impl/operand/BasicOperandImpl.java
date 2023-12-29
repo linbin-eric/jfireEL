@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression.impl.operand;
 import com.jfirer.jfireel.expression.Operand;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 public abstract class BasicOperandImpl implements Operand
@@ -320,7 +321,7 @@ public abstract class BasicOperandImpl implements Operand
         @Override
         protected Object mathBigDecimal(Object leftValue, Object rightValue)
         {
-            return new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()));
+            return new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()), 2, RoundingMode.HALF_UP);
         }
 
         @Override

@@ -18,18 +18,23 @@ public class NumberParser implements TokenParser
             if (CharType.isDigital(el.charAt(index + 1)))
             {
                 int preIndex = index - 1;
-                while (CharType.isIgnore(el.charAt(preIndex)))
+                while (preIndex != -1 && CharType.isIgnore(el.charAt(preIndex)))
                 {
                     preIndex -= 1;
                 }
-                if (CharType.isDigital(el.charAt(preIndex)))
-                {
-                    return false;
-                }
-                else
+                if (preIndex == -1)
                 {
                     extractNum(parseContext);
                     return true;
+                }
+                c= el.charAt(preIndex);
+                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '(' || c == '[' || c == '{')
+                {
+                    extractNum(parseContext);
+                    return true;
+                }
+                else{
+                    return false;
                 }
             }
             else
