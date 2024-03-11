@@ -68,7 +68,7 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 5);
             return true;
         }
-        else if (el.charAt(index) == 'c' && index + 8 < el.length() && el.substring(index, index + 5).equals("continue"))
+        else if (el.charAt(index) == 'c' && index + 8 < el.length() && el.substring(index, index + 8).equals("continue"))
         {
             parseContext.getOperandStack().push(ControlFlagOperand.CONTINUE_OPERAND);
             parseContext.setIndex(index + 8);
