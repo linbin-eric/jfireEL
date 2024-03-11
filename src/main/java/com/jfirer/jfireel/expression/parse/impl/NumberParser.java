@@ -28,7 +28,7 @@ public class NumberParser implements TokenParser
                     return true;
                 }
                 c = el.charAt(preIndex);
-                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '(' || c == '[' || c == '{' || c == '=')
+                if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '(' || c == '[' || c == '{' || c == '=' || c == '?' || c == ':')
                 {
                     extractNum(parseContext);
                     return true;
