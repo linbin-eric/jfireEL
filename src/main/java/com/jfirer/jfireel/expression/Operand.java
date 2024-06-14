@@ -7,37 +7,40 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public interface Operand
 {
-    static ConcurrentHashMap<Class, Function<Object, Map<String, Object>>> translator = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<Class, Consumer<Object>> translator = new ConcurrentHashMap<>();
 
     Object calculate(Map<String, Object> contextParam);
 
-    default Object calculate(Object contextParam)
+    default <T extends HashMap<String, Object>> Object calculate(T contextParam)
     {
         if (contextParam == null)
         {
             return calculate();
         }
+        else if (!contextParam.isEmpty())
+        {
+            return calculate((Map<String, Object>) contextParam);
+        }
         else
         {
             Class<?> ckass = contextParam.getClass();
-            Function<Object, Map<String, Object>> computed = translator.computeIfAbsent(ckass, type -> {
-                Field[]         declaredFields = type.getDeclaredFields();
-                ValueAccessor[] array          = Arrays.stream(declaredFields).map(field -> new ValueAccessor(field)).toArray(ValueAccessor[]::new);
-                return (Object a) -> {
-                    Map<String, Object> map = DEFAULT.get();
-                    map.clear();
+            Consumer<Object> computed = translator.computeIfAbsent(ckass, type -> {
+                ValueAccessor[] array = Stream.iterate(type, t -> t != HashMap.class, t -> t.getSuperclass()).flatMap(t -> Arrays.stream(t.getDeclaredFields()).map(field -> new ValueAccessor(field))).toArray(ValueAccessor[]::new);
+                return (a) -> {
                     for (ValueAccessor valueAccessor : array)
                     {
-                        map.put(valueAccessor.getField().getName(), valueAccessor.get(a));
+                        ((Map<String, Object>) a).put(valueAccessor.getField().getName(), valueAccessor.get(a));
                     }
-                    return map;
                 };
             });
-            return calculate(computed.apply(contextParam));
+            computed.accept(contextParam);
+            return calculate((Map<String, Object>) contextParam);
         }
     }
 

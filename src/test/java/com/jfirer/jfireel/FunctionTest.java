@@ -775,7 +775,7 @@ public class FunctionTest extends TestSupport
 
     @Accessors(chain = true)
     @Data
-    public static class TestData
+    public static class TestData extends HashMap<String, Object>
     {
         private Integer i;
         private String  name;
@@ -784,10 +784,11 @@ public class FunctionTest extends TestSupport
     @Test
     public void test74()
     {
-        TestData lin = new TestData().setI(5).setName("lin");
+        TestData lin     = new TestData().setI(5).setName("lin");
         Operand  operand = Expression.parse("i>3?name:'xx'");
         lin.setI(5);
         assertEquals("lin", operand.calculate(lin));
+        lin.clear();
         lin.setI(2);
         assertEquals("xx", operand.calculate(lin));
     }
