@@ -4,6 +4,8 @@ import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.template.Template;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -769,5 +771,24 @@ public class FunctionTest extends TestSupport
         Operand operand   = Expression.parse(content);
         Boolean calculate = (Boolean) operand.calculate(param);
         assertTrue(calculate);
+    }
+
+    @Accessors(chain = true)
+    @Data
+    public static class TestData
+    {
+        private Integer i;
+        private String  name;
+    }
+
+    @Test
+    public void test74()
+    {
+        TestData lin = new TestData().setI(5).setName("lin");
+        Operand  operand = Expression.parse("i>3?name:'xx'");
+        lin.setI(5);
+        assertEquals("lin", operand.calculate(lin));
+        lin.setI(2);
+        assertEquals("xx", operand.calculate(lin));
     }
 }
