@@ -14,9 +14,9 @@ public abstract class TestSupport
     @Before
     public void before()
     {
-        home = new Home();
-        person = new Person();
-        person.age = 14;
+        home        = new Home();
+        person      = new Person();
+        person.age  = 14;
         home.person = person;
         vars.put("person", person);
         vars.put("home", home);
@@ -74,6 +74,11 @@ public abstract class TestSupport
         public void setAge(int age)
         {
             this.age = age;
+        }
+
+        public String reFirst(String a, String b)
+        {
+            return a;
         }
     }
 }

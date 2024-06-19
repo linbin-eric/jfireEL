@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
@@ -791,5 +792,32 @@ public class FunctionTest extends TestSupport
         lin.clear();
         lin.setI(2);
         assertEquals("xx", operand.calculate(lin));
+    }
+
+    @Test
+    public void test75()
+    {
+        TestSupport.Person              person  = new TestSupport.Person();
+        Operand             operand = Expression.parse("person.reFirst('a','b')");
+        Map<String, Object> map     = new HashMap<>();
+        map.put("person", person);
+        assertEquals("a", operand.calculate(map));
+    }
+
+    @Test
+    public void test76(){
+        File file =new File("/Users/linbin/Downloads/未命名文件夹");
+        Set<Integer> set= new HashSet<>();
+        for (int i = 1; i < 999; i++)
+        {
+            set.add(i);
+        }
+        for (File listFile : file.listFiles())
+        {
+            String name = listFile.getName();
+            String substring = name.substring(1, 4);
+            set.remove(Integer.valueOf(substring));
+        }
+        System.out.println(set);
     }
 }

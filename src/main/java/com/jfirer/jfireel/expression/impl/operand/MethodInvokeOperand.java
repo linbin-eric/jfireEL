@@ -620,4 +620,40 @@ public abstract class MethodInvokeOperand implements Operand
             return invokeHelper.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
         }
     }
+
+    public static class InstanceExtendMethod extends MethodInvokeOperand
+    {
+        private Operand instanceOperand;
+        Map<Class, MethodInvokeHelper> extendMethodMap;
+
+        public InstanceExtendMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> refenceCalls, Map<Class, MethodInvokeHelper> extendMethodMap)
+        {
+            super(methodName, methodParams, fragment, refenceCalls);
+            this.instanceOperand = instanceOperand;
+            this.extendMethodMap = extendMethodMap;
+        }
+
+        @Override
+        public Object calculate(Map<String, Object> contextParam)
+        {
+            if (methodIdentify == false)
+            {
+                synchronized (this)
+                {
+                    if (methodIdentify == false)
+                    {
+                        Object instance = instanceOperand.calculate(contextParam);
+                        if (instance == null)
+                        {
+                            throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
+                        }
+                        Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
+                        findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
+                        return methodInvoke(instance, args);
+                    }
+                }
+            }
+            return invokeHelper.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
+        }
+    }
 }
