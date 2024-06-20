@@ -820,4 +820,13 @@ public class FunctionTest extends TestSupport
         }
         System.out.println(set);
     }
+    @Test
+    public void test77(){
+        Expression.registerClassExtendMethod(String.class, "ex", (instance,argOperands,contextParam)->{
+            Object calculate = argOperands[0].calculate(contextParam);
+            return instance.equals(calculate);
+        });
+        Object result = Expression.parse("'abc'.ex('abc')").calculate();
+        assertTrue((Boolean) result);
+    }
 }

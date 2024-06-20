@@ -5,6 +5,7 @@ import com.jfirer.baseutil.smc.SmcHelper;
 import com.jfirer.baseutil.smc.compiler.CompileHelper;
 import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
+import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
 import lombok.Data;
 
@@ -127,7 +128,7 @@ public abstract class MethodInvokeOperand implements Operand
         }
     }
 
-    protected void findMethod(List<Method> methods, Object[] methodParamValues)
+    protected boolean findMethod(List<Method> methods, Object[] methodParamValues)
     {
         for (Method method : methods)
         {
@@ -306,11 +307,11 @@ public abstract class MethodInvokeOperand implements Operand
                     }
                     this.method    = method;
                     methodIdentify = true;
-                    return;
+                    return true;
                 }
             }
         }
-        throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
+        return false;
     }
 
     public interface MethodInvokeHelper
@@ -578,7 +579,10 @@ public abstract class MethodInvokeOperand implements Operand
                     if (methodIdentify == false)
                     {
                         Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        findMethod(candidates, methodParamValues);
+                        if (findMethod(candidates, methodParamValues))
+                        {
+                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
+                        }
                         return methodInvoke(null, methodParamValues);
                     }
                 }
@@ -589,12 +593,14 @@ public abstract class MethodInvokeOperand implements Operand
 
     public static class InstanceMethod extends MethodInvokeOperand
     {
-        private Operand instanceOperand;
+        private Operand                                   instanceOperand;
+        private Map<Expression.Tuper, MethodInvokeHelper> classExtendMethodMap;
 
-        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
+        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators, Map<Expression.Tuper, MethodInvokeHelper> classExtendMethodMap)
         {
             super(methodName, methodParams, fragment, methodInvokeAccelerators);
-            this.instanceOperand = instanceOperand;
+            this.instanceOperand      = instanceOperand;
+            this.classExtendMethodMap = classExtendMethodMap;
         }
 
         @Override
@@ -611,45 +617,17 @@ public abstract class MethodInvokeOperand implements Operand
                         {
                             throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
                         }
-                        Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
-                        return methodInvoke(instance, args);
-                    }
-                }
-            }
-            return invokeHelper.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
-        }
-    }
-
-    public static class InstanceExtendMethod extends MethodInvokeOperand
-    {
-        private Operand instanceOperand;
-        Map<Class, MethodInvokeHelper> extendMethodMap;
-
-        public InstanceExtendMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> refenceCalls, Map<Class, MethodInvokeHelper> extendMethodMap)
-        {
-            super(methodName, methodParams, fragment, refenceCalls);
-            this.instanceOperand = instanceOperand;
-            this.extendMethodMap = extendMethodMap;
-        }
-
-        @Override
-        public Object calculate(Map<String, Object> contextParam)
-        {
-            if (methodIdentify == false)
-            {
-                synchronized (this)
-                {
-                    if (methodIdentify == false)
-                    {
-                        Object instance = instanceOperand.calculate(contextParam);
-                        if (instance == null)
+                        invokeHelper = classExtendMethodMap.get(new Expression.Tuper(instance.getClass(), methodName));
+                        if (invokeHelper != null)
                         {
-                            throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
+                            return invokeHelper.invoke(instance, methodParams, contextParam);
                         }
                         Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args);
-                        return methodInvoke(instance, args);
+                        if (findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args) == false)
+                        {
+                            return methodInvoke(instance, args);
+                        }
+                        throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
                     }
                 }
             }

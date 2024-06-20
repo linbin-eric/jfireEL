@@ -30,6 +30,14 @@ public class Expression
      * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
      */
     private static Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new ConcurrentHashMap<>();
+    /**
+     * 为类型添加额外的，仅在 EL 表达式中被识别的方法调用。
+     */
+    private static Map<Tuper, MethodInvokeOperand.MethodInvokeHelper>              classExtendMethodMap     = new ConcurrentHashMap<>();
+
+    public record Tuper(Class ckass, String extendMethodName)
+    {
+    }
 
     public static void registerClass(String name, Class<?> ckass)
     {
@@ -51,14 +59,19 @@ public class Expression
         methodInvokeAccelerators.put(method, methodInvokeHelper);
     }
 
+    public static void registerClassExtendMethod(Class ckass, String extendMethodName, MethodInvokeOperand.MethodInvokeHelper methodInvokeHelper)
+    {
+        classExtendMethodMap.put(new Tuper(ckass, extendMethodName), methodInvokeHelper);
+    }
+
     public static Operand parse(String el)
     {
-        return new ParseContext(el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parse();
+        return new ParseContext(el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap).parse();
     }
 
     public static Operand parseMutli(String el)
     {
-        return new ParseContext(el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parseMutli();
+        return new ParseContext(el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap).parseMutli();
     }
 
     /**
@@ -73,7 +86,7 @@ public class Expression
      */
     public static String format(String content)
     {
-        ParseContext parseContext = new ParseContext(content, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators);
+        ParseContext parseContext = new ParseContext(content, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap);
         parseContext.parseMutli();
         List<FormatToken> formatTokens = parseContext.getFormatTokens();
         StringBuilder     builder      = new StringBuilder();

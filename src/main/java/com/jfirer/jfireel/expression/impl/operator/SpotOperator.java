@@ -53,7 +53,7 @@ public class SpotOperator implements Operator
             }
             else
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
+                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.stream().toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators(),parseContext.getClassExtendMethodMap()));
             }
             processStack.clear();
         }

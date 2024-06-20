@@ -46,19 +46,21 @@ public class ParseContext
     private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls               = new HashMap<>();
     private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             methodInvokeAccelerators = new HashMap<>();
     private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
+    private        Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper>   classExtendMethodMap     = new HashMap<>();
 
     public ParseContext(String el)
     {
         this.el = el;
     }
 
-    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators, Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper> classExtendMethodMap)
     {
         this.el = el;
         this.className.putAll(className);
         this.innerCalls.putAll(innerCalls);
         this.methodInvokeAccelerators.putAll(methodInvokeAccelerators);
         this.propertyReadAccelerators.putAll(propertyReadAccelerators);
+        this.classExtendMethodMap.putAll(classExtendMethodMap);
     }
 
     public void registerClass(String name, Class<?> ckass)
@@ -170,8 +172,6 @@ public class ParseContext
         }
         return new MethodStructureOperand(processStack.toArray(Operand[]::new), true);
     }
-
-
 }
 
 
