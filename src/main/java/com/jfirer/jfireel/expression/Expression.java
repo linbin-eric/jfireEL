@@ -14,9 +14,21 @@ import java.util.function.Function;
 
 public class Expression
 {
+    /**
+     * 提前注册的类的简单名，可以在 EL 表达式中被识别
+     */
     private static Map<String, Class<?>>                                           className                = new ConcurrentHashMap<>();
+    /**
+     * 提前注册的EL 内部调用，可以在 EL 表达式中被识别
+     */
     private static Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls               = new ConcurrentHashMap<>();
+    /**
+     * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
+     */
     private static Map<Method, MethodInvokeOperand.MethodInvokeHelper>             methodInvokeAccelerators = new ConcurrentHashMap<>();
+    /**
+     * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
+     */
     private static Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new ConcurrentHashMap<>();
 
     public static void registerClass(String name, Class<?> ckass)

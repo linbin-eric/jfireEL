@@ -562,9 +562,9 @@ public abstract class MethodInvokeOperand implements Operand
     {
         private final List<Method> candidates;
 
-        public StaticMethod(Class ckass, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
+        public StaticMethod(Class ckass, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
         {
-            super(methodName, methodParams, fragment, refenceCalls);
+            super(methodName, methodParams, fragment, methodInvokeAccelerators);
             candidates = Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
         }
 
@@ -591,9 +591,9 @@ public abstract class MethodInvokeOperand implements Operand
     {
         private Operand instanceOperand;
 
-        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> refenceCalls)
+        public InstanceMethod(Operand instanceOperand, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
         {
-            super(methodName, methodParams, fragment, refenceCalls);
+            super(methodName, methodParams, fragment, methodInvokeAccelerators);
             this.instanceOperand = instanceOperand;
         }
 
