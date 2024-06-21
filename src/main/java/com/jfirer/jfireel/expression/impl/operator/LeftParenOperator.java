@@ -47,7 +47,7 @@ public class LeftParenOperator implements Operator
             type = METHOD;
             ((SpotOperator) parseContext.getOperatorStack().peek()).setType(SpotOperator.METHOD);
         }
-        else if (parseContext.getOperatorStack().peek() instanceof NewInstanceOperator)
+        else if (parseContext.getOperatorStack().peek() instanceof NewInstanceOperator && parseContext.getOperandStack().peek() instanceof ClassOperand)
         {
             type = CLASS;
         }
@@ -63,7 +63,6 @@ public class LeftParenOperator implements Operator
         {
             type = ELSE_IF;
         }
-
         else if (operandStack.peek() instanceof VariableOperand)
         {
             throw new IllegalStateException("解析异常，(的左边无法匹配，异常位置:" + fragment);
@@ -100,15 +99,11 @@ public class LeftParenOperator implements Operator
                     throw new IllegalStateException("解析表达式异常，异常位置" + fragment);
                 }
             }
-            case CLASS -> {
-                Deque<Operator> operatorStack = parseContext.getOperatorStack();
-                if (operatorStack.peek() instanceof NewInstanceOperator)
-                {
-
-                }
-                else{
-                    throw new IllegalStateException("解析表达式异常。异常位置" + fragment);
-                }
+            case CLASS ->
+            {
+                Deque<Operator>     operatorStack = parseContext.getOperatorStack();
+                NewInstanceOperator pop           = (NewInstanceOperator) operatorStack.pop();
+                ClassOperand        classOperand  = (ClassOperand) parseContext.getOperandStack().pop();
             }
             case IF ->
             {
@@ -146,7 +141,6 @@ public class LeftParenOperator implements Operator
             {
                 parseContext.getOperandStack().push(parseContext.getProcessStack().pop());
             }
-
         }
     }
 }
