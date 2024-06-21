@@ -8,9 +8,9 @@ import com.jfirer.baseutil.smc.model.MethodModel;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
 import lombok.Data;
+import lombok.SneakyThrows;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -23,24 +23,19 @@ import java.util.stream.Stream;
 @Data
 public abstract class MethodInvokeOperand implements Operand
 {
-    protected final      String                                    methodName;
+    protected final      String                                    memberName;
     protected final      Operand[]                                 methodParams;
     protected final      String                                    fragment;
     protected final      Map<Method, MethodInvokeHelper>           methodInvokeAccelerators;
     protected            int[]                                     convertTypes;
-    protected            Method                                    method;
+    protected            Executable                                candidate;
     protected volatile   boolean                                   methodIdentify = false;
     private static final CompileHelper                             COMPILE_HELPER = new CompileHelper();
     private static final AtomicInteger                             COUNTER        = new AtomicInteger(1);
     private static final ConcurrentMap<Method, MethodInvokeHelper> INVOKER_MAP    = new ConcurrentHashMap<>();
     protected            MethodInvokeHelper                        invokeHelper;
 
-    enum ConvertType
-    {
-        INT, LONG, SHORT, BYTE, CHAR, FLOAT, DOUBLE, BOOLEAN, NONE
-    }
-
-    protected Object methodInvoke(Object instance, Object[] methodParamValues)
+    protected Object[] candidateParamValues(Object[] methodParamValues)
     {
         for (int i = 0; i < methodParamValues.length; i++)
         {
@@ -116,147 +111,72 @@ public abstract class MethodInvokeOperand implements Operand
                 }
             }
         }
-        try
-        {
-            return method.invoke(instance, methodParamValues);
-        }
-        catch (Throwable e)
-        {
-            ReflectUtil.throwException(e);
-            return null;
-        }
+        return methodParamValues;
     }
 
-    protected boolean findMethod(List<Method> methods, Object[] methodParamValues)
+    public static boolean typeCompatibleValues(Class<?>[] parameterTypes, Object[] methodParamValues)
     {
-        for (Method method : methods)
+        for (int i = 0; i < parameterTypes.length; i++)
         {
-            if (method.getName().equalsIgnoreCase(methodName) && method.getParameterCount() == methodParamValues.length)
+            if (methodParamValues[i] == null)
             {
-                boolean allTypeMatch = true;
-                for (int i = 0; i < method.getParameterTypes().length; i++)
+                continue;
+            }
+            Class<?> parameterType    = parameterTypes[i];
+            Object   methodParamValue = methodParamValues[i];
+            if ((ReflectUtil.isNumber(parameterType) || parameterType == BigDecimal.class) && (ReflectUtil.isNumber(methodParamValue.getClass()) || methodParamValue.getClass() == BigDecimal.class))
+            {
+                ;
+            }
+            else if (ReflectUtil.isBooleanOrBooleanBox(parameterType) && ReflectUtil.isBooleanOrBooleanBox(methodParamValue.getClass()))
+            {
+                ;
+            }
+            else if (ReflectUtil.isCharOrCharBox(parameterType) && ReflectUtil.isCharOrCharBox(methodParamValue.getClass()))
+            {
+                ;
+            }
+            else if (parameterType.isAssignableFrom(methodParamValue.getClass()))
+            {
+                ;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected boolean findMethod(List<? extends Executable> methods, Object[] methodParamValues, String memberName)
+    {
+        for (Executable candidate : methods)
+        {
+            if (candidate.getName().equals(memberName) && candidate.getParameterCount() == methodParamValues.length)
+            {
+                if (typeCompatibleValues(candidate.getParameterTypes(), methodParamValues))
                 {
-                    Class<?> parameterType    = method.getParameterTypes()[i];
-                    Object   methodParamValue = methodParamValues[i];
-                    if (parameterType.isPrimitive())
+                    convertTypes = Arrays.stream(candidate.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
+                    candidate.setAccessible(true);
+                    if (candidate instanceof Method method)
                     {
-                        if (parameterType == float.class || parameterType == double.class)
-                        {
-                            if (methodParamValues[i] != null && (methodParamValue.getClass() == Float.class || methodParamValue.getClass() == Double.class || methodParamValue.getClass() == BigDecimal.class))
+                        invokeHelper = methodInvokeAccelerators.getOrDefault(candidate, (obj, methodParams, contextParam) -> {
+                            Object[] _args = new Object[methodParams.length];
+                            for (int i = 0; i < _args.length; i++)
                             {
-                                ;
+                                _args[i] = methodParams[i].calculate(contextParam);
                             }
-                            else
+                            try
                             {
-                                allTypeMatch = false;
-                                break;
+                                return method.invoke(obj, candidateParamValues(_args));
                             }
-                        }
-                        else if (parameterType == boolean.class)
-                        {
-                            if (methodParamValue != null && methodParamValue.getClass() == Boolean.class)
+                            catch (IllegalAccessException | InvocationTargetException e)
                             {
-                                ;
+                                throw new RuntimeException(e);
                             }
-                            else
-                            {
-                                allTypeMatch = false;
-                                break;
-                            }
-                        }
-                        else if (parameterType == char.class)
-                        {
-                            if (methodParamValue != null && methodParamValue.getClass() == Character.class)
-                            {
-                                ;
-                            }
-                            else
-                            {
-                                allTypeMatch = false;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            if (methodParamValue != null && (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class || methodParamValue.getClass() == BigDecimal.class))
-                            {
-                                ;
-                            }
-                            else
-                            {
-                                allTypeMatch = false;
-                            }
-                        }
+                        });
                     }
-                    else if (Number.class.isAssignableFrom(parameterType))
-                    {
-                        if (parameterType == Float.class || parameterType == Double.class)
-                        {
-                            if (methodParamValue == null || (methodParamValue.getClass() == Float.class || methodParamValue == Double.class || methodParamValue.getClass() == BigDecimal.class))
-                            {
-                                ;
-                            }
-                            else
-                            {
-                                allTypeMatch = false;
-                            }
-                        }
-                        else
-                        {
-                            if (methodParamValue == null || (methodParamValue.getClass() == Integer.class || methodParamValue.getClass() == Long.class || methodParamValue.getClass() == Byte.class || methodParamValue.getClass() == Short.class || methodParamValue.getClass() == BigDecimal.class))
-                            {
-                                ;
-                            }
-                            else
-                            {
-                                allTypeMatch = false;
-                            }
-                        }
-                    }
-                    else if (Boolean.class.isAssignableFrom(parameterType))
-                    {
-                        if (methodParamValue == null || methodParamValue.getClass() == Boolean.class)
-                        {
-                            ;
-                        }
-                        else
-                        {
-                            allTypeMatch = false;
-                            break;
-                        }
-                    }
-                    else if (parameterType == Character.class)
-                    {
-                        if (methodParamValue == null || (methodParamValue.getClass() == Character.class || methodParamValue.getClass() == String.class))
-                        {
-                            ;
-                        }
-                        else
-                        {
-                            allTypeMatch = false;
-                            break;
-                        }
-                    }
-                    else if (methodParamValue == null || parameterType.isAssignableFrom(methodParamValue.getClass()))
-                    {
-                        ;
-                    }
-                    else
-                    {
-                        allTypeMatch = false;
-                        break;
-                    }
-                }
-                if (allTypeMatch)
-                {
-                    convertTypes = Arrays.stream(method.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
-                    method.setAccessible(true);
-                    MethodInvokeHelper methodInvokeAccelerator = methodInvokeAccelerators.get(method);
-                    if (methodInvokeAccelerator != null)
-                    {
-                        invokeHelper = methodInvokeAccelerator;
-                    }
-                    else
+                    else if (candidate instanceof Constructor<?> constructor)
                     {
                         invokeHelper = (obj, methodParams, contextParam) -> {
                             Object[] _args = new Object[methodParams.length];
@@ -264,10 +184,17 @@ public abstract class MethodInvokeOperand implements Operand
                             {
                                 _args[i] = methodParams[i].calculate(contextParam);
                             }
-                            return methodInvoke(obj, _args);
+                            try
+                            {
+                                return constructor.newInstance(candidateParamValues(_args));
+                            }
+                            catch (IllegalAccessException | InvocationTargetException | InstantiationException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
                         };
                     }
-                    this.method    = method;
+                    this.candidate = candidate;
                     methodIdentify = true;
                     return true;
                 }
@@ -470,26 +397,26 @@ public abstract class MethodInvokeOperand implements Operand
         for (int i = 0; i < parameterTypes.length; i++)
         {
             Class<?> parameterType = parameterTypes[i];
-                switch (convertTypes[i])
-                {
-                    case ReflectUtil.PRIMITIVE_INT -> body.append("((Number)$1[").append(i).append("].calculate($2)).intValue(),");
-                    case ReflectUtil.PRIMITIVE_LONG -> body.append("((Number)$1[").append(i).append("].calculate($2)).longValue(),");
-                    case ReflectUtil.PRIMITIVE_SHORT -> body.append("((Number)$1[").append(i).append("].calculate($2)).shortValue(),");
-                    case ReflectUtil.PRIMITIVE_BYTE -> body.append("((Number)$1[").append(i).append("].calculate($2)).byteValue(),");
-                    case ReflectUtil.PRIMITIVE_CHAR -> body.append("((Character)$1[").append(i).append("].calculate($2)).charValue(),");
-                    case ReflectUtil.PRIMITIVE_FLOAT -> body.append("((Number)$1[").append(i).append("].calculate($2)).floatValue(),");
-                    case ReflectUtil.PRIMITIVE_DOUBLE -> body.append("((Number)$1[").append(i).append("].calculate($2)).doubleValue(),");
-                    case ReflectUtil.PRIMITIVE_BOOL -> body.append("((Boolean)$1[").append(i).append("].calculate($2)).booleanValue(),");
-                    case ReflectUtil.CLASS_INT -> body.append("convertInteger($1[").append("i").append("],$2),");
-                    case ReflectUtil.CLASS_LONG -> body.append("convertLong($1[").append("i").append("],$2),");
-                    case ReflectUtil.CLASS_SHORT -> body.append("convertShort($1[").append("i").append("],$2),");
-                    case ReflectUtil.CLASS_BYTE -> body.append("convertByte($1[").append("i").append("],$2),");
-                    case ReflectUtil.CLASS_CHAR -> body.append("convertCharacter($1[").append("i").append("],$2),");
-                    case ReflectUtil.CLASS_FLOAT -> body.append("convertFloat($1[").append("i").append("],$2),");
-                    case ReflectUtil.CLASS_DOUBLE -> body.append("convertDouble($1[").append("i").append("],$2),");
-                    case ReflectUtil.CLASS_BOOL -> body.append("convertBoolean($1[").append("i").append("],$2),");
-                    default -> body.append("(").append(parameterType.getName()).append(")$1[").append(i).append("].calculate($2),");
-                }
+            switch (convertTypes[i])
+            {
+                case ReflectUtil.PRIMITIVE_INT -> body.append("((Number)$1[").append(i).append("].calculate($2)).intValue(),");
+                case ReflectUtil.PRIMITIVE_LONG -> body.append("((Number)$1[").append(i).append("].calculate($2)).longValue(),");
+                case ReflectUtil.PRIMITIVE_SHORT -> body.append("((Number)$1[").append(i).append("].calculate($2)).shortValue(),");
+                case ReflectUtil.PRIMITIVE_BYTE -> body.append("((Number)$1[").append(i).append("].calculate($2)).byteValue(),");
+                case ReflectUtil.PRIMITIVE_CHAR -> body.append("((Character)$1[").append(i).append("].calculate($2)).charValue(),");
+                case ReflectUtil.PRIMITIVE_FLOAT -> body.append("((Number)$1[").append(i).append("].calculate($2)).floatValue(),");
+                case ReflectUtil.PRIMITIVE_DOUBLE -> body.append("((Number)$1[").append(i).append("].calculate($2)).doubleValue(),");
+                case ReflectUtil.PRIMITIVE_BOOL -> body.append("((Boolean)$1[").append(i).append("].calculate($2)).booleanValue(),");
+                case ReflectUtil.CLASS_INT -> body.append("convertInteger($1[").append("i").append("],$2),");
+                case ReflectUtil.CLASS_LONG -> body.append("convertLong($1[").append("i").append("],$2),");
+                case ReflectUtil.CLASS_SHORT -> body.append("convertShort($1[").append("i").append("],$2),");
+                case ReflectUtil.CLASS_BYTE -> body.append("convertByte($1[").append("i").append("],$2),");
+                case ReflectUtil.CLASS_CHAR -> body.append("convertCharacter($1[").append("i").append("],$2),");
+                case ReflectUtil.CLASS_FLOAT -> body.append("convertFloat($1[").append("i").append("],$2),");
+                case ReflectUtil.CLASS_DOUBLE -> body.append("convertDouble($1[").append("i").append("],$2),");
+                case ReflectUtil.CLASS_BOOL -> body.append("convertBoolean($1[").append("i").append("],$2),");
+                default -> body.append("(").append(parameterType.getName()).append(")$1[").append(i).append("].calculate($2),");
+            }
         }
         if (parameterTypes.length != 0)
         {
@@ -518,79 +445,72 @@ public abstract class MethodInvokeOperand implements Operand
         public StaticMethod(Class ckass, String methodName, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
         {
             super(methodName, methodParams, fragment, methodInvokeAccelerators);
-            candidates = Stream.iterate(ckass, c -> c != Object.class, c -> c.getSuperclass()).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
+            candidates = Stream.iterate(ckass, c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList();
         }
 
         @Override
         public Object calculate(Map<String, Object> contextParam)
         {
-            if (methodIdentify == false)
+            if (!methodIdentify)
             {
                 synchronized (this)
                 {
-                    if (methodIdentify == false)
+                    if (!methodIdentify)
                     {
                         Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        if (findMethod(candidates, methodParamValues) == false)
+                        if (!findMethod(candidates, methodParamValues, memberName))
                         {
-                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
+                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + memberName + "。异常解析位置为" + fragment);
                         }
-                        return methodInvoke(null, methodParamValues);
+                        try
+                        {
+                            return ((Method) candidate).invoke(null, candidateParamValues(methodParamValues));
+                        }
+                        catch (IllegalAccessException | InvocationTargetException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
             return invokeHelper.invoke(null, methodParams, contextParam);
         }
     }
-//    public static class ConstructorMethod extends MethodInvokeOperand
-//    {
-//        private Class             ckass;
-//        private List<Constructor> candidate;
-//        private Constructor constructor;
-//
-//        public ConstructorMethod(Class ckass, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
-//        {
-//            super(null, methodParams, fragment, methodInvokeAccelerators);
-//            this.ckass = ckass;
-//            candidate  = Arrays.stream(ckass.getConstructors()).filter(constructor -> constructor.getParameterCount() == methodParams.length).toList();
-//            if (candidate.size() == 1)
-//            {
-//                constructor = candidate.get(0);
-//                methodIdentify = true;
-//            }
-//        }
-//
-//        @Override
-//        public Object calculate(Map<String, Object> contextParam)
-//        {
-//            if (methodIdentify == false)
-//            {
-//                synchronized (this)
-//                {
-//                    if (methodIdentify == false)
-//                    {
-//                        Object instance = instanceOperand.calculate(contextParam);
-//                        if (instance == null)
-//                        {
-//                            throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
-//                        }
-//                        invokeHelper = classExtendMethodMap.get(new Expression.Tuper(instance.getClass(), methodName));
-//                        if (invokeHelper != null)
-//                        {
-//                            return invokeHelper.invoke(instance, methodParams, contextParam);
-//                        }
-//                        Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-//                        if (findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args) == false)
-//                        {
-//                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
-//                        }
-//                        return methodInvoke(instance, args);
-//                    }
-//                }
-//            }
-//            return invokeHelper.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
-//        }
-//    }
+
+    public static class ConstructorMethod extends MethodInvokeOperand
+    {
+        private Class                ckass;
+        private List<Constructor<?>> candidates;
+
+        public ConstructorMethod(Class<?> ckass, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
+        {
+            super(ckass.getName(), methodParams, fragment, methodInvokeAccelerators);
+            this.ckass = ckass;
+            candidates = Arrays.stream(ckass.getConstructors()).filter(constructor -> constructor.getParameterCount() == methodParams.length).toList();
+        }
+
+        @SneakyThrows
+        @Override
+        public Object calculate(Map<String, Object> contextParam)
+        {
+            if (!methodIdentify)
+            {
+                synchronized (this)
+                {
+                    if (!methodIdentify)
+                    {
+                        Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
+                        if (!findMethod(candidates, args, memberName))
+                        {
+                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的构造方法。异常解析位置为" + fragment);
+                        }
+                        return ((Constructor<?>) candidate).newInstance(args);
+                    }
+                }
+            }
+            return invokeHelper.invoke(null, methodParams, contextParam);
+        }
+    }
 
     public static class InstanceMethod extends MethodInvokeOperand
     {
@@ -607,28 +527,35 @@ public abstract class MethodInvokeOperand implements Operand
         @Override
         public Object calculate(Map<String, Object> contextParam)
         {
-            if (methodIdentify == false)
+            if (!methodIdentify)
             {
                 synchronized (this)
                 {
-                    if (methodIdentify == false)
+                    if (!methodIdentify)
                     {
                         Object instance = instanceOperand.calculate(contextParam);
                         if (instance == null)
                         {
                             throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
                         }
-                        invokeHelper = classExtendMethodMap.get(new Expression.Tuper(instance.getClass(), methodName));
+                        invokeHelper = classExtendMethodMap.get(new Expression.Tuper(instance.getClass(), memberName));
                         if (invokeHelper != null)
                         {
                             return invokeHelper.invoke(instance, methodParams, contextParam);
                         }
                         Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        if (findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args) == false)
+                        if (!findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args, memberName))
                         {
-                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
+                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + memberName + "。异常解析位置为" + fragment);
                         }
-                        return methodInvoke(instance, args);
+                        try
+                        {
+                            return ((Method) candidate).invoke(instance, candidateParamValues(args));
+                        }
+                        catch (IllegalAccessException | InvocationTargetException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }

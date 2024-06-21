@@ -77,8 +77,8 @@ public class ExtraExecuteParser implements TokenParser
         }
         else if (el.charAt(index) == 'n' && index + 4 < el.length() && el.startsWith("new ", index))
         {
-            parseContext.getOperatorStack().push(new NewInstanceOperator());
-            parseContext.setIndex(index + 8);
+            parseContext.getOperatorStack().push(new NewInstanceOperator(el.substring(0, index + 4)));
+            parseContext.setIndex(index + 4);
             return true;
         }
         else

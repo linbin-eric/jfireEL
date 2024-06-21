@@ -828,6 +828,27 @@ public class FunctionTest extends TestSupport
         param.put("i", 10);
         Object result = operand.calculate(param);
         assertEquals("abc", result);
-        assertTrue(param.containsKey("name")==false);
+        assertTrue(param.containsKey("name") == false);
+    }
+
+    /**
+     * 测试 new 操作符
+     */
+    @Test
+    public void test78()
+    {
+        Expression.registerClass(LinkedList.class.getSimpleName(), LinkedList.class);
+        Expression.registerClass("Person", TestSupport.Person.class);
+        Operand operand = Expression.parseMutli("""
+                                                        var list = new LinkedList();
+                                                        list.add('a');
+                                                        return list;""");
+        List<?> result = (List<?>) operand.calculate();
+        assertEquals("a", result.get(0));
+        operand = Expression.parseMutli("""
+                                                var person = new Person(5);
+                                                return person;""");
+        TestSupport.Person person = (TestSupport.Person) operand.calculate();
+        assertEquals(5, person.getAge());
     }
 }
