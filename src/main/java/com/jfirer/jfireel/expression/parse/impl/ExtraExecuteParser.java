@@ -20,7 +20,7 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 3);
             return true;
         }
-        if (el.charAt(index) == 'i' && index + 1 < el.length() && el.charAt(index + 1) == 'n' && index+2<el.length() && el.charAt(index+2)==' ')
+        else if (el.charAt(index) == 'i' && index + 3 < el.length() && el.substring(index, index + 3).equals("in "))
         {
             new InOperator().push(parseContext);
             parseContext.setIndex(index + 2);
@@ -69,6 +69,12 @@ public class ExtraExecuteParser implements TokenParser
             return true;
         }
         else if (el.charAt(index) == 'c' && index + 8 < el.length() && el.substring(index, index + 8).equals("continue"))
+        {
+            parseContext.getOperandStack().push(ControlFlagOperand.CONTINUE_OPERAND);
+            parseContext.setIndex(index + 8);
+            return true;
+        }
+        else if (el.charAt(index) == 'n' && index + 5 < el.length() && el.substring(index, index + 5).equals("new "))
         {
             parseContext.getOperandStack().push(ControlFlagOperand.CONTINUE_OPERAND);
             parseContext.setIndex(index + 8);

@@ -18,6 +18,7 @@ public class LeftParenOperator implements Operator
     public static final int    ELSE_IF            = 6;
     public static final int    FOR                = 7;
     public static final int    INNER_CALL         = 8;
+    public static final int    CLASS              = 9;
     private final       String fragment;
     private             int    type;
 
@@ -46,6 +47,10 @@ public class LeftParenOperator implements Operator
             type = METHOD;
             ((SpotOperator) parseContext.getOperatorStack().peek()).setType(SpotOperator.METHOD);
         }
+        else if (parseContext.getOperatorStack().peek() instanceof NewInstanceOperator)
+        {
+            type = CLASS;
+        }
         else if (operandStack.peek() instanceof IfOperand)
         {
             type = IF;
@@ -58,6 +63,7 @@ public class LeftParenOperator implements Operator
         {
             type = ELSE_IF;
         }
+
         else if (operandStack.peek() instanceof VariableOperand)
         {
             throw new IllegalStateException("解析异常，(的左边无法匹配，异常位置:" + fragment);
@@ -92,6 +98,16 @@ public class LeftParenOperator implements Operator
                 else
                 {
                     throw new IllegalStateException("解析表达式异常，异常位置" + fragment);
+                }
+            }
+            case CLASS -> {
+                Deque<Operator> operatorStack = parseContext.getOperatorStack();
+                if (operatorStack.peek() instanceof NewInstanceOperator)
+                {
+
+                }
+                else{
+                    throw new IllegalStateException("解析表达式异常。异常位置" + fragment);
                 }
             }
             case IF ->
@@ -130,6 +146,7 @@ public class LeftParenOperator implements Operator
             {
                 parseContext.getOperandStack().push(parseContext.getProcessStack().pop());
             }
+
         }
     }
 }
