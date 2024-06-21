@@ -62,13 +62,6 @@ public class MethodStructureOperand implements Operand
         {
             contextParam.remove(localVariableName);
         }
-        if (outest && calculate instanceof ProcessControlResult processControlResult && processControlResult.getFlag() == ControlFlag.RETURN_WITH_VALUE)
-        {
-            return processControlResult.getResultValue();
-        }
-        else
-        {
-            return calculate;
-        }
+        return calculate;
     }
 }

@@ -797,7 +797,7 @@ public class FunctionTest extends TestSupport
     @Test
     public void test75()
     {
-        TestSupport.Person              person  = new TestSupport.Person();
+        TestSupport.Person  person  = new TestSupport.Person();
         Operand             operand = Expression.parse("person.reFirst('a','b')");
         Map<String, Object> map     = new HashMap<>();
         map.put("person", person);
@@ -805,28 +805,29 @@ public class FunctionTest extends TestSupport
     }
 
     @Test
-    public void test76(){
-        File file =new File("/Users/linbin/Downloads/未命名文件夹");
-        Set<Integer> set= new HashSet<>();
-        for (int i = 1; i < 999; i++)
-        {
-            set.add(i);
-        }
-        for (File listFile : file.listFiles())
-        {
-            String name = listFile.getName();
-            String substring = name.substring(1, 4);
-            set.remove(Integer.valueOf(substring));
-        }
-        System.out.println(set);
-    }
-    @Test
-    public void test77(){
-        Expression.registerClassExtendMethod(String.class, "ex", (instance,argOperands,contextParam)->{
+    public void test76()
+    {
+        Expression.registerClassExtendMethod(String.class, "ex", (instance, argOperands, contextParam) -> {
             Object calculate = argOperands[0].calculate(contextParam);
             return instance.equals(calculate);
         });
         Object result = Expression.parse("'abc'.ex('abc')").calculate();
         assertTrue((Boolean) result);
+    }
+
+    /**
+     * 测试在方法体中返回变量的值，是否正确获取
+     */
+    public void test77()
+    {
+        Operand operand = Expression.parseMutli("""
+                                                        var name = 'abc';
+                                                        if(i>5){return name;}
+                                                        else{return 'h';}""");
+        Map<String, Object> param = new HashMap<>();
+        param.put("i", 10);
+        Object result = operand.calculate(param);
+        assertEquals("abc", result);
+        assertTrue(param.containsKey("name")==false);
     }
 }

@@ -579,7 +579,7 @@ public abstract class MethodInvokeOperand implements Operand
                     if (methodIdentify == false)
                     {
                         Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        if (findMethod(candidates, methodParamValues))
+                        if (findMethod(candidates, methodParamValues)==false)
                         {
                             throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
                         }
