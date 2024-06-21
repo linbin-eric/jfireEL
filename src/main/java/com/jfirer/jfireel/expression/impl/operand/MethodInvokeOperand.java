@@ -27,7 +27,7 @@ public abstract class MethodInvokeOperand implements Operand
     protected final      Operand[]                                 methodParams;
     protected final      String                                    fragment;
     protected final      Map<Method, MethodInvokeHelper>           methodInvokeAccelerators;
-    protected            ConvertType[]                             convertTypes;
+    protected            int[]                                     convertTypes;
     protected            Method                                    method;
     protected volatile   boolean                                   methodIdentify = false;
     private static final CompileHelper                             COMPILE_HELPER = new CompileHelper();
@@ -47,18 +47,18 @@ public abstract class MethodInvokeOperand implements Operand
             Object paramValue = methodParamValues[i];
             switch (convertTypes[i])
             {
-                case INT ->
+                case ReflectUtil.CLASS_INT, ReflectUtil.PRIMITIVE_INT ->
                 {
                     if (paramValue instanceof BigDecimal)
                     {
                         methodParamValues[i] = ((BigDecimal) paramValue).intValue();
                     }
-                    if (paramValue instanceof Integer == false)
+                    if (!(paramValue instanceof Integer))
                     {
                         methodParamValues[i] = ((Number) paramValue).intValue();
                     }
                 }
-                case LONG ->
+                case ReflectUtil.CLASS_LONG, ReflectUtil.PRIMITIVE_LONG ->
                 {
                     if (paramValue instanceof BigDecimal)
                     {
@@ -69,7 +69,7 @@ public abstract class MethodInvokeOperand implements Operand
                         methodParamValues[i] = ((Number) paramValue).longValue();
                     }
                 }
-                case SHORT ->
+                case ReflectUtil.CLASS_SHORT, ReflectUtil.PRIMITIVE_SHORT ->
                 {
                     if (paramValue instanceof BigDecimal)
                     {
@@ -80,7 +80,7 @@ public abstract class MethodInvokeOperand implements Operand
                         methodParamValues[i] = ((Number) paramValue).shortValue();
                     }
                 }
-                case BYTE ->
+                case ReflectUtil.CLASS_BYTE, ReflectUtil.PRIMITIVE_BYTE ->
                 {
                     if (paramValue instanceof BigDecimal)
                     {
@@ -91,8 +91,8 @@ public abstract class MethodInvokeOperand implements Operand
                         methodParamValues[i] = ((Number) paramValue).byteValue();
                     }
                 }
-                case CHAR -> methodParamValues[i] = paramValue instanceof Character ? paramValue : ((String) paramValue).charAt(0);
-                case FLOAT ->
+                case ReflectUtil.CLASS_CHAR, ReflectUtil.PRIMITIVE_CHAR -> methodParamValues[i] = paramValue instanceof Character ? paramValue : ((String) paramValue).charAt(0);
+                case ReflectUtil.CLASS_FLOAT, ReflectUtil.PRIMITIVE_FLOAT ->
                 {
                     if (paramValue instanceof BigDecimal)
                     {
@@ -103,7 +103,7 @@ public abstract class MethodInvokeOperand implements Operand
                         methodParamValues[i] = ((Number) paramValue).floatValue();
                     }
                 }
-                case DOUBLE ->
+                case ReflectUtil.CLASS_DOUBLE, ReflectUtil.PRIMITIVE_DOUBLE ->
                 {
                     if (paramValue instanceof BigDecimal)
                     {
@@ -114,7 +114,6 @@ public abstract class MethodInvokeOperand implements Operand
                         methodParamValues[i] = ((Number) paramValue).doubleValue();
                     }
                 }
-                case BOOLEAN, NONE -> {}
             }
         }
         try
@@ -250,44 +249,7 @@ public abstract class MethodInvokeOperand implements Operand
                 }
                 if (allTypeMatch)
                 {
-                    convertTypes = Arrays.stream(method.getParameterTypes()).map(type -> {
-                        if (type == int.class || type == Integer.class)
-                        {
-                            return ConvertType.INT;
-                        }
-                        else if (type == short.class || type == Short.class)
-                        {
-                            return ConvertType.SHORT;
-                        }
-                        else if (type == long.class || type == Long.class)
-                        {
-                            return ConvertType.LONG;
-                        }
-                        else if (type == float.class || type == Float.class)
-                        {
-                            return ConvertType.FLOAT;
-                        }
-                        else if (type == double.class || type == Double.class)
-                        {
-                            return ConvertType.DOUBLE;
-                        }
-                        else if (type == byte.class || type == Byte.class)
-                        {
-                            return ConvertType.BYTE;
-                        }
-                        else if (type == char.class || type == Character.class)
-                        {
-                            return ConvertType.CHAR;
-                        }
-                        else if (type == boolean.class || type == Boolean.class)
-                        {
-                            return ConvertType.BOOLEAN;
-                        }
-                        else
-                        {
-                            return ConvertType.NONE;
-                        }
-                    }).toArray(ConvertType[]::new);
+                    convertTypes = Arrays.stream(method.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
                     method.setAccessible(true);
                     MethodInvokeHelper methodInvokeAccelerator = methodInvokeAccelerators.get(method);
                     if (methodInvokeAccelerator != null)
@@ -508,36 +470,26 @@ public abstract class MethodInvokeOperand implements Operand
         for (int i = 0; i < parameterTypes.length; i++)
         {
             Class<?> parameterType = parameterTypes[i];
-            if (parameterType.isPrimitive())
-            {
                 switch (convertTypes[i])
                 {
-                    case INT -> body.append("((Number)$1[").append(i).append("].calculate($2)).intValue(),");
-                    case LONG -> body.append("((Number)$1[").append(i).append("].calculate($2)).longValue(),");
-                    case SHORT -> body.append("((Number)$1[").append(i).append("].calculate($2)).shortValue(),");
-                    case BYTE -> body.append("((Number)$1[").append(i).append("].calculate($2)).byteValue(),");
-                    case CHAR -> body.append("((Character)$1[").append(i).append("].calculate($2)).charValue(),");
-                    case FLOAT -> body.append("((Number)$1[").append(i).append("].calculate($2)).floatValue(),");
-                    case DOUBLE -> body.append("((Number)$1[").append(i).append("].calculate($2)).doubleValue(),");
-                    case BOOLEAN -> body.append("((Boolean)$1[").append(i).append("].calculate($2)).booleanValue(),");
-                    case NONE -> {}
+                    case ReflectUtil.PRIMITIVE_INT -> body.append("((Number)$1[").append(i).append("].calculate($2)).intValue(),");
+                    case ReflectUtil.PRIMITIVE_LONG -> body.append("((Number)$1[").append(i).append("].calculate($2)).longValue(),");
+                    case ReflectUtil.PRIMITIVE_SHORT -> body.append("((Number)$1[").append(i).append("].calculate($2)).shortValue(),");
+                    case ReflectUtil.PRIMITIVE_BYTE -> body.append("((Number)$1[").append(i).append("].calculate($2)).byteValue(),");
+                    case ReflectUtil.PRIMITIVE_CHAR -> body.append("((Character)$1[").append(i).append("].calculate($2)).charValue(),");
+                    case ReflectUtil.PRIMITIVE_FLOAT -> body.append("((Number)$1[").append(i).append("].calculate($2)).floatValue(),");
+                    case ReflectUtil.PRIMITIVE_DOUBLE -> body.append("((Number)$1[").append(i).append("].calculate($2)).doubleValue(),");
+                    case ReflectUtil.PRIMITIVE_BOOL -> body.append("((Boolean)$1[").append(i).append("].calculate($2)).booleanValue(),");
+                    case ReflectUtil.CLASS_INT -> body.append("convertInteger($1[").append("i").append("],$2),");
+                    case ReflectUtil.CLASS_LONG -> body.append("convertLong($1[").append("i").append("],$2),");
+                    case ReflectUtil.CLASS_SHORT -> body.append("convertShort($1[").append("i").append("],$2),");
+                    case ReflectUtil.CLASS_BYTE -> body.append("convertByte($1[").append("i").append("],$2),");
+                    case ReflectUtil.CLASS_CHAR -> body.append("convertCharacter($1[").append("i").append("],$2),");
+                    case ReflectUtil.CLASS_FLOAT -> body.append("convertFloat($1[").append("i").append("],$2),");
+                    case ReflectUtil.CLASS_DOUBLE -> body.append("convertDouble($1[").append("i").append("],$2),");
+                    case ReflectUtil.CLASS_BOOL -> body.append("convertBoolean($1[").append("i").append("],$2),");
+                    default -> body.append("(").append(parameterType.getName()).append(")$1[").append(i).append("].calculate($2),");
                 }
-            }
-            else
-            {
-                switch (convertTypes[i])
-                {
-                    case INT -> body.append("convertInteger($1[").append("i").append("],$2),");
-                    case LONG -> body.append("convertLong($1[").append("i").append("],$2),");
-                    case SHORT -> body.append("convertShort($1[").append("i").append("],$2),");
-                    case BYTE -> body.append("convertByte($1[").append("i").append("],$2),");
-                    case CHAR -> body.append("convertCharacter($1[").append("i").append("],$2),");
-                    case FLOAT -> body.append("convertFloat($1[").append("i").append("],$2),");
-                    case DOUBLE -> body.append("convertDouble($1[").append("i").append("],$2),");
-                    case BOOLEAN -> body.append("convertBoolean($1[").append("i").append("],$2),");
-                    case NONE -> body.append("(").append(parameterType.getName()).append(")$1[").append(i).append("].calculate($2),");
-                }
-            }
         }
         if (parameterTypes.length != 0)
         {
@@ -579,7 +531,7 @@ public abstract class MethodInvokeOperand implements Operand
                     if (methodIdentify == false)
                     {
                         Object[] methodParamValues = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        if (findMethod(candidates, methodParamValues)==false)
+                        if (findMethod(candidates, methodParamValues) == false)
                         {
                             throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
                         }
@@ -590,6 +542,55 @@ public abstract class MethodInvokeOperand implements Operand
             return invokeHelper.invoke(null, methodParams, contextParam);
         }
     }
+//    public static class ConstructorMethod extends MethodInvokeOperand
+//    {
+//        private Class             ckass;
+//        private List<Constructor> candidate;
+//        private Constructor constructor;
+//
+//        public ConstructorMethod(Class ckass, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
+//        {
+//            super(null, methodParams, fragment, methodInvokeAccelerators);
+//            this.ckass = ckass;
+//            candidate  = Arrays.stream(ckass.getConstructors()).filter(constructor -> constructor.getParameterCount() == methodParams.length).toList();
+//            if (candidate.size() == 1)
+//            {
+//                constructor = candidate.get(0);
+//                methodIdentify = true;
+//            }
+//        }
+//
+//        @Override
+//        public Object calculate(Map<String, Object> contextParam)
+//        {
+//            if (methodIdentify == false)
+//            {
+//                synchronized (this)
+//                {
+//                    if (methodIdentify == false)
+//                    {
+//                        Object instance = instanceOperand.calculate(contextParam);
+//                        if (instance == null)
+//                        {
+//                            throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
+//                        }
+//                        invokeHelper = classExtendMethodMap.get(new Expression.Tuper(instance.getClass(), methodName));
+//                        if (invokeHelper != null)
+//                        {
+//                            return invokeHelper.invoke(instance, methodParams, contextParam);
+//                        }
+//                        Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
+//                        if (findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args) == false)
+//                        {
+//                            throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + methodName + "。异常解析位置为" + fragment);
+//                        }
+//                        return methodInvoke(instance, args);
+//                    }
+//                }
+//            }
+//            return invokeHelper.invoke(instanceOperand.calculate(contextParam), methodParams, contextParam);
+//        }
+//    }
 
     public static class InstanceMethod extends MethodInvokeOperand
     {

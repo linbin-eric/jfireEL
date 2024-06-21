@@ -6,6 +6,7 @@ import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import lombok.Data;
 
+import java.awt.event.PaintEvent;
 import java.util.Deque;
 import java.util.List;
 
@@ -104,6 +105,8 @@ public class LeftParenOperator implements Operator
                 Deque<Operator>     operatorStack = parseContext.getOperatorStack();
                 NewInstanceOperator pop           = (NewInstanceOperator) operatorStack.pop();
                 ClassOperand        classOperand  = (ClassOperand) parseContext.getOperandStack().pop();
+                parseContext.getProcessStack().push(classOperand);
+                pop.onPop(parseContext);
             }
             case IF ->
             {

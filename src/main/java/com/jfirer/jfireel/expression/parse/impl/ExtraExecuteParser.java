@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import com.jfirer.jfireel.expression.impl.operator.InOperator;
+import com.jfirer.jfireel.expression.impl.operator.NewInstanceOperator;
 import com.jfirer.jfireel.expression.impl.operator.ReturnOperator;
 import com.jfirer.jfireel.expression.impl.operator.VarOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
@@ -20,7 +21,7 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 3);
             return true;
         }
-        else if (el.charAt(index) == 'i' && index + 3 < el.length() && el.substring(index, index + 3).equals("in "))
+        else if (el.charAt(index) == 'i' && index + 3 < el.length() && el.startsWith("in ", index))
         {
             new InOperator().push(parseContext);
             parseContext.setIndex(index + 2);
@@ -38,13 +39,13 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 2);
             return true;
         }
-        else if (el.charAt(index) == 'e' && index + 7 < el.length() && el.substring(index, index + 7).equals("else if"))
+        else if (el.charAt(index) == 'e' && index + 7 < el.length() && el.startsWith("else if", index))
         {
             parseContext.getOperandStack().push(new ElseIfOperand());
             parseContext.setIndex(index + 7);
             return true;
         }
-        else if (el.charAt(index) == 'e' && index + 4 < el.length() && el.substring(index, index + 4).equals("else"))
+        else if (el.charAt(index) == 'e' && index + 4 < el.length() && el.startsWith("else", index))
         {
             parseContext.getOperandStack().push(new ElseOperand());
             parseContext.setIndex(index + 4);
@@ -56,27 +57,27 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 3);
             return true;
         }
-        else if (el.charAt(index) == 'r' && index + 6 < el.length() && el.substring(index, index + 6).equals("return"))
+        else if (el.charAt(index) == 'r' && index + 6 < el.length() && el.startsWith("return", index))
         {
             new ReturnOperator(el.substring(0, index)).push(parseContext);
             parseContext.setIndex(index + 6);
             return true;
         }
-        else if (el.charAt(index) == 'b' && index + 5 < el.length() && el.substring(index, index + 5).equals("break"))
+        else if (el.charAt(index) == 'b' && index + 5 < el.length() && el.startsWith("break", index))
         {
             parseContext.getOperandStack().push(ControlFlagOperand.BREAK_OPERAND);
             parseContext.setIndex(index + 5);
             return true;
         }
-        else if (el.charAt(index) == 'c' && index + 8 < el.length() && el.substring(index, index + 8).equals("continue"))
+        else if (el.charAt(index) == 'c' && index + 8 < el.length() && el.startsWith("continue", index))
         {
             parseContext.getOperandStack().push(ControlFlagOperand.CONTINUE_OPERAND);
             parseContext.setIndex(index + 8);
             return true;
         }
-        else if (el.charAt(index) == 'n' && index + 5 < el.length() && el.substring(index, index + 5).equals("new "))
+        else if (el.charAt(index) == 'n' && index + 4 < el.length() && el.startsWith("new ", index))
         {
-            parseContext.getOperandStack().push(ControlFlagOperand.CONTINUE_OPERAND);
+            parseContext.getOperatorStack().push(new NewInstanceOperator());
             parseContext.setIndex(index + 8);
             return true;
         }

@@ -23,7 +23,7 @@ public class RightParenOperator implements Operator
     public void push(ParseContext parseContext)
     {
         Deque<Operator> operatorStack = parseContext.getOperatorStack();
-        while (operatorStack.peek() instanceof LeftParenOperator == false)
+        while (!(operatorStack.peek() instanceof LeftParenOperator))
         {
             operatorStack.pop().onPop(parseContext);
         }
