@@ -47,6 +47,7 @@ public class ParseContext
     private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             methodInvokeAccelerators = new HashMap<>();
     private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
     private        Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper>   classExtendMethodMap     = new HashMap<>();
+    private        boolean                                                         hasReturnToken           = false;
 
     public ParseContext(String el)
     {
@@ -156,11 +157,11 @@ public class ParseContext
         }
         catch (Throwable e)
         {
-            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index), e);
+            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index) + ".[详细异常信息为:" + e.getMessage() + "]", e);
         }
         if (processStack.isEmpty() == false)
         {
-            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index));
+            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index) + "。[详细异常信息为:表达式的解析不完整]");
         }
         while (operandStack.isEmpty() == false)
         {
@@ -170,7 +171,14 @@ public class ParseContext
         {
             throw new IllegalStateException("当前表达式解析出现异常，代码中{}没有完全配对");
         }
-        return new MethodStructureOperand(processStack.toArray(Operand[]::new), true);
+        if (processStack.size() == 1 && hasReturnToken == false)
+        {
+            return processStack.pop();
+        }
+        else
+        {
+            return new MethodStructureOperand(processStack.toArray(Operand[]::new), true);
+        }
     }
 }
 

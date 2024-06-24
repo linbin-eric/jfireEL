@@ -61,6 +61,7 @@ public class ExtraExecuteParser implements TokenParser
         {
             new ReturnOperator(el.substring(0, index)).push(parseContext);
             parseContext.setIndex(index + 6);
+            parseContext.setHasReturnToken(true);
             return true;
         }
         else if (el.charAt(index) == 'b' && index + 5 < el.length() && el.startsWith("break", index))

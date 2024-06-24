@@ -406,7 +406,7 @@ public class FunctionTest extends TestSupport
     @Test
     public void test47()
     {
-        Operand operand = Expression.parseMutli("""
+        Operand operand = Expression.parse("""
                                                         if(1+age>5)
                                                         {
                                                            var name ='f1';
@@ -428,7 +428,7 @@ public class FunctionTest extends TestSupport
     @Test
     public void test48()
     {
-        Operand operand = Expression.parseMutli("""
+        Operand operand = Expression.parse("""
                                                              var value;
                                                              for(i in array)
                                                              {
@@ -460,7 +460,7 @@ public class FunctionTest extends TestSupport
     @Test
     public void test49()
     {
-        Operand operand = Expression.parseMutli("""
+        Operand operand = Expression.parse("""
                                                         var value;
                                                         for(i in array)
                                                         {
@@ -609,7 +609,7 @@ public class FunctionTest extends TestSupport
                 var name =5;
                 return name;
                 }""";
-        Operand             operand = Expression.parseMutli(content);
+        Operand             operand = Expression.parse(content);
         Map<String, Object> map     = new HashMap<>();
         map.put("i", 3);
         assertEquals(5, ((Integer) operand.calculate(map)).intValue());
@@ -622,7 +622,7 @@ public class FunctionTest extends TestSupport
                 var name='yl';
                 return name;""";
         Map<String, Object> map     = new HashMap<>();
-        Operand             operand = Expression.parseMutli(content);
+        Operand             operand = Expression.parse(content);
         assertEquals("yl", ((String) operand.calculate(map)));
     }
 
@@ -687,7 +687,7 @@ public class FunctionTest extends TestSupport
                 sum=sum+each.age;
                 }
                 return sum;""";
-        Operand             operand = Expression.parseMutli(content);
+        Operand             operand = Expression.parse(content);
         Map<String, Object> param   = new HashMap<>();
         Person[]            persons = new Person[]{new Person(1), new Person(2)};
         Home2               home    = new Home2();
@@ -732,7 +732,7 @@ public class FunctionTest extends TestSupport
         String content = """
                 var array =['1','2'];
                 return array[1];""";
-        assertEquals("2", Expression.parseMutli(content).calculate());
+        assertEquals("2", Expression.parse(content).calculate());
     }
 
     @Test
@@ -741,7 +741,7 @@ public class FunctionTest extends TestSupport
         String content = """
                 if(1>0){return true;}
                 return false;""";
-        Boolean calculate = (Boolean) Expression.parseMutli(content).calculate();
+        Boolean calculate = (Boolean) Expression.parse(content).calculate();
         assertTrue(calculate);
     }
 
@@ -750,7 +750,7 @@ public class FunctionTest extends TestSupport
     {
         String content = """
                 if(1<2){;}else{return 2;}""";
-        Object calculate = Expression.parseMutli(content).calculate();
+        Object calculate = Expression.parse(content).calculate();
         assertNull(calculate);
     }
 
@@ -820,7 +820,7 @@ public class FunctionTest extends TestSupport
      */
     public void test77()
     {
-        Operand operand = Expression.parseMutli("""
+        Operand operand = Expression.parse("""
                                                         var name = 'abc';
                                                         if(i>5){return name;}
                                                         else{return 'h';}""");
@@ -839,16 +839,24 @@ public class FunctionTest extends TestSupport
     {
         Expression.registerClass(LinkedList.class.getSimpleName(), LinkedList.class);
         Expression.registerClass("Person", TestSupport.Person.class);
-        Operand operand = Expression.parseMutli("""
+        Operand operand = Expression.parse("""
                                                         var list = new LinkedList();
                                                         list.add('a');
                                                         return list;""");
         List<?> result = (List<?>) operand.calculate();
         assertEquals("a", result.get(0));
-        operand = Expression.parseMutli("""
+        operand = Expression.parse("""
                                                 var person = new Person(5);
                                                 return person;""");
         TestSupport.Person person = (TestSupport.Person) operand.calculate();
         assertEquals(5, person.getAge());
+    }
+
+    @Test
+    public void test79(){
+        Operand operand = Expression.parse("1+2>4;");
+        assertFalse(((Boolean) operand.calculate()));
+        operand = Expression.parse("1+2>4");
+        assertFalse(((Boolean) operand.calculate()));
     }
 }

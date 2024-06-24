@@ -66,13 +66,9 @@ public class Expression
 
     public static Operand parse(String el)
     {
-        return new ParseContext(el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap).parse();
-    }
-
-    public static Operand parseMutli(String el)
-    {
         return new ParseContext(el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap).parseMutli();
     }
+
 
     /**
      * 对表达式内容进行格式化并且返回。

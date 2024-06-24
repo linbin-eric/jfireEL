@@ -99,7 +99,7 @@ public class Template
         {
             builder.append("out('").append(content.substring(mark, index)).append("');\r\n");
         }
-        return new Template(Expression.parseMutli(builder.toString()));
+        return new Template(Expression.parse(builder.toString()));
     }
 
     public String render(Map<String, Object> params)
