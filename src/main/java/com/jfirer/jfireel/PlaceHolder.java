@@ -14,13 +14,19 @@ public interface PlaceHolder extends Operand
     /**
      * 代表左侧的'['占位符
      */
-    PlaceHolder LeftBracketPlaceHolder = new PlaceHolder()
+    PlaceHolder LEFT_BRACKET       = new PlaceHolder()
     {
     };
     /**
      * 代表左侧的'{'占位符
      */
-    PlaceHolder LeftAngleBracket       = new PlaceHolder()
+    PlaceHolder LEFT_ANGLE_BRACKET = new PlaceHolder()
+    {
+    };
+    /**
+     * 代表左侧的'('占位符
+     */
+    PlaceHolder LEFT_PAREN         = new PlaceHolder()
     {
     };
 }

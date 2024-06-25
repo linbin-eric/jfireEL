@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression.impl.operator;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.InOperand;
 import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
 
@@ -13,7 +14,7 @@ public class InOperator implements Operator
     @Override
     public int priority()
     {
-        return -2;
+        return -1;
     }
 
     @Override
@@ -29,5 +30,6 @@ public class InOperator implements Operator
         Operand         itemsContainer = operandStack.pop();
         VariableOperand itemName       = (VariableOperand) operandStack.pop();
         operandStack.push(new InOperand(itemName.getVariable(), itemsContainer));
+        parseContext.setLastToken(TokenType.OPERAND);
     }
 }

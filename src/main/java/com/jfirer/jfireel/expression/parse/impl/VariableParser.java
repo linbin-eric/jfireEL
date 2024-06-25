@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.CharType;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -21,6 +22,7 @@ public class VariableParser implements TokenParser
             }
             parseContext.getOperandStack().push(new VariableOperand(el.substring(parseContext.getIndex(), index)));
             parseContext.setIndex(index);
+            parseContext.setLastToken(TokenType.OPERAND);
             return true;
         }
         else

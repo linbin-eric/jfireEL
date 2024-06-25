@@ -1,8 +1,10 @@
 package com.jfirer.jfireel.expression.impl.operator;
 
+import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import lombok.Data;
 
@@ -73,7 +75,8 @@ public class LeftParenOperator implements Operator
             type = PURE_LEFT_BRACKETS;
         }
         parseContext.getOperatorStack().push(this);
-        parseContext.getOperandStack().push(new LeftParenOperand());
+        parseContext.setLastToken(TokenType.OPERATOR);
+        parseContext.getOperandStack().push(PlaceHolder.LEFT_PAREN);
     }
 
     @Override

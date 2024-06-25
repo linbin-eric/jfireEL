@@ -729,7 +729,7 @@ public class FunctionTest extends TestSupport
     public void test69()
     {
         String content = """
-                var array=[]{'1','2'};
+                var array=['1','2'];
                 return array[1];""";
         assertEquals("2", Expression.parse(content).calculate());
     }
@@ -857,5 +857,18 @@ public class FunctionTest extends TestSupport
         assertFalse(((Boolean) operand.calculate()));
         operand = Expression.parse("1+2>4");
         assertFalse(((Boolean) operand.calculate()));
+    }
+
+    /**
+     * 测试数组的新建和下标的获取
+     */
+    @Test
+    public void test80(){
+        Operand parse = Expression.parse("""
+                                                 var array = [1,2,3];
+                                                 var a = array[0];
+                                                 return a""");
+        Object result = parse.calculate();
+        assertEquals(1, result);
     }
 }

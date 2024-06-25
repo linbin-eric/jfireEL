@@ -28,7 +28,7 @@ public class SemicolonOperator implements Operator
                 ((ReturnOperator) operatorStack.peek()).setWithValue(false);
             }
         }
-        while (!operatorStack.isEmpty())
+        while (!operatorStack.isEmpty() && operatorStack.peek() instanceof  LeftAngleBracketOperator ==false)
         {
             operatorStack.pop().onPop(parseContext);
         }

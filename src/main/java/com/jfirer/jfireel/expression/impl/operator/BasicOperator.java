@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression.impl.operator;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 
 import java.util.Deque;
 
@@ -40,6 +41,7 @@ public class BasicOperator implements Operator
             operatorStack.pop().onPop(parseContext);
         }
         operatorStack.push(this);
+        parseContext.setLastToken(TokenType.OPERATOR);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.CharType;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
 import com.jfirer.jfireel.expression.impl.operator.SpotOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
@@ -31,6 +32,7 @@ public class StaticClassParser implements TokenParser
             try
             {
                 parseContext.getOperandStack().push(new ClassOperand(Class.forName(className)));
+                parseContext.setLastToken(TokenType.OPERAND);
             }
             catch (ClassNotFoundException e)
             {
@@ -50,6 +52,7 @@ public class StaticClassParser implements TokenParser
             {
                 parseContext.getOperandStack().push(new ClassOperand(staticClassName.get(el.substring(parseContext.getIndex(), index))));
                 parseContext.setIndex(index);
+                parseContext.setLastToken(TokenType.OPERAND);
                 return true;
             }
             else

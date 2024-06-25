@@ -4,13 +4,14 @@ import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import lombok.Data;
 
 import java.util.Deque;
 
 @Data
-public class MethodStructLeftAngleBracketOperator implements Operator
+public class LeftAngleBracketOperator implements Operator
 {
     private final String fragment;
 
@@ -24,19 +25,15 @@ public class MethodStructLeftAngleBracketOperator implements Operator
     public void push(ParseContext parseContext)
     {
         parseContext.getOperatorStack().push(this);
-        parseContext.getOperandStack().push(PlaceHolder.LeftAngleBracket);
+        parseContext.getOperandStack().push(PlaceHolder.LEFT_ANGLE_BRACKET);
+        parseContext.setLastToken(TokenType.OPERATOR);
     }
 
     @Override
     public void onPop(ParseContext parseContext)
     {
+        Deque<Operand> processStack = parseContext.getProcessStack();
         Deque<Operand> operandStack = parseContext.getOperandStack();
-        while (operandStack.peek() instanceof LeftAngleBracketOperand == false)
-        {
-            Operand pop = operandStack.pop();
-            processStack.push(pop);
-        }
-        operandStack.pop();
         Operand[] array = processStack.toArray(Operand[]::new);
         processStack.clear();
         Operand top = operandStack.peek();

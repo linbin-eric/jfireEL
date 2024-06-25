@@ -1,6 +1,7 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.NullOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -15,6 +16,7 @@ public class NullParser implements TokenParser
         {
             parseContext.getOperandStack().push(new NullOperand());
             parseContext.setIndex(index + 4);
+            parseContext.setLastToken(TokenType.OPERAND);
             return true;
         }
         else

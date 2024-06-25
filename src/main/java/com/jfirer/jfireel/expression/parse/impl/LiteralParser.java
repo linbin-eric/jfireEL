@@ -1,6 +1,7 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.LiteralOparand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -73,5 +74,6 @@ public class LiteralParser implements TokenParser
         }
         parseContext.setIndex(index + 1);
         parseContext.getOperandStack().push(new LiteralOparand(builder.toString()));
+        parseContext.setLastToken(TokenType.OPERAND);
     }
 }

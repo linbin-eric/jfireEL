@@ -48,6 +48,7 @@ public class ParseContext
     private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
     private        Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper>   classExtendMethodMap     = new HashMap<>();
     private        boolean                                                         hasReturnToken           = false;
+    private        TokenType                                                       lastToken                = TokenType.NONE;
 
     public ParseContext(String el)
     {

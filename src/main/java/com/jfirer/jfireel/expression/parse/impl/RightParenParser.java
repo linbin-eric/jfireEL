@@ -1,7 +1,8 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.impl.operator.RightParenOperator;
+import com.jfirer.jfireel.expression.TokenType;
+import com.jfirer.jfireel.expression.impl.operator.AbstractRightOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
 public class RightParenParser implements TokenParser
@@ -13,8 +14,9 @@ public class RightParenParser implements TokenParser
         int    index = parseContext.getIndex();
         if (el.charAt(index) == ')')
         {
-            new RightParenOperator(el.substring(0, index+1)).push(parseContext);
+            new AbstractRightOperator.RightParenOperator(el.substring(0, index + 1)).push(parseContext);
             parseContext.setIndex(index + 1);
+            parseContext.setLastToken(TokenType.OPERATOR);
             return true;
         }
         else

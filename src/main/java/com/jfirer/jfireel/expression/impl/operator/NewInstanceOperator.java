@@ -18,7 +18,7 @@ public class NewInstanceOperator implements Operator
     @Override
     public int priority()
     {
-        return -1;
+        return 12;
     }
 
     @Override

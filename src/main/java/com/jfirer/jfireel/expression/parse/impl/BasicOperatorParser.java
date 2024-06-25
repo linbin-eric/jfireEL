@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.BasicOperandImpl;
 import com.jfirer.jfireel.expression.impl.operator.*;
 import com.jfirer.jfireel.expression.parse.TokenParser;
@@ -27,15 +28,17 @@ public class BasicOperatorParser implements TokenParser
             case ':' -> operator = new ColonOperator(fragment);
             case '.' -> operator = new SpotOperator(fragment);
             case ',' -> operator = new CommaOperator(fragment);
-            case '[' -> operator = new ContainerLeftBracketOperator(fragment);
-            case ']' -> operator = new RightBracketOperator();
-            case ';' -> operator = new SemicolonOperator(el.substring(0, index));
-            case '}' -> operator = new RightAngleBracketOperator(fragment);
+            case '[' -> operator = new LeftBracketOperator(fragment);
+            case ']' -> operator = new AbstractRightOperator.RightBracketOperator(fragment);
+            case ';' -> operator = new SemicolonOperator(fragment);
+            case '{'->operator = new LeftAngleBracketOperator(fragment);
+            case '}' -> operator = new AbstractRightOperator.RightAngleBracketOperator(fragment);
         }
         if (operator != null)
         {
             operator.push(parseContext);
             parseContext.setIndex(index + 1);
+            parseContext.setLastToken(TokenType.OPERATOR);
             return true;
         }
         switch (c)
