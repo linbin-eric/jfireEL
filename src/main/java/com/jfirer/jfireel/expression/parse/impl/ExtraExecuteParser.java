@@ -2,10 +2,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.*;
-import com.jfirer.jfireel.expression.impl.operator.InOperator;
-import com.jfirer.jfireel.expression.impl.operator.NewInstanceOperator;
-import com.jfirer.jfireel.expression.impl.operator.ReturnOperator;
-import com.jfirer.jfireel.expression.impl.operator.VarOperator;
+import com.jfirer.jfireel.expression.impl.operator.*;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
 public class ExtraExecuteParser implements TokenParser
@@ -15,7 +12,7 @@ public class ExtraExecuteParser implements TokenParser
     {
         int    index = parseContext.getIndex();
         String el    = parseContext.getEl();
-        if (el.charAt(index) == 'v' && index + 2 < el.length() && el.charAt(index + 1) == 'a' && el.charAt(index + 2) == 'r')
+        if (el.charAt(index) == 'v' && index + 4 < el.length() && el.startsWith("var ", index))
         {
             new VarOperator().push(parseContext);
             parseContext.setIndex(index + 3);
@@ -27,13 +24,7 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 2);
             return true;
         }
-        else if (el.charAt(index) == '{')
-        {
-            parseContext.getOperandStack().push(new LeftAngleBracketOperand());
-            parseContext.setIndex(index + 1);
-            return true;
-        }
-        else if (el.charAt(index) == 'i' && index + 1 < el.length() && el.charAt(index + 1) == 'f')
+        else if (el.charAt(index) == 'i' && index + 2 < el.length() && el.startsWith("if", index))
         {
             parseContext.getOperandStack().push(new IfOperand());
             parseContext.setIndex(index + 2);
@@ -51,7 +42,7 @@ public class ExtraExecuteParser implements TokenParser
             parseContext.setIndex(index + 4);
             return true;
         }
-        else if (el.charAt(index) == 'f' && index + 2 < el.length() && el.charAt(index + 1) == 'o' && el.charAt(index + 2) == 'r')
+        else if (el.charAt(index) == 'f' && index + 3 < el.length() && el.startsWith("for", index))
         {
             parseContext.getOperandStack().push(new ForOperand(el.substring(0, index + 3)));
             parseContext.setIndex(index + 3);
@@ -80,6 +71,18 @@ public class ExtraExecuteParser implements TokenParser
         {
             parseContext.getOperatorStack().push(new NewInstanceOperator(el.substring(0, index + 4)));
             parseContext.setIndex(index + 4);
+            return true;
+        }
+        else if (el.charAt(index) == '[' && index + 3 < el.length() && el.startsWith("[]{", index))
+        {
+            new ArrayLeftAngleOperator(el.substring(0, index + 3)).push(parseContext);
+            parseContext.setIndex(index + 3);
+            return true;
+        }
+        else if (el.charAt(index) == '{')
+        {
+            new MethodStructLeftAngleBracketOperator(el.substring(0, index + 1)).push(parseContext);
+            parseContext.setIndex(index + 1);
             return true;
         }
         else

@@ -30,6 +30,7 @@ public class AssignOperator implements Operator
     @Override
     public void push(ParseContext parseContext)
     {
+
         Deque<Operator> operatorStack = parseContext.getOperatorStack();
         while (operatorStack.isEmpty() == false && operatorStack.peek().priority() >= priority())
         {

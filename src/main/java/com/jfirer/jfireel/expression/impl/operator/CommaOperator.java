@@ -30,7 +30,7 @@ public class CommaOperator implements Operator
         do
         {
             Operator peek = operatorStack.peek();
-            if (peek instanceof LeftParenOperator || peek instanceof CommaOperator || peek instanceof LeftBracketOperator)
+            if (peek instanceof LeftParenOperator || peek instanceof CommaOperator || peek instanceof ContainerLeftBracketOperator)
             {
                 break;
             }

@@ -9,7 +9,6 @@ import lombok.experimental.Accessors;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
@@ -730,7 +729,7 @@ public class FunctionTest extends TestSupport
     public void test69()
     {
         String content = """
-                var array =['1','2'];
+                var array=[]{'1','2'};
                 return array[1];""";
         assertEquals("2", Expression.parse(content).calculate());
     }

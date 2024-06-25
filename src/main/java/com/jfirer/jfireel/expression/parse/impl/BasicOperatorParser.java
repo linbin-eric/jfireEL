@@ -27,7 +27,7 @@ public class BasicOperatorParser implements TokenParser
             case ':' -> operator = new ColonOperator(fragment);
             case '.' -> operator = new SpotOperator(fragment);
             case ',' -> operator = new CommaOperator(fragment);
-            case '[' -> operator = new LeftBracketOperator(fragment);
+            case '[' -> operator = new ContainerLeftBracketOperator(fragment);
             case ']' -> operator = new RightBracketOperator();
             case ';' -> operator = new SemicolonOperator(el.substring(0, index));
             case '}' -> operator = new RightAngleBracketOperator(fragment);

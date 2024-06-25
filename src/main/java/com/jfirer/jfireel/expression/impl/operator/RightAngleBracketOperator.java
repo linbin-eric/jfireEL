@@ -22,55 +22,14 @@ public class RightAngleBracketOperator implements Operator
     @Override
     public void push(ParseContext parseContext)
     {
-        Deque<Operand> operandStack = parseContext.getOperandStack();
-        Deque<Operand> processStack = parseContext.getProcessStack();
-        while (operandStack.peek() instanceof LeftAngleBracketOperand == false)
+        Deque<Operand>  operandStack  = parseContext.getOperandStack();
+        Deque<Operator> operatorStack = parseContext.getOperatorStack();
+        Deque<Operand>  processStack  = parseContext.getProcessStack();
+        while (operatorStack.peek() instanceof ArrayLeftAngleOperator == false || operatorStack.peek() instanceof MethodStructLeftAngleBracketOperator == false)
         {
-            Operand pop = operandStack.pop();
-            processStack.push(pop);
+            operatorStack.pop().onPop(parseContext);
         }
-        operandStack.pop();
-        Operand[] array = processStack.toArray(Operand[]::new);
-        processStack.clear();
-        Operand top = operandStack.peek();
-        if (top instanceof IfOperand == false && top instanceof ElseIfOperand == false && top instanceof ForOperand == false && top instanceof ElseOperand == false)
-        {
-            throw new IllegalStateException("表达式解析异常，异常位置" + fragment);
-        }
-        if (top instanceof IfOperand ifOperand)
-        {
-            ifOperand.setBody(new MethodStructureOperand(array, false));
-        }
-        else if (top instanceof ElseIfOperand elseIfOperand)
-        {
-            elseIfOperand.setBody(new MethodStructureOperand(array, false));
-            operandStack.pop();
-            if (operandStack.peek() instanceof IfOperand ifOperand)
-            {
-                ifOperand.addElseIfOperand(elseIfOperand);
-            }
-            else
-            {
-                throw new IllegalStateException("表达式解析异常else if 未能发现与之匹配的 if，异常位置" + fragment);
-            }
-        }
-        else if (top instanceof ElseOperand elseOperand)
-        {
-            elseOperand.setBody(new MethodStructureOperand(array, false));
-            operandStack.pop();
-            if (operandStack.peek() instanceof IfOperand ifOperand)
-            {
-                ifOperand.setElseOperand(elseOperand);
-            }
-            else
-            {
-                throw new IllegalStateException("表达式解析异常 else 未能发现与之匹配的 if，异常位置" + fragment);
-            }
-        }
-        else if (top instanceof ForOperand forOperand)
-        {
-            forOperand.setBody(new MethodStructureOperand(array, false));
-        }
+
     }
 
     @Override
