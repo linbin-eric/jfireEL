@@ -2,18 +2,16 @@ package com.jfirer.jfireel.expression;
 
 import com.jfirer.baseutil.reflect.ValueAccessor;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface Operand
 {
-    static ConcurrentHashMap<Class, Consumer<Object>> translator = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Class, Consumer<Object>> translator = new ConcurrentHashMap<>();
 
     Object calculate(Map<String, Object> contextParam);
 

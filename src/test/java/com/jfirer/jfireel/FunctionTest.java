@@ -406,17 +406,17 @@ public class FunctionTest extends TestSupport
     public void test47()
     {
         Operand operand = Expression.parse("""
-                                                        if(1+age>5)
-                                                        {
-                                                           var name ='f1';
-                                                           return name;
-                                                        }
-                                                        else
-                                                        { 
-                                                           var name = 'f2';
-                                                           return name;
-                                                        }
-                                                        """);
+                                                   if(1+age>5)
+                                                   {
+                                                      var name ='f1';
+                                                      return name;
+                                                   }
+                                                   else
+                                                   { 
+                                                      var name = 'f2';
+                                                      return name;
+                                                   }
+                                                   """);
         Map<String, Object> param = new HashMap<>();
         param.put("age", 3);
         assertEquals("f2", operand.calculate(param));
@@ -428,45 +428,12 @@ public class FunctionTest extends TestSupport
     public void test48()
     {
         Operand operand = Expression.parse("""
-                                                             var value;
-                                                             for(i in array)
-                                                             {
-                                                        if(i<5)
-                                                                {
-                                                                    value = i;
-                                                                }
-                                                                else
-                                                                {
-                                                                    break;
-                                                                }
-                                                             }
-                                                             var result;
-                                                             if(value==4)
-                                                             {
-                                                                result = true;
-                                                             }
-                                                             else
-                                                             {
-                                                                result=false;
-                                                             }
-                                                             return result;
-                                                             """);
-        Map<String, Object> param = new HashMap<>();
-        param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
-        assertTrue((Boolean) operand.calculate(param));
-    }
-
-    @Test
-    public void test49()
-    {
-        Operand operand = Expression.parse("""
                                                         var value;
                                                         for(i in array)
                                                         {
-                                                           if(i<5)
+                                                   if(i<5)
                                                            {
                                                                value = i;
-                                                               return;
                                                            }
                                                            else
                                                            {
@@ -482,7 +449,40 @@ public class FunctionTest extends TestSupport
                                                         {
                                                            result=false;
                                                         }
+                                                        return result;
                                                         """);
+        Map<String, Object> param = new HashMap<>();
+        param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
+        assertTrue((Boolean) operand.calculate(param));
+    }
+
+    @Test
+    public void test49()
+    {
+        Operand operand = Expression.parse("""
+                                                   var value;
+                                                   for(i in array)
+                                                   {
+                                                      if(i<5)
+                                                      {
+                                                          value = i;
+                                                          return;
+                                                      }
+                                                      else
+                                                      {
+                                                          break;
+                                                      }
+                                                   }
+                                                   var result;
+                                                   if(value==4)
+                                                   {
+                                                      result = true;
+                                                   }
+                                                   else
+                                                   {
+                                                      result=false;
+                                                   }
+                                                   """);
         Map<String, Object> param = new HashMap<>();
         param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
         operand.calculate(param);
@@ -820,9 +820,9 @@ public class FunctionTest extends TestSupport
     public void test77()
     {
         Operand operand = Expression.parse("""
-                                                        var name = 'abc';
-                                                        if(i>5){return name;}
-                                                        else{return 'h';}""");
+                                                   var name = 'abc';
+                                                   if(i>5){return name;}
+                                                   else{return 'h';}""");
         Map<String, Object> param = new HashMap<>();
         param.put("i", 10);
         Object result = operand.calculate(param);
@@ -839,20 +839,21 @@ public class FunctionTest extends TestSupport
         Expression.registerClass(LinkedList.class.getSimpleName(), LinkedList.class);
         Expression.registerClass("Person", TestSupport.Person.class);
         Operand operand = Expression.parse("""
-                                                        var list = new LinkedList();
-                                                        list.add('a');
-                                                        return list;""");
+                                                   var list = new LinkedList();
+                                                   list.add('a');
+                                                   return list;""");
         List<?> result = (List<?>) operand.calculate();
         assertEquals("a", result.get(0));
         operand = Expression.parse("""
-                                                var person = new Person(5);
-                                                return person;""");
+                                           var person = new Person(5);
+                                           return person;""");
         TestSupport.Person person = (TestSupport.Person) operand.calculate();
         assertEquals(5, person.getAge());
     }
 
     @Test
-    public void test79(){
+    public void test79()
+    {
         Operand operand = Expression.parse("1+2>4;");
         assertFalse(((Boolean) operand.calculate()));
         operand = Expression.parse("1+2>4");
@@ -863,12 +864,34 @@ public class FunctionTest extends TestSupport
      * 测试数组的新建和下标的获取
      */
     @Test
-    public void test80(){
+    public void test80()
+    {
         Operand parse = Expression.parse("""
                                                  var array = [1,2,3];
                                                  var a = array[0];
                                                  return a""");
         Object result = parse.calculate();
         assertEquals(1, result);
+    }
+
+    /**
+     * 测试下数组的常量优化结果
+     */
+    @Test
+    public void test81()
+    {
+        Operand operand = Expression.parse("['a','b','c']");
+        Object  result  = operand.calculate();
+        assertTrue(result instanceof String[]);
+        Object result2 = operand.calculate();
+        assertTrue(result == result2);
+        assertEquals(result, result2);
+        Operand operand1 = Expression.parse("['a',null,'c']");
+        result = operand1.calculate();
+        assertTrue(result instanceof String[]);
+        result2= operand1.calculate();
+        assertTrue(result==result2);
+        assertEquals(result,result2);
+
     }
 }

@@ -1,11 +1,11 @@
 package com.jfirer.jfireel.expression.impl.operand;
 
-import com.jfirer.baseutil.reflect.LambdaValueAccessor;
 import com.jfirer.baseutil.reflect.ValueAccessor;
 import com.jfirer.jfireel.expression.Operand;
 import lombok.Data;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -43,6 +43,10 @@ public abstract class PropertyReadOperand implements Operand
             super(typeOperand, propertyNameOperand, fragment, propertyReadAccelerators);
             Class<?> ckass = ((ClassOperand) typeOperand).getCkass();
             Field    field = findField(ckass, propertyNameOperand.getVariable(), fragment);
+            if (Modifier.isStatic(field.getModifiers()) == false)
+            {
+                throw new IllegalArgumentException("解析属性异常，非 static 属性不能获取。异常错误位置在:[" + fragment + "]");
+            }
             field.setAccessible(true);
             Function<Object, Object> function = propertyReadAccelerators.get(field);
             if (function != null)
@@ -75,7 +79,7 @@ public abstract class PropertyReadOperand implements Operand
     {
         private volatile Function<Object, Object> propertyGetter;
 
-        public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment,  Map<Field, Function<Object, Object>> propertyReadAccelerators)
+        public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
         {
             super(typeOperand, propertyNameOperand, fragment, propertyReadAccelerators);
         }
@@ -98,7 +102,7 @@ public abstract class PropertyReadOperand implements Operand
                         }
                         else
                         {
-                            ValueAccessor valueAccessor =  new ValueAccessor(field);
+                            ValueAccessor valueAccessor = new ValueAccessor(field);
                             propertyGetter = v -> valueAccessor.get(v);
                         }
                         return propertyGetter.apply(instance);
