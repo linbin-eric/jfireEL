@@ -6,49 +6,72 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 public interface Operand
 {
-    ConcurrentHashMap<Class, Consumer<Object>> translator = new ConcurrentHashMap<>();
+    class InnerContextParam
+    {
+        private final Map<String, Object> map   = new HashMap<>();
+        private       boolean             inUse = false;
+    }
+
+    ThreadLocal<InnerContextParam>                                    INNER_CONTEXT_PARAM = ThreadLocal.withInitial(InnerContextParam::new);
+    ConcurrentHashMap<Class, BiConsumer<Object, Map<String, Object>>> translator          = new ConcurrentHashMap<>();
 
     Object calculate(Map<String, Object> contextParam);
 
-    default <T extends HashMap<String, Object>> Object calculate(T contextParam)
+    default Object calculate(Object objParam)
     {
-        if (contextParam == null)
+        if (objParam == null)
         {
             return calculate();
         }
-        else if (!contextParam.isEmpty())
-        {
-            return calculate((Map<String, Object>) contextParam);
-        }
         else
         {
-            Class<?> ckass = contextParam.getClass();
-            Consumer<Object> computed = translator.computeIfAbsent(ckass, type -> {
-                ValueAccessor[] array = Stream.iterate(type, t -> t != HashMap.class, t -> t.getSuperclass()).flatMap(t -> Arrays.stream(t.getDeclaredFields()).map(field -> new ValueAccessor(field))).toArray(ValueAccessor[]::new);
-                return (a) -> {
+            Class<?> ckass = objParam.getClass();
+            BiConsumer<Object, Map<String, Object>> computed = translator.computeIfAbsent(ckass, type -> {
+                ValueAccessor[] array = Stream.iterate(type, t -> t != HashMap.class && t != Object.class, t -> t.getSuperclass()).flatMap(t -> Arrays.stream(t.getDeclaredFields()).map(field -> new ValueAccessor(field))).toArray(ValueAccessor[]::new);
+                return (obj, map) -> {
                     for (ValueAccessor valueAccessor : array)
                     {
-                        ((Map<String, Object>) a).put(valueAccessor.getField().getName(), valueAccessor.get(a));
+                        map.put(valueAccessor.getField().getName(), valueAccessor.get(obj));
                     }
                 };
             });
-            computed.accept(contextParam);
-            return calculate((Map<String, Object>) contextParam);
+            InnerContextParam innerContextParam = INNER_CONTEXT_PARAM.get();
+            if (innerContextParam.inUse == false)
+            {
+                innerContextParam.inUse = true;
+                computed.accept(objParam, innerContextParam.map);
+                Object result = calculate(innerContextParam.map);
+                innerContextParam.inUse = false;
+                innerContextParam.map.clear();
+                return result;
+            }
+            else
+            {
+                computed.accept(objParam, innerContextParam.map);
+                return calculate(innerContextParam.map);
+            }
         }
     }
 
-    ThreadLocal<Map<String, Object>> DEFAULT = ThreadLocal.withInitial(HashMap::new);
-
     default Object calculate()
     {
-        Map<String, Object> map    = DEFAULT.get();
-        Object              result = calculate(map);
-        map.clear();
-        return result;
+        InnerContextParam innerContextParam = INNER_CONTEXT_PARAM.get();
+        if (innerContextParam.inUse == false)
+        {
+            innerContextParam.inUse = true;
+            Object result = calculate(innerContextParam.map);
+            innerContextParam.inUse = false;
+            innerContextParam.map.clear();
+            return result;
+        }
+        else
+        {
+            return calculate(innerContextParam.map);
+        }
     }
 }

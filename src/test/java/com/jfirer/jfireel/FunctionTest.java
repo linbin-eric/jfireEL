@@ -775,12 +775,15 @@ public class FunctionTest extends TestSupport
 
     @Accessors(chain = true)
     @Data
-    public static class TestData extends HashMap<String, Object>
+    public static class TestData
     {
         private Integer i;
         private String  name;
     }
 
+    /**
+     * 测试入参是非 Map 的形式
+     */
     @Test
     public void test74()
     {
@@ -788,11 +791,13 @@ public class FunctionTest extends TestSupport
         Operand  operand = Expression.parse("i>3?name:'xx'");
         lin.setI(5);
         assertEquals("lin", operand.calculate(lin));
-        lin.clear();
         lin.setI(2);
         assertEquals("xx", operand.calculate(lin));
     }
 
+    /**
+     * 测试入参是非 Map 的形式
+     */
     @Test
     public void test75()
     {
@@ -889,9 +894,8 @@ public class FunctionTest extends TestSupport
         Operand operand1 = Expression.parse("['a',null,'c']");
         result = operand1.calculate();
         assertTrue(result instanceof String[]);
-        result2= operand1.calculate();
-        assertTrue(result==result2);
-        assertEquals(result,result2);
-
+        result2 = operand1.calculate();
+        assertTrue(result == result2);
+        assertEquals(result, result2);
     }
 }
