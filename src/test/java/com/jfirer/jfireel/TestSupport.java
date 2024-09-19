@@ -1,5 +1,6 @@
 package com.jfirer.jfireel;
 
+import lombok.Data;
 import org.junit.Before;
 
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public abstract class TestSupport
         vars.put("home", home);
     }
 
+    @Data
     public static class Home
     {
         public Person person;
@@ -62,6 +64,7 @@ public abstract class TestSupport
         }
     }
 
+    @Data
     public static class Person
     {
         public int age;

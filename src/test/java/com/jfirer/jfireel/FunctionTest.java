@@ -660,6 +660,7 @@ public class FunctionTest extends TestSupport
         assertEquals("ni \\", value);
     }
 
+    @Data
     public class Person
     {
         int age;
@@ -670,6 +671,7 @@ public class FunctionTest extends TestSupport
         }
     }
 
+    @Data
     public class Home2
     {
         Person[] persons;

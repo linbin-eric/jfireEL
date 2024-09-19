@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,6 +35,106 @@ public abstract class MethodInvokeOperand implements Operand
     private static final AtomicInteger                             COUNTER        = new AtomicInteger(1);
     private static final ConcurrentMap<Method, MethodInvokeHelper> INVOKER_MAP    = new ConcurrentHashMap<>();
     protected            MethodInvokeHelper                        invokeHelper;
+
+    protected Object[] compatibleValues(Object[] values, int[] classIds)
+    {
+        for (int i = 0; i < values.length; i++)
+        {
+            Object value = values[i];
+            switch (classIds[i])
+            {
+                case ReflectUtil.CLASS_INT, ReflectUtil.PRIMITIVE_INT ->
+                {
+                    if (value instanceof BigDecimal)
+                    {
+                        values[i] = ((BigDecimal) value).intValue();
+                    }
+                    else if (!(value instanceof Integer))
+                    {
+                        values[i] = ((Number) value).intValue();
+                    }
+                }
+                case ReflectUtil.CLASS_LONG, ReflectUtil.PRIMITIVE_LONG ->
+                {
+                    if (value instanceof BigDecimal)
+                    {
+                        values[i] = ((BigDecimal) value).longValue();
+                    }
+                    else if (!(value instanceof Long))
+                    {
+                        values[i] = ((Number) value).longValue();
+                    }
+                }
+                case ReflectUtil.CLASS_SHORT, ReflectUtil.PRIMITIVE_SHORT ->
+                {
+                    if (value instanceof BigDecimal)
+                    {
+                        values[i] = ((BigDecimal) value).shortValue();
+                    }
+                    else if (!(value instanceof Short))
+                    {
+                        values[i] = ((Number) value).shortValue();
+                    }
+                }
+                case ReflectUtil.CLASS_BYTE, ReflectUtil.PRIMITIVE_BYTE ->
+                {
+                    if (value instanceof BigDecimal)
+                    {
+                        values[i] = ((BigDecimal) value).byteValue();
+                    }
+                    else if (!(value instanceof Byte))
+                    {
+                        values[i] = ((Number) value).byteValue();
+                    }
+                }
+                case ReflectUtil.CLASS_FLOAT, ReflectUtil.PRIMITIVE_FLOAT ->
+                {
+                    if (value instanceof BigDecimal)
+                    {
+                        values[i] = ((BigDecimal) value).floatValue();
+                    }
+                    else if (!(value instanceof Float))
+                    {
+                        values[i] = ((Number) value).floatValue();
+                    }
+                }
+                case ReflectUtil.CLASS_DOUBLE, ReflectUtil.PRIMITIVE_DOUBLE ->
+                {
+                    if (value instanceof BigDecimal)
+                    {
+                        values[i] = ((BigDecimal) value).doubleValue();
+                    }
+                    else if (!(value instanceof Double))
+                    {
+                        values[i] = ((Number) value).doubleValue();
+                    }
+                }
+                case ReflectUtil.CLASS_CHAR, ReflectUtil.PRIMITIVE_CHAR ->
+                {
+                    if (value instanceof Character)
+                    {
+                        ;
+                    }
+                    else if (value instanceof String str)
+                    {
+                        values[i] = str.charAt(0);
+                    }
+                }
+                case ReflectUtil.CLASS_BOOL, ReflectUtil.PRIMITIVE_BOOL ->
+                {
+                    if (value instanceof Boolean)
+                    {
+                        ;
+                    }
+                    else if (value instanceof String str)
+                    {
+                        values[i] = Boolean.parseBoolean(str);
+                    }
+                }
+            }
+        }
+        return values;
+    }
 
     protected Object[] candidateParamValues(Object[] methodParamValues)
     {
@@ -122,21 +223,21 @@ public abstract class MethodInvokeOperand implements Operand
             {
                 continue;
             }
-            Class<?> parameterType    = parameterTypes[i];
-            Object   methodParamValue = methodParamValues[i];
-            if ((ReflectUtil.isNumber(parameterType) || parameterType == BigDecimal.class) && (ReflectUtil.isNumber(methodParamValue.getClass()) || methodParamValue.getClass() == BigDecimal.class))
+            Class<?> parameterType        = parameterTypes[i];
+            Class<?> methodParamValueType = methodParamValues[i].getClass();
+            if (ReflectUtil.isNumberOrBigDecimal(parameterType) && ReflectUtil.isNumberOrBigDecimal(methodParamValueType))
             {
                 ;
             }
-            else if (ReflectUtil.isBooleanOrBooleanBox(parameterType) && ReflectUtil.isBooleanOrBooleanBox(methodParamValue.getClass()))
+            else if (ReflectUtil.isBooleanOrBooleanBox(parameterType) && ReflectUtil.isBooleanOrBooleanBox(methodParamValueType))
             {
                 ;
             }
-            else if (ReflectUtil.isCharOrCharBox(parameterType) && ReflectUtil.isCharOrCharBox(methodParamValue.getClass()))
+            else if (ReflectUtil.isCharOrCharBox(parameterType) && ReflectUtil.isCharOrCharBox(methodParamValueType))
             {
                 ;
             }
-            else if (parameterType.isAssignableFrom(methodParamValue.getClass()))
+            else if (parameterType.isAssignableFrom(methodParamValueType))
             {
                 ;
             }
@@ -148,59 +249,68 @@ public abstract class MethodInvokeOperand implements Operand
         return true;
     }
 
+    protected Executable findExecutable(List<? extends Executable> methods, Object[] methodParamValues, String memberName)
+    {
+        return methods.stream()//
+                      .filter(executable -> executable.getName().equals(memberName))//
+                      .filter(executable -> executable.getParameterCount() == methodParamValues.length)//
+                      .filter(executable -> typeCompatibleValues(executable.getParameterTypes(), methodParamValues))//
+                      .findAny().orElse(null);
+    }
+
     protected boolean findMethod(List<? extends Executable> methods, Object[] methodParamValues, String memberName)
     {
-        for (Executable candidate : methods)
+        Optional<? extends Executable> first = methods.stream()//
+                                                      .filter(executable -> executable.getName().equals(memberName))//
+                                                      .filter(executable -> executable.getParameterCount() == methodParamValues.length)//
+                                                      .filter(executable -> typeCompatibleValues(executable.getParameterTypes(), methodParamValues))//
+                                                      .findFirst();
+        if (first.isEmpty())
         {
-            if (candidate.getName().equals(memberName) && candidate.getParameterCount() == methodParamValues.length)
-            {
-                if (typeCompatibleValues(candidate.getParameterTypes(), methodParamValues))
-                {
-                    convertTypes = Arrays.stream(candidate.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
-                    candidate.setAccessible(true);
-                    if (candidate instanceof Method method)
-                    {
-                        invokeHelper = methodInvokeAccelerators.getOrDefault(candidate, (obj, methodParams, contextParam) -> {
-                            Object[] _args = new Object[methodParams.length];
-                            for (int i = 0; i < _args.length; i++)
-                            {
-                                _args[i] = methodParams[i].calculate(contextParam);
-                            }
-                            try
-                            {
-                                return method.invoke(obj, candidateParamValues(_args));
-                            }
-                            catch (IllegalAccessException | InvocationTargetException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                        });
-                    }
-                    else if (candidate instanceof Constructor<?> constructor)
-                    {
-                        invokeHelper = (obj, methodParams, contextParam) -> {
-                            Object[] _args = new Object[methodParams.length];
-                            for (int i = 0; i < _args.length; i++)
-                            {
-                                _args[i] = methodParams[i].calculate(contextParam);
-                            }
-                            try
-                            {
-                                return constructor.newInstance(candidateParamValues(_args));
-                            }
-                            catch (IllegalAccessException | InvocationTargetException | InstantiationException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                        };
-                    }
-                    this.candidate = candidate;
-                    methodIdentify = true;
-                    return true;
-                }
-            }
+            return false;
         }
-        return false;
+        Executable executable = first.get();
+        convertTypes = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
+        executable.setAccessible(true);
+        if (executable instanceof Method method)
+        {
+            invokeHelper = methodInvokeAccelerators.getOrDefault(executable, (obj, methodParams, contextParam) -> {
+                Object[] _args = new Object[methodParams.length];
+                for (int i = 0; i < _args.length; i++)
+                {
+                    _args[i] = methodParams[i].calculate(contextParam);
+                }
+                try
+                {
+                    return method.invoke(obj, candidateParamValues(_args));
+                }
+                catch (IllegalAccessException | InvocationTargetException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        else if (executable instanceof Constructor<?> constructor)
+        {
+            invokeHelper = (obj, methodParams, contextParam) -> {
+                Object[] _args = new Object[methodParams.length];
+                for (int i = 0; i < _args.length; i++)
+                {
+                    _args[i] = methodParams[i].calculate(contextParam);
+                }
+                try
+                {
+                    return constructor.newInstance(candidateParamValues(_args));
+                }
+                catch (IllegalAccessException | InvocationTargetException | InstantiationException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            };
+        }
+        this.candidate = executable;
+        methodIdentify = true;
+        return true;
     }
 
     public interface MethodInvokeHelper
@@ -499,12 +609,30 @@ public abstract class MethodInvokeOperand implements Operand
                 {
                     if (!methodIdentify)
                     {
-                        Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        if (!findMethod(candidates, args, memberName))
+                        Object[]    args       = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
+                        Executable  executable = findExecutable(List.of(ckass.getConstructors()), args, memberName);
+                        final int[] classIds   = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
+                        if (executable == null)
                         {
                             throw new IllegalArgumentException("解析过程中发现未能发现匹配的构造方法。异常解析位置为" + fragment);
                         }
-                        return ((Constructor<?>) candidate).newInstance(args);
+                        Constructor constructor = (Constructor) executable;
+                        invokeHelper = (obj, argOperands, context) -> {
+                            Object[] _args = new Object[argOperands.length];
+                            for (int i = 0; i < _args.length; i++)
+                            {
+                                _args[i] = argOperands[i].calculate(contextParam);
+                            }
+                            try
+                            {
+                                return constructor.newInstance(compatibleValues(_args, classIds));
+                            }
+                            catch (IllegalAccessException | InvocationTargetException | InstantiationException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        };
+                        return ((Constructor<?>) executable).newInstance(compatibleValues(args, classIds));
                     }
                 }
             }
@@ -544,13 +672,31 @@ public abstract class MethodInvokeOperand implements Operand
                             return invokeHelper.invoke(instance, methodParams, contextParam);
                         }
                         Object[] args = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                        if (!findMethod(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args, memberName))
+
+                        Method executable = (Method) findExecutable(Stream.iterate((Class) instance.getClass(), c -> c != Object.class, Class::getSuperclass).flatMap(c -> Arrays.stream(c.getDeclaredMethods())).toList(), args, memberName);
+                        final int[] classIds= Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
+                        if (executable==null)
                         {
                             throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + memberName + "。异常解析位置为" + fragment);
                         }
+                        invokeHelper = methodInvokeAccelerators.getOrDefault(executable, (obj, argOperands, context) -> {
+                            Object[] _args = new Object[argOperands.length];
+                            for (int i = 0; i < _args.length; i++)
+                            {
+                                _args[i] = argOperands[i].calculate(context);
+                            }
+                            try
+                            {
+                                return executable.invoke(obj, compatibleValues(_args,classIds));
+                            }
+                            catch (IllegalAccessException | InvocationTargetException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        });
                         try
                         {
-                            return ((Method) candidate).invoke(instance, candidateParamValues(args));
+                            return executable.invoke(instance, compatibleValues(args,classIds));
                         }
                         catch (IllegalAccessException | InvocationTargetException e)
                         {
