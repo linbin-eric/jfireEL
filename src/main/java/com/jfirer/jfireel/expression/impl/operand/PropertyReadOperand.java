@@ -1,12 +1,22 @@
 package com.jfirer.jfireel.expression.impl.operand;
 
-import com.jfirer.baseutil.reflect.ValueAccessor;
+import com.jfirer.baseutil.STR;
+import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
+import com.jfirer.baseutil.smc.SmcHelper;
+import com.jfirer.baseutil.smc.compiler.CompileHelper;
+import com.jfirer.baseutil.smc.model.ClassModel;
+import com.jfirer.baseutil.smc.model.ConstructorModel;
+import com.jfirer.baseutil.smc.model.FieldModel;
+import com.jfirer.baseutil.smc.model.MethodModel;
 import com.jfirer.jfireel.expression.Operand;
 import lombok.Data;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -77,7 +87,9 @@ public abstract class PropertyReadOperand implements Operand
 
     public static class InstancePropertyReadOperand extends PropertyReadOperand
     {
-        private volatile Function<Object, Object> propertyGetter;
+        private volatile boolean                  init = false;
+        private          Function<Object, Object> propertyGetter;
+        private          ValueAccessor            valueAccessor;
 
         public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
         {
@@ -87,29 +99,109 @@ public abstract class PropertyReadOperand implements Operand
         @Override
         public Object calculate(Map<String, Object> contextParam)
         {
-            if (propertyGetter == null)
+            if (init == false)
             {
                 synchronized (this)
                 {
-                    if (propertyGetter == null)
+                    if (init == false)
                     {
+                        init = true;
                         Object                   instance = typeOperand.calculate(contextParam);
                         Field                    field    = findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
                         Function<Object, Object> function = propertyReadAccelerators.get(field);
                         if (function != null)
                         {
                             propertyGetter = function;
+                            return function.apply(instance);
                         }
                         else
                         {
-                            ValueAccessor valueAccessor = new ValueAccessor(field);
-                            propertyGetter = v -> valueAccessor.get(v);
+                            valueAccessor = ValueAccessor.compile(field);
+                            return valueAccessor.get(instance);
                         }
-                        return propertyGetter.apply(instance);
                     }
                 }
             }
-            return propertyGetter.apply(typeOperand.calculate(contextParam));
+            return valueAccessor != null ? valueAccessor.get(typeOperand.calculate(contextParam)) : propertyGetter.apply(typeOperand.calculate(contextParam));
+        }
+    }
+
+    public static class CompilePropertyReadOperand extends PropertyReadOperand
+    {
+        private             String        fieldName;
+        private volatile    Operand       handler;
+        public final static AtomicInteger count          = new AtomicInteger();
+        public static final CompileHelper COMPILE_HELPER = new CompileHelper();
+
+        public CompilePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+        {
+            super(typeOperand, propertyNameOperand, fragment, propertyReadAccelerators);
+            fieldName = propertyNameOperand.getVariable();
+            handler   = new Operand()
+            {
+                @Override
+                public Object calculate(Map<String, Object> contextParam)
+                {
+                    try
+                    {
+                        Object instance = typeOperand.calculate(contextParam);
+                        Field  field    = findField(instance.getClass(), fieldName, fragment);
+                        field.setAccessible(true);
+                        ClassModel classModel = new ClassModel("CompilePropertyReadOperand_" + fieldName + "_" + count.getAndIncrement());
+                        classModel.addInterface(Operand.class);
+                        classModel.addField(new FieldModel("typeOperand", Operand.class, classModel));
+                        ConstructorModel constructorModel = new ConstructorModel(classModel);
+                        constructorModel.setParamTypes(Operand.class);
+                        constructorModel.setParamNames("typeOperand");
+                        constructorModel.setBody("this.typeOperand = typeOperand;");
+                        classModel.addConstructor(constructorModel);
+                        MethodModel methodModel = new MethodModel(Operand.class.getDeclaredMethod("calculate", Map.class), classModel);
+                        methodModel.setParamterNames("contextParam");
+                        String referenceName = SmcHelper.getReferenceName(field.getDeclaringClass(), classModel);
+                        String methodName    = field.getType() == boolean.class ? "is" + ValueAccessor.toMethodName(field) : "get" + ValueAccessor.toMethodName(field);
+                        String format = STR.format("""
+                                                           {} instance = ({})typeOperand.calculate(contextParam);
+                                                           return instance.{}();""", referenceName, referenceName, methodName);
+                        methodModel.setBody(format);
+                        classModel.putMethodModel(methodModel);
+                        System.out.println("生成");
+                        Class<?> compile = COMPILE_HELPER.compile(classModel);
+                        Operand  operand = (Operand) compile.getConstructor(Operand.class).newInstance(typeOperand);
+                        CompilePropertyReadOperand.this.handler = operand;
+                        return field.get(instance);
+                    }
+                    catch (IllegalAccessException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                    catch (ClassNotFoundException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                    catch (NoSuchMethodException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                    catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                    catch (InvocationTargetException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                    catch (InstantiationException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+        }
+
+        @Override
+        public Object calculate(Map<String, Object> contextParam)
+        {
+            return handler.calculate(contextParam);
         }
     }
 }

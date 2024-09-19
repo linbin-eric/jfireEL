@@ -1,13 +1,12 @@
 package com.jfirer.jfireel.benchmark;
 
 import com.jfirer.jfireel.TestSupport;
+import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.ParseContext;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -18,21 +17,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Warmup(iterations = 2, time = 2)
+@Measurement(iterations = 3, time = 8)
+@Fork(2)
 @State(Scope.Benchmark)
 public class PropertyBenchMark
 {
     public    Map<String, Object> vars = new HashMap<String, Object>();
     protected TestSupport.Person  person;
-    Operand lexer_3 = Expression.parse("home.person");
+    Operand lexer_3     = Expression.parse("home.person");
     Operand lexer_accel;
+    Operand compileRead = Expression.parse("home.person", new ELConfig().setPropertyReadUseCompile(true));
 
     public static void main(String[] args) throws RunnerException
     {
-        Options opt = new OptionsBuilder().include(PropertyBenchMark.class.getSimpleName()).warmupIterations(2)//
-                                          .warmupTime(TimeValue.seconds(3)).forks(2)//
-                                          .measurementIterations(5)//
-                                          .measurementTime(TimeValue.seconds(2))//
-                                          .timeUnit(TimeUnit.SECONDS).build();
+        Options opt = new OptionsBuilder().include(PropertyBenchMark.class.getSimpleName()).timeUnit(TimeUnit.SECONDS).build();
         new Runner(opt).run();
     }
 
@@ -58,14 +57,23 @@ public class PropertyBenchMark
     }
 
     @Benchmark
-    public void test()
+    public void test(Blackhole blackhole)
     {
-        lexer_3.calculate(vars);
+        Object calculate = lexer_3.calculate(vars);
+        blackhole.consume(calculate);
     }
 
     @Benchmark
-    public void testAcc()
+    public void testAcc(Blackhole blackhole)
     {
-        lexer_accel.calculate(vars);
+        Object calculate = lexer_accel.calculate(vars);
+        blackhole.consume(calculate);
+    }
+
+    @Benchmark
+    public void testCompile(Blackhole blackhole)
+    {
+        Object calculate = compileRead.calculate(vars);
+        blackhole.consume(calculate);
     }
 }

@@ -66,9 +66,13 @@ public class Expression
 
     public static Operand parse(String el)
     {
-        return new ParseContext(el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap).parseMutli();
+        return new ParseContext(ELConfig.DEFAULT_CONFIG, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap).parseMutli();
     }
 
+    public static Operand parse(String el, ELConfig config)
+    {
+        return new ParseContext(config, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap).parseMutli();
+    }
 
     /**
      * 对表达式内容进行格式化并且返回。
@@ -82,7 +86,7 @@ public class Expression
      */
     public static String format(String content)
     {
-        ParseContext parseContext = new ParseContext(content, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap);
+        ParseContext parseContext = new ParseContext(ELConfig.DEFAULT_CONFIG, content, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators, classExtendMethodMap);
         parseContext.parseMutli();
         List<FormatToken> formatTokens = parseContext.getFormatTokens();
         StringBuilder     builder      = new StringBuilder();
@@ -94,12 +98,12 @@ public class Expression
     public static void main(String[] args)
     {
         System.out.println(format("""
-if(
-diagnoseInfos.hasDiagnose('A52.705+K77.0*,B65.202+K77.0*,F06.800x008,K70.200,K70.300,K70.301+I98.2*,K70.302+I98.3*,K70.303+I98.2*,K70.304+I98.2*,K70.305+I98.3*,K70.306+I98.3*,K71.700,K71.701,K71.702,K74.100,K74.200,K74.300,K74.300x005+I98.2*,K74.300x006+I98.3*,K74.300x007+I98.2*,K74.300x008+I98.3*,K74.301+I98.2*,K74.302+I98.3*,K74.400,K74.500,K74.600x002,K74.600x003,K74.600x010,K74.600x021,K74.600x025,K74.600x027,K74.600x029,K74.600x030,K74.600x031,K74.600x034,K74.600x036,K74.600x041,K74.600x042,K74.601,K74.602,K74.603,K74.604,K74.605,K74.606,K74.607,K74.608,K74.610,K74.611,K74.612,K74.613,K74.614,K74.615+I98.3*,K74.616+I98.2*,K74.617+I98.3*,K74.618+I98.3*,K74.619+I98.2*,K74.620+I98.2*,K76.101,K76.600x007,O26.604,P78.803') &&
-diagnoseInfos.hasDiagnose('B15.002,B15.003,B16.000x001,B16.202,B16.203,B17.102,B17.103,B17.200x005,B17.204,B17.205,B17.800x001,B17.800x002,B17.800x003,B17.803,B17.900x005,B17.900x006,B18.004,B18.106,B18.204,B18.800x001,B18.800x002,B18.800x003,B18.800x004,B18.801,B18.802,B18.803,B18.805,B18.903,B19.001,B19.002,D61.800x002,K72.000x013,K73.901,O98.406') &&
-diagnoseInfos.hasDiagnose('B15.000,B15.001,B15.002,B15.003,B15.900,B16.000,B16.001,B16.100,B16.101,B16.200,B16.201,B16.202,B16.203,B16.204,B16.900,B19.000,B19.001,B19.002,B19.900,B25.101+K77.0*,K70.403')
-){return 0;}
-return 2;
+                                          if(
+                                          diagnoseInfos.hasDiagnose('A52.705+K77.0*,B65.202+K77.0*,F06.800x008,K70.200,K70.300,K70.301+I98.2*,K70.302+I98.3*,K70.303+I98.2*,K70.304+I98.2*,K70.305+I98.3*,K70.306+I98.3*,K71.700,K71.701,K71.702,K74.100,K74.200,K74.300,K74.300x005+I98.2*,K74.300x006+I98.3*,K74.300x007+I98.2*,K74.300x008+I98.3*,K74.301+I98.2*,K74.302+I98.3*,K74.400,K74.500,K74.600x002,K74.600x003,K74.600x010,K74.600x021,K74.600x025,K74.600x027,K74.600x029,K74.600x030,K74.600x031,K74.600x034,K74.600x036,K74.600x041,K74.600x042,K74.601,K74.602,K74.603,K74.604,K74.605,K74.606,K74.607,K74.608,K74.610,K74.611,K74.612,K74.613,K74.614,K74.615+I98.3*,K74.616+I98.2*,K74.617+I98.3*,K74.618+I98.3*,K74.619+I98.2*,K74.620+I98.2*,K76.101,K76.600x007,O26.604,P78.803') &&
+                                          diagnoseInfos.hasDiagnose('B15.002,B15.003,B16.000x001,B16.202,B16.203,B17.102,B17.103,B17.200x005,B17.204,B17.205,B17.800x001,B17.800x002,B17.800x003,B17.803,B17.900x005,B17.900x006,B18.004,B18.106,B18.204,B18.800x001,B18.800x002,B18.800x003,B18.800x004,B18.801,B18.802,B18.803,B18.805,B18.903,B19.001,B19.002,D61.800x002,K72.000x013,K73.901,O98.406') &&
+                                          diagnoseInfos.hasDiagnose('B15.000,B15.001,B15.002,B15.003,B15.900,B16.000,B16.001,B16.100,B16.101,B16.200,B16.201,B16.202,B16.203,B16.204,B16.900,B19.000,B19.001,B19.002,B19.900,B25.101+K77.0*,K70.403')
+                                          ){return 0;}
+                                          return 2;
                                           """));
     }
 }

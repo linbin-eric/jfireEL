@@ -1,6 +1,6 @@
 package com.jfirer.jfireel.expression;
 
-import com.jfirer.baseutil.reflect.ValueAccessor;
+import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public interface Operand
         {
             Class<?> ckass = objParam.getClass();
             BiConsumer<Object, Map<String, Object>> computed = translator.computeIfAbsent(ckass, type -> {
-                ValueAccessor[] array = Stream.iterate(type, t -> t != HashMap.class && t != Object.class, t -> t.getSuperclass()).flatMap(t -> Arrays.stream(t.getDeclaredFields()).map(field -> new ValueAccessor(field))).toArray(ValueAccessor[]::new);
+                ValueAccessor[] array = Stream.iterate(type, t -> t != HashMap.class && t != Object.class, t -> t.getSuperclass()).flatMap(t -> Arrays.stream(t.getDeclaredFields()).map(ValueAccessor::compile)).toArray(ValueAccessor[]::new);
                 return (obj, map) -> {
                     for (ValueAccessor valueAccessor : array)
                     {

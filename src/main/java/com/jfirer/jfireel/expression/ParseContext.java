@@ -49,15 +49,18 @@ public class ParseContext
     private        Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper>   classExtendMethodMap     = new HashMap<>();
     private        boolean                                                         hasReturnToken           = false;
     private        TokenType                                                       lastToken                = TokenType.NONE;
+    private        ELConfig                                                        config;
 
     public ParseContext(String el)
     {
-        this.el = el;
+        this.el     = el;
+        this.config = ELConfig.DEFAULT_CONFIG;
     }
 
-    public ParseContext(String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators, Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper> classExtendMethodMap)
+    public ParseContext(ELConfig config, String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators, Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper> classExtendMethodMap)
     {
-        this.el = el;
+        this.config = config;
+        this.el     = el;
         this.className.putAll(className);
         this.innerCalls.putAll(innerCalls);
         this.methodInvokeAccelerators.putAll(methodInvokeAccelerators);

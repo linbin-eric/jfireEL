@@ -1,5 +1,6 @@
 package com.jfirer.jfireel.expression.impl.operator;
 
+import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
@@ -67,7 +68,15 @@ public class SpotOperator implements Operator
             }
             else
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(),  parseContext.getPropertyReadAccelerators()));
+                ELConfig config = parseContext.getConfig();
+                if (config.isPropertyReadUseCompile())
+                {
+                    parseContext.getOperandStack().push(new PropertyReadOperand.CompilePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                }
+                else
+                {
+                    parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                }
             }
         }
     }
