@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Warmup(iterations = 2, time = 2)
-@Measurement(iterations = 3, time = 8)
-@Fork(2)
+@Measurement(iterations = 3, time = 3)
+@Fork(5)
 @State(Scope.Benchmark)
 public class PropertyBenchMark
 {
