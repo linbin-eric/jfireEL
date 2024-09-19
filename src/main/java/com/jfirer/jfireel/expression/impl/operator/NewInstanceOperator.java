@@ -4,7 +4,7 @@ import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
-import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
+import com.jfirer.jfireel.expression.impl.operand.method.ConstructorMethod;
 import lombok.Data;
 
 import java.util.Deque;
@@ -34,7 +34,7 @@ public class NewInstanceOperator implements Operator
         ClassOperand   classOperand = (ClassOperand) processStack.pop();
         Operand[]      array        = processStack.toArray(Operand[]::new);
         processStack.clear();
-        MethodInvokeOperand.ConstructorMethod constructorMethod = new MethodInvokeOperand.ConstructorMethod(classOperand.getCkass(), array, fragment, parseContext.getMethodInvokeAccelerators());
+        ConstructorMethod constructorMethod = new ConstructorMethod(classOperand.getCkass(), array, fragment, parseContext.getMethodInvokeAccelerators());
         parseContext.getOperandStack().push(constructorMethod);
     }
 }

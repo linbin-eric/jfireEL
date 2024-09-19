@@ -164,7 +164,7 @@ public abstract class PropertyReadOperand implements Operand
                                                            return instance.{}();""", referenceName, referenceName, methodName);
                         methodModel.setBody(format);
                         classModel.putMethodModel(methodModel);
-                        System.out.println("生成");
+                        System.out.println("生成" + classModel.toString());
                         Class<?> compile = COMPILE_HELPER.compile(classModel);
                         Operand  operand = (Operand) compile.getConstructor(Operand.class).newInstance(typeOperand);
                         CompilePropertyReadOperand.this.handler = operand;

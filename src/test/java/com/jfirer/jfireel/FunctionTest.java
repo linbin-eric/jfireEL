@@ -450,7 +450,7 @@ public class FunctionTest extends TestSupport
                                                            result=false;
                                                         }
                                                         return result;
-                                                        """);
+                                                   """);
         Map<String, Object> param = new HashMap<>();
         param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
         assertTrue((Boolean) operand.calculate(param));
@@ -682,7 +682,7 @@ public class FunctionTest extends TestSupport
     {
         String content = """
                 var sum=0;
-                               
+                
                 for(each in home.persons)
                 {
                 sum=sum+each.age;
@@ -808,17 +808,6 @@ public class FunctionTest extends TestSupport
         Map<String, Object> map     = new HashMap<>();
         map.put("person", person);
         assertEquals("a", operand.calculate(map));
-    }
-
-    @Test
-    public void test76()
-    {
-        Expression.registerClassExtendMethod(String.class, "ex", (instance, argOperands, contextParam) -> {
-            Object calculate = argOperands[0].calculate(contextParam);
-            return instance.equals(calculate);
-        });
-        Object result = Expression.parse("'abc'.ex('abc')").calculate();
-        assertTrue((Boolean) result);
     }
 
     /**

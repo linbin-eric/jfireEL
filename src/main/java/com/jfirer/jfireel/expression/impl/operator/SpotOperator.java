@@ -5,9 +5,11 @@ import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
-import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
+import com.jfirer.jfireel.expression.impl.operand.method.CompileInstanceMethod;
+import com.jfirer.jfireel.expression.impl.operand.method.InstanceMethod;
 import com.jfirer.jfireel.expression.impl.operand.PropertyReadOperand;
 import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
+import com.jfirer.jfireel.expression.impl.operand.method.StaticMethod;
 import lombok.Data;
 
 import java.util.Deque;
@@ -50,11 +52,19 @@ public class SpotOperator implements Operator
             String  methodName = ((VariableOperand) processStack.pop()).getVariable();
             if (pop instanceof ClassOperand classOperand)
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.StaticMethod(classOperand.getCkass(), methodName, processStack.toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
+                parseContext.getOperandStack().push(new StaticMethod(classOperand.getCkass(), methodName, processStack.toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
             }
             else
             {
-                parseContext.getOperandStack().push(new MethodInvokeOperand.InstanceMethod(pop, methodName, processStack.toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators(), parseContext.getClassExtendMethodMap()));
+                ELConfig config = parseContext.getConfig();
+                if (config.isMethodInvokeUseCompile())
+                {
+                    parseContext.getOperandStack().push(new CompileInstanceMethod(pop, methodName, processStack.toArray(Operand[]::new), fragment));
+                }
+                else
+                {
+                    parseContext.getOperandStack().push(new InstanceMethod(pop, methodName, processStack.toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
+                }
             }
             processStack.clear();
         }

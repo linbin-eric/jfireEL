@@ -1,6 +1,7 @@
 package com.jfirer.jfireel.benchmark;
 
 import com.jfirer.jfireel.TestSupport;
+import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.ParseContext;
@@ -24,12 +25,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Warmup(iterations = 2, time = 2)
+@Measurement(iterations = 3, time = 3)
+@Fork(1)
 @State(Scope.Benchmark)
-public class MethodMark
+public class MethodBenchMark
 {
-    public Operand             lexer_new = Expression.parse("person.getAge()");
+    public Operand             lexer_new         = Expression.parse("home.personAge2(5)");
     public Operand             lexer_new_lambda;
-    public Map<String, Object> vars      = new HashMap<String, Object>();
+    public Operand             operandUseCompile = Expression.parse("home.personAge2(5)", new ELConfig().setMethodInvokeUseCompile(true));
+    public Map<String, Object> vars              = new HashMap<String, Object>();
     public TestSupport.Person  person;
     public TestSupport.Home    home;
     org.springframework.expression.Expression exp;
@@ -37,32 +42,25 @@ public class MethodMark
     GroupTemplate                             gt;
     String                                    key = "return @person.getAge();";
 
-    public MethodMark()
+    public MethodBenchMark()
     {
-        ParseContext parseContext = new ParseContext("person.getAge()");
-        Method       bool         = null;
-        Method       getAge;
+        ParseContext parseContext = new ParseContext("home.personAge2(5)");
+        Method       personAge2         = null;
         try
         {
-            bool   = TestSupport.Home.class.getDeclaredMethod("bool", boolean.class);
-            getAge = TestSupport.Person.class.getDeclaredMethod("getAge");
+            personAge2   = TestSupport.Home.class.getDeclaredMethod("personAge2", int.class);
         }
         catch (NoSuchMethodException e)
         {
             throw new RuntimeException(e);
         }
-        parseContext.registerMethodInvokeAccelerator(bool, (instance, operands, map) -> ((TestSupport.Home) instance).bool((Boolean) operands[0].calculate(map)));
-        parseContext.registerMethodInvokeAccelerator(getAge, (instance, operands, map) -> ((TestSupport.Person) instance).getAge());
+        parseContext.registerMethodInvokeAccelerator(personAge2, (instance, operands, map) -> ((TestSupport.Home) instance).personAge2((Integer) operands[0].calculate(map)));
         lexer_new_lambda = parseContext.parse();
     }
 
     public static void main(String[] args) throws RunnerException
     {
-        Options opt = new OptionsBuilder().include(MethodMark.class.getSimpleName()).warmupIterations(1)//
-                                          .warmupTime(TimeValue.seconds(3)).forks(2)//
-                                          .measurementIterations(3)//
-                                          .measurementTime(TimeValue.seconds(3))//
-                                          .timeUnit(TimeUnit.SECONDS).build();
+        Options opt = new OptionsBuilder().include(MethodBenchMark.class.getSimpleName()).timeUnit(TimeUnit.SECONDS).build();
         new Runner(opt).run();
     }
 
@@ -77,7 +75,6 @@ public class MethodMark
         vars.put("home", home);
         String value = person.age + "12";
         vars.put("value", value);
-        System.out.println("初始化一次");
         societyContext = new StandardEvaluationContext();
         societyContext.setVariable("vars", vars);
         ExpressionParser parser = new SpelExpressionParser();
@@ -103,6 +100,12 @@ public class MethodMark
     public void testJfireEL_new_lambda()
     {
         lexer_new_lambda.calculate(vars);
+    }
+
+    @Benchmark
+    public void testMethodCompile()
+    {
+        operandUseCompile.calculate(vars);
     }
 
     //    @Benchmark

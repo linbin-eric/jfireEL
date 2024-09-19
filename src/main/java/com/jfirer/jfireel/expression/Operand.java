@@ -1,16 +1,21 @@
 package com.jfirer.jfireel.expression;
 
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
+import com.jfirer.baseutil.smc.compiler.CompileHelper;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 public interface Operand
 {
+    CompileHelper COMPILE_HELPER = new CompileHelper();
+    AtomicInteger COUNTER = new AtomicInteger(1);
+
     class InnerContextParam
     {
         private final Map<String, Object> map   = new HashMap<>();

@@ -9,4 +9,5 @@ public class ELConfig
 {
     public static final ELConfig DEFAULT_CONFIG         = new ELConfig();
     private             boolean  propertyReadUseCompile = false;
+    private             boolean  methodInvokeUseCompile = false;
 }

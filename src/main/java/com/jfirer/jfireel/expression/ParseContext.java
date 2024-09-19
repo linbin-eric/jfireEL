@@ -2,7 +2,7 @@ package com.jfirer.jfireel.expression;
 
 import com.jfirer.jfireel.expression.format.FormatToken;
 import com.jfirer.jfireel.expression.impl.operand.LeftAngleBracketOperand;
-import com.jfirer.jfireel.expression.impl.operand.MethodInvokeOperand;
+import com.jfirer.jfireel.expression.impl.operand.method.MethodInvokeHelper;
 import com.jfirer.jfireel.expression.impl.operand.MethodStructureOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 import com.jfirer.jfireel.expression.parse.impl.*;
@@ -44,9 +44,8 @@ public class ParseContext
     private        Map<String, Class<?>>                                           className                = new HashMap<>();
     @Setter(AccessLevel.NONE)
     private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls               = new HashMap<>();
-    private        Map<Method, MethodInvokeOperand.MethodInvokeHelper>             methodInvokeAccelerators = new HashMap<>();
+    private        Map<Method, MethodInvokeHelper>                                 methodInvokeAccelerators = new HashMap<>();
     private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
-    private        Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper>   classExtendMethodMap     = new HashMap<>();
     private        boolean                                                         hasReturnToken           = false;
     private        TokenType                                                       lastToken                = TokenType.NONE;
     private        ELConfig                                                        config;
@@ -57,7 +56,7 @@ public class ParseContext
         this.config = ELConfig.DEFAULT_CONFIG;
     }
 
-    public ParseContext(ELConfig config, String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeOperand.MethodInvokeHelper> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators, Map<Expression.Tuper, MethodInvokeOperand.MethodInvokeHelper> classExtendMethodMap)
+    public ParseContext(ELConfig config, String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvokeHelper> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators)
     {
         this.config = config;
         this.el     = el;
@@ -65,7 +64,6 @@ public class ParseContext
         this.innerCalls.putAll(innerCalls);
         this.methodInvokeAccelerators.putAll(methodInvokeAccelerators);
         this.propertyReadAccelerators.putAll(propertyReadAccelerators);
-        this.classExtendMethodMap.putAll(classExtendMethodMap);
     }
 
     public void registerClass(String name, Class<?> ckass)
@@ -78,7 +76,7 @@ public class ParseContext
         propertyReadAccelerators.put(field, accelerator);
     }
 
-    public void registerMethodInvokeAccelerator(Method method, MethodInvokeOperand.MethodInvokeHelper helper)
+    public void registerMethodInvokeAccelerator(Method method, MethodInvokeHelper helper)
     {
         methodInvokeAccelerators.put(method, helper);
     }
