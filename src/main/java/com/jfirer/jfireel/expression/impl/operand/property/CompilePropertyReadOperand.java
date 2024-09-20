@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class CompilePropertyReadOperand implements Operand
 {
-    private Operand handler;
+    private volatile Operand handler;
 
     public CompilePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment)
     {

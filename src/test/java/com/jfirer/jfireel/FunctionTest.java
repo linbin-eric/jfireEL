@@ -715,7 +715,7 @@ public class FunctionTest extends TestSupport
     {
         String value = person.age + "12";
         vars.put("value", value);
-        ParseContext  parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)");
+        ParseContext  parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)", new ELConfig().setMethodInvokeUseCompile(false));
         Method        bool         = Home.class.getDeclaredMethod("bool", boolean.class);
         AtomicBoolean called       = new AtomicBoolean(false);
         parseContext.registerMethodInvokeAccelerator(bool, (instance, operands, map) -> {

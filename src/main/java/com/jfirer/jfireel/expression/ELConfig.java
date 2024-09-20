@@ -10,10 +10,14 @@ public class ELConfig
     public static final ELConfig DEFAULT_CONFIG                      = new ELConfig();
     /**
      * 实例属性的读取采用编译形式。
+     * 在intel平台上，性能和默认的一致；在mac平台上，性能只有默认的一半。
+     * 建议是关闭
      */
     private             boolean  propertyReadUseCompile              = false;
     /**
      * 实例方法的调用采用编译形式
+     * 在intel平台上性能测试能和通过lambda对方法引用一致，在mac平台上则是lambda性能的三分之二。
+     * 建议是开启
      */
     private             boolean  methodInvokeUseCompile              = false;
     /**

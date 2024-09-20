@@ -57,6 +57,12 @@ public class ParseContext
         this.config = ELConfig.DEFAULT_CONFIG;
     }
 
+    public ParseContext(String el, ELConfig elConfig)
+    {
+        this.el     = el;
+        this.config = elConfig;
+    }
+
     public ParseContext(ELConfig config, String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvoker> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators)
     {
         this.config = config;

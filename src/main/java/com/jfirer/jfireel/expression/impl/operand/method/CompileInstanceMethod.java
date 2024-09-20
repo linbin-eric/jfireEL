@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class CompileInstanceMethod implements Operand
 {
-    private Operand operand;
+    private volatile Operand operand;
 
     public CompileInstanceMethod(Operand instanceOperand, String methodName, Operand[] argOperands, String fragment, ELConfig elConfig)
     {
