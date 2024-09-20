@@ -1,14 +1,27 @@
 package com.jfirer.jfireel.expression.impl.operand.method;
 
+import com.jfirer.baseutil.STR;
 import com.jfirer.baseutil.reflect.ReflectUtil;
+import com.jfirer.baseutil.smc.SmcHelper;
+import com.jfirer.baseutil.smc.model.ClassModel;
+import com.jfirer.baseutil.smc.model.ConstructorModel;
+import com.jfirer.baseutil.smc.model.FieldModel;
+import com.jfirer.baseutil.smc.model.MethodModel;
+import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Operand;
+import lombok.SneakyThrows;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 
-public interface MethodInvokeHelper
+@FunctionalInterface
+public interface MethodInvoker
 {
     static Object compatibleValues(Object value, int classId)
     {
@@ -211,7 +224,7 @@ public interface MethodInvokeHelper
         return values;
     }
 
-    static boolean typeCompatibleValues(Class<?>[] parameterTypes, Object[] methodParamValues)
+    static boolean isTypeCompatibleValues(Class<?>[] parameterTypes, Object[] methodParamValues)
     {
         for (int i = 0; i < parameterTypes.length; i++)
         {
@@ -245,13 +258,143 @@ public interface MethodInvokeHelper
         return true;
     }
 
-    static Executable findExecutable(List<? extends Executable> methods, Object[] methodParamValues, String memberName)
+    static Executable findExecutable(Class clazz, Object[] methodParamValues, String memberName)
     {
-        return methods.stream()//
-                      .filter(executable -> executable.getName().equals(memberName))//
-                      .filter(executable -> executable.getParameterCount() == methodParamValues.length)//
-                      .filter(executable -> typeCompatibleValues(executable.getParameterTypes(), methodParamValues))//
-                      .findAny().orElse(null);
+        return Stream.concat(Arrays.stream(clazz.getConstructors()), Arrays.stream(clazz.getMethods()))//
+                     .filter(executable -> executable.getName().equals(memberName))//
+                     .filter(executable -> executable.getParameterCount() == methodParamValues.length)//
+                     .filter(executable -> isTypeCompatibleValues(executable.getParameterTypes(), methodParamValues))//
+                     .findAny().orElse(null);
+    }
+
+    @SneakyThrows
+    static Operand make(Operand instanceOperand, Executable executable, Operand[] argOperands, int[] classIds, ELConfig elConfig)
+    {
+        if (instanceOperand != null && executable instanceof Method && !Modifier.isStatic(executable.getModifiers()))
+        {
+            ;
+        }
+        else if ((executable instanceof Constructor<?> || Modifier.isStatic(executable.getModifiers())) && instanceOperand == null)
+        {
+            ;
+        }
+        else
+        {
+            throw new IllegalArgumentException("对方法进行编译，但是入组的组合情况不明确");
+        }
+        ClassModel classModel = new ClassModel(STR.format("Compile{}_{}", executable instanceof Constructor<?> ? executable.getDeclaringClass().getSimpleName() : executable.getName(), Operand.COUNTER.getAndIncrement()));
+        classModel.addInterface(Operand.class);
+        classModel.addImport(Map.class);
+        classModel.addImport(MethodInvoker.class);
+        classModel.addImport(executable.getDeclaringClass());
+        for (int i = 0; i < argOperands.length; i++)
+        {
+            classModel.addField(new FieldModel("argOperand_" + i, Operand.class, classModel));
+            classModel.addField(new FieldModel("classId_" + i, int.class, classModel));
+        }
+        if (instanceOperand != null)
+        {
+            classModel.addField(new FieldModel("instanceOperand", Operand.class, classModel));
+        }
+        ConstructorModel constructorModel = new ConstructorModel(classModel);
+        if (instanceOperand != null)
+        {
+            constructorModel.setParamTypes(Operand.class, Operand[].class, int[].class);
+            constructorModel.setParamNames("instanceOperand", "argOperands", "classIds");
+        }
+        else
+        {
+            constructorModel.setParamTypes(Operand[].class, int[].class);
+            constructorModel.setParamNames("argOperands", "classIds");
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < argOperands.length; i++)
+        {
+            builder.append("this.argOperand_" + i + " = argOperands[" + i + "];\r\n");
+            builder.append("this.classId_" + i + " = classIds[" + i + "];\r\n");
+        }
+        if (instanceOperand != null)
+        {
+            builder.append("this.instanceOperand = instanceOperand;\r\n");
+        }
+        constructorModel.setBody(builder.toString());
+        classModel.addConstructor(constructorModel);
+        Method      calculate   = Operand.class.getDeclaredMethod("calculate", Map.class);
+        MethodModel methodModel = new MethodModel(calculate, classModel);
+        methodModel.setParamterNames("contextParam");
+        String referenceName = SmcHelper.getReferenceName(executable.getDeclaringClass(), classModel);
+        if (executable.getParameterCount() == 0)
+        {
+            if (instanceOperand != null)
+            {
+                methodModel.setBody(STR.format("""
+                                                       {} instance = ({}) instanceOperand.calculate(contextParam);
+                                                       return instance.{}();
+                                                       """, referenceName, referenceName, executable.getName()));
+            }
+            else
+            {
+                if (executable instanceof Constructor)
+                {
+                    methodModel.setBody(STR.format("return new {}();", referenceName));
+                }
+                else
+                {
+                    methodModel.setBody(STR.format("return {}.{}();", referenceName, executable.getName()));
+                }
+            }
+        }
+        else
+        {
+            String format;
+            if (instanceOperand != null)
+            {
+                format = STR.format("""
+                                            {} instance = ({}) instanceOperand.calculate(contextParam);
+                                            return instance.{}(
+                                            """, referenceName, referenceName, executable.getName());
+            }
+            else
+            {
+                if (executable instanceof Constructor<?>)
+                {
+                    format = STR.format("return new {}(", referenceName);
+                }
+                else
+                {
+                    format = STR.format("return {}.{}(", referenceName, executable.getName());
+                }
+            }
+            builder = new StringBuilder();
+            Class<?>[] parameterTypes = executable.getParameterTypes();
+            for (int i = 0; i < parameterTypes.length; i++)
+            {
+                if (elConfig.isDisableCompileMethodCompatibleValue())
+                {
+                    builder.append("(").append(SmcHelper.getReferenceName(ReflectUtil.getBoxedTypeOrOrigin(parameterTypes[i]), classModel)).append(")argOperand_").append(i).append(".calculate(contextParam)");
+                }
+                else
+                {
+                    builder.append("(").append(SmcHelper.getReferenceName(ReflectUtil.getBoxedTypeOrOrigin(parameterTypes[i]), classModel)).append(")MethodInvoker.compatibleValues(argOperand_").append(i).append(".calculate(contextParam),classId_").append(i).append(")");
+                }
+                if (i != parameterTypes.length - 1)
+                {
+                    builder.append(",");
+                }
+            }
+            builder.append(");");
+            methodModel.setBody(format + builder);
+        }
+        classModel.putMethodModel(methodModel);
+        Class<?> compile = Operand.COMPILE_HELPER.compile(classModel);
+        if (instanceOperand != null)
+        {
+            return (Operand) compile.getConstructor(Operand.class, Operand[].class, int[].class).newInstance(instanceOperand, argOperands, classIds);
+        }
+        else
+        {
+            return (Operand) compile.getConstructor(Operand[].class, int[].class).newInstance(argOperands, classIds);
+        }
     }
 
     Object invoke(Object instance, Operand[] methodParams, Map<String, Object> contextParam);

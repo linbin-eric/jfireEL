@@ -14,7 +14,6 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -31,10 +30,11 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class MethodBenchMark
 {
-    public Operand             lexer_new         = Expression.parse("home.personAge2(5)");
+    public Operand             lexer_new                          = Expression.parse("home.personAge2(5)");
     public Operand             lexer_new_lambda;
-    public Operand             operandUseCompile = Expression.parse("home.personAge2(5)", new ELConfig().setMethodInvokeUseCompile(true));
-    public Map<String, Object> vars              = new HashMap<String, Object>();
+    public Operand             operandUseCompile                  = Expression.parse("home.personAge2(5)", new ELConfig().setMethodInvokeUseCompile(true));
+    public Operand             operandUseCompileDisableCompatible = Expression.parse("home.personAge2(5)", new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
+    public Map<String, Object> vars                               = new HashMap<String, Object>();
     public TestSupport.Person  person;
     public TestSupport.Home    home;
     org.springframework.expression.Expression exp;
@@ -45,10 +45,10 @@ public class MethodBenchMark
     public MethodBenchMark()
     {
         ParseContext parseContext = new ParseContext("home.personAge2(5)");
-        Method       personAge2         = null;
+        Method       personAge2   = null;
         try
         {
-            personAge2   = TestSupport.Home.class.getDeclaredMethod("personAge2", int.class);
+            personAge2 = TestSupport.Home.class.getDeclaredMethod("personAge2", int.class);
         }
         catch (NoSuchMethodException e)
         {
@@ -106,6 +106,12 @@ public class MethodBenchMark
     public void testMethodCompile()
     {
         operandUseCompile.calculate(vars);
+    }
+
+    @Benchmark
+    public void testMethodCompileDisableCompatible()
+    {
+        operandUseCompileDisableCompatible.calculate(vars);
     }
 
     //    @Benchmark

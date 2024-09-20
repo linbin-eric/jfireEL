@@ -14,15 +14,12 @@ import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.function.Function;
-
-import static com.jfirer.jfireel.expression.impl.operand.property.PropertyReadOperand.findField;
 
 public class CompilePropertyReadOperand implements Operand
 {
     private volatile Operand handler;
 
-    public CompilePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+    public CompilePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment)
     {
         handler = new OneshotForAnalyse(typeOperand, propertyNameOperand.getVariable(), fragment);
     }
@@ -45,7 +42,7 @@ public class CompilePropertyReadOperand implements Operand
         public Object calculate(Map<String, Object> contextParam)
         {
             Object instance = instanceOperand.calculate(contextParam);
-            Field  field    = findField(instance.getClass(), fieldName, fragment);
+            Field  field    = Operand.findField(instance.getClass(), fieldName, fragment);
             field.setAccessible(true);
             ClassModel classModel = new ClassModel("CompilePropertyReadOperand_" + fieldName + "_" + COUNTER.getAndIncrement());
             classModel.addInterface(Operand.class);

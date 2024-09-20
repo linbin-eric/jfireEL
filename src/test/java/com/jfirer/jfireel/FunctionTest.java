@@ -1,5 +1,6 @@
 package com.jfirer.jfireel;
 
+import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.ParseContext;
@@ -888,5 +889,17 @@ public class FunctionTest extends TestSupport
         result2 = operand1.calculate();
         assertTrue(result == result2);
         assertEquals(result, result2);
+    }
+
+    @Test
+    public void test82()
+    {
+        Operand parse = Expression.parse("home.personAge2(l)", new ELConfig().setMethodInvokeUseCompile(true));
+        assertEquals(Integer.valueOf(5), parse.calculate(vars));
+        Operand parse1 = Expression.parse("home.person.age", new ELConfig().setPropertyReadUseCompile(true));
+        assertEquals(Integer.valueOf(14), parse1.calculate(vars));
+        Operand parse2    = Expression.parse("new @(com.jfirer.jfireel.TestSupport$Home)()", new ELConfig().setMethodInvokeUseCompile(true));
+        Object  calculate = parse2.calculate();
+        assertTrue(calculate instanceof Home);
     }
 }

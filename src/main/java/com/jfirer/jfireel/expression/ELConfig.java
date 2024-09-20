@@ -7,7 +7,18 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ELConfig
 {
-    public static final ELConfig DEFAULT_CONFIG         = new ELConfig();
-    private             boolean  propertyReadUseCompile = false;
-    private             boolean  methodInvokeUseCompile = false;
+    public static final ELConfig DEFAULT_CONFIG                      = new ELConfig();
+    /**
+     * 实例属性的读取采用编译形式。
+     */
+    private             boolean  propertyReadUseCompile              = false;
+    /**
+     * 实例方法的调用采用编译形式
+     */
+    private             boolean  methodInvokeUseCompile              = false;
+    /**
+     * 使用编译形式进行方法调用时，关闭方法入参值的兼容性转换。
+     * 在方法入参值都是正确类型的情况下，这会提升方法调用的性能。但是如果类型不兼容，则会导致运行异常的错误。
+     */
+    private             boolean  disableCompileMethodCompatibleValue = false;
 }

@@ -2,7 +2,7 @@ package com.jfirer.jfireel.expression;
 
 import com.jfirer.jfireel.expression.format.FormatContext;
 import com.jfirer.jfireel.expression.format.FormatToken;
-import com.jfirer.jfireel.expression.impl.operand.method.MethodInvokeHelper;
+import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -25,7 +25,7 @@ public class Expression
     /**
      * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
      */
-    private static Map<Method, MethodInvokeHelper>                                 methodInvokeAccelerators = new ConcurrentHashMap<>();
+    private static Map<Method, MethodInvoker>                                      methodInvokeAccelerators = new ConcurrentHashMap<>();
     /**
      * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
      */
@@ -50,9 +50,9 @@ public class Expression
         propertyReadAccelerators.put(field, accelerator);
     }
 
-    public static void registerAccelerateInvoker(Method method, MethodInvokeHelper methodInvokeHelper)
+    public static void registerAccelerateInvoker(Method method, MethodInvoker methodInvoker)
     {
-        methodInvokeAccelerators.put(method, methodInvokeHelper);
+        methodInvokeAccelerators.put(method, methodInvoker);
     }
 
     public static Operand parse(String el)

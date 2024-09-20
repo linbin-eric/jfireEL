@@ -21,6 +21,7 @@ public abstract class TestSupport
         home.person = person;
         vars.put("person", person);
         vars.put("home", home);
+        vars.put("l", Long.valueOf(5));
     }
 
     @Data
@@ -76,6 +77,7 @@ public abstract class TestSupport
 
         public Person()
         {
+
         }
 
         public int getAge()

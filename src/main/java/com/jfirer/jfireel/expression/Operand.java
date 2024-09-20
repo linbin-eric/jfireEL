@@ -3,6 +3,7 @@ package com.jfirer.jfireel.expression;
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
 import com.jfirer.baseutil.smc.compiler.CompileHelper;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
 public interface Operand
 {
     CompileHelper COMPILE_HELPER = new CompileHelper();
-    AtomicInteger COUNTER = new AtomicInteger(1);
+    AtomicInteger COUNTER        = new AtomicInteger(1);
 
     class InnerContextParam
     {
@@ -78,5 +79,21 @@ public interface Operand
         {
             return calculate(innerContextParam.map);
         }
+    }
+
+    static Field findField(Class<?> ckass, String fieldName, String fragment)
+    {
+        while (ckass != Object.class)
+        {
+            try
+            {
+                return ckass.getDeclaredField(fieldName);
+            }
+            catch (NoSuchFieldException e)
+            {
+                ckass = ckass.getSuperclass();
+            }
+        }
+        throw new IllegalArgumentException("解析属性，未能发现属性，异常解析表达式位置为：" + fragment);
     }
 }

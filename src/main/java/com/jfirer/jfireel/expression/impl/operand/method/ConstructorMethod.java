@@ -7,18 +7,16 @@ import lombok.SneakyThrows;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class ConstructorMethod extends MethodInvokeOperand
 {
     private Class ckass;
 
-    public ConstructorMethod(Class<?> ckass, Operand[] methodParams, String fragment, Map<Method, MethodInvokeHelper> methodInvokeAccelerators)
+    public ConstructorMethod(Class<?> ckass, Operand[] argOperands, String fragment, Map<Executable, MethodInvoker> methodInvokeAccelerators)
     {
-        super(ckass.getName(), methodParams, fragment, methodInvokeAccelerators);
+        super(ckass.getName(), argOperands, fragment, methodInvokeAccelerators);
         this.ckass = ckass;
     }
 
@@ -26,21 +24,21 @@ public class ConstructorMethod extends MethodInvokeOperand
     @Override
     public Object calculate(Map<String, Object> contextParam)
     {
-        if (!methodIdentify)
+        if (!init)
         {
             synchronized (this)
             {
-                if (!methodIdentify)
+                if (!init)
                 {
-                    Object[]    args       = Arrays.stream(methodParams).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
-                    Executable  executable = MethodInvokeHelper.findExecutable(List.of(ckass.getConstructors()), args, memberName);
+                    Object[]    args       = Arrays.stream(argOperands).map(Operand::calculate).toArray();
+                    Executable  executable = MethodInvoker.findExecutable(ckass, args, memberName);
                     final int[] classIds   = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
                     if (executable == null)
                     {
                         throw new IllegalArgumentException("解析过程中发现未能发现匹配的构造方法。异常解析位置为" + fragment);
                     }
                     Constructor constructor = (Constructor) executable;
-                    invokeHelper   = (obj, argOperands, context) -> {
+                    invoker = methodInvokeAccelerators.getOrDefault(executable, (obj, argOperands, context) -> {
                         Object[] _args = new Object[argOperands.length];
                         for (int i = 0; i < _args.length; i++)
                         {
@@ -48,18 +46,18 @@ public class ConstructorMethod extends MethodInvokeOperand
                         }
                         try
                         {
-                            return constructor.newInstance(MethodInvokeHelper.compatibleValues(_args, classIds));
+                            return constructor.newInstance(MethodInvoker.compatibleValues(_args, classIds));
                         }
                         catch (IllegalAccessException | InvocationTargetException | InstantiationException e)
                         {
                             throw new RuntimeException(e);
                         }
-                    };
-                    methodIdentify = true;
-                    return ((Constructor<?>) executable).newInstance(MethodInvokeHelper.compatibleValues(args, classIds));
+                    });
+                    init    = true;
+                    return ((Constructor<?>) executable).newInstance(MethodInvoker.compatibleValues(args, classIds));
                 }
             }
         }
-        return invokeHelper.invoke(null, methodParams, contextParam);
+        return invoker.invoke(null, argOperands, contextParam);
     }
 }

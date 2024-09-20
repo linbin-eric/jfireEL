@@ -5,12 +5,13 @@ import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
+import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.CompileInstanceMethod;
+import com.jfirer.jfireel.expression.impl.operand.method.CompileStaticMethod;
 import com.jfirer.jfireel.expression.impl.operand.method.InstanceMethod;
+import com.jfirer.jfireel.expression.impl.operand.method.StaticMethod;
 import com.jfirer.jfireel.expression.impl.operand.property.CompilePropertyReadOperand;
 import com.jfirer.jfireel.expression.impl.operand.property.InstancePropertyReadOperand;
-import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
-import com.jfirer.jfireel.expression.impl.operand.method.StaticMethod;
 import com.jfirer.jfireel.expression.impl.operand.property.StaticClassPropertyOperand;
 import lombok.Data;
 
@@ -50,18 +51,25 @@ public class SpotOperator implements Operator
         processStack.push(operandStack.pop());
         if (type == METHOD)
         {
-            Operand pop        = processStack.pop();
-            String  methodName = ((VariableOperand) processStack.pop()).getVariable();
+            Operand  pop        = processStack.pop();
+            String   methodName = ((VariableOperand) processStack.pop()).getVariable();
+            ELConfig config     = parseContext.getConfig();
             if (pop instanceof ClassOperand classOperand)
             {
-                parseContext.getOperandStack().push(new StaticMethod(classOperand.getCkass(), methodName, processStack.toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
+                if (config.isMethodInvokeUseCompile())
+                {
+                    parseContext.getOperandStack().push(new CompileStaticMethod(classOperand.getCkass(), processStack.toArray(Operand[]::new), methodName, fragment, config));
+                }
+                else
+                {
+                    parseContext.getOperandStack().push(new StaticMethod(classOperand.getCkass(), methodName, processStack.toArray(Operand[]::new), fragment, parseContext.getMethodInvokeAccelerators()));
+                }
             }
             else
             {
-                ELConfig config = parseContext.getConfig();
                 if (config.isMethodInvokeUseCompile())
                 {
-                    parseContext.getOperandStack().push(new CompileInstanceMethod(pop, methodName, processStack.toArray(Operand[]::new), fragment));
+                    parseContext.getOperandStack().push(new CompileInstanceMethod(pop, methodName, processStack.toArray(Operand[]::new), fragment, parseContext.getConfig()));
                 }
                 else
                 {
@@ -76,14 +84,14 @@ public class SpotOperator implements Operator
             VariableOperand variableOperand = (VariableOperand) processStack.pop();
             if (typeOperand instanceof ClassOperand)
             {
-                parseContext.getOperandStack().push(new StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                parseContext.getOperandStack().push(new StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
             }
             else
             {
                 ELConfig config = parseContext.getConfig();
                 if (config.isPropertyReadUseCompile())
                 {
-                    parseContext.getOperandStack().push(new CompilePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                    parseContext.getOperandStack().push(new CompilePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
                 }
                 else
                 {
