@@ -1,6 +1,7 @@
 package com.jfirer.jfireel.expression.impl.operand;
 
 import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.impl.operand.property.StaticClassPropertyOperand;
 import lombok.Data;
 
 import java.lang.reflect.Array;
@@ -19,7 +20,7 @@ public class ArrayOperand implements Operand
     public ArrayOperand(Operand[] array)
     {
         this.array = array;
-        if (Arrays.stream(array).filter(Objects::nonNull).allMatch(one -> one instanceof LiteralOparand || one instanceof NumberOperand || one instanceof ClassOperand || one instanceof PropertyReadOperand.StaticClassPropertyOperand|| one instanceof  NullOperand))
+        if (Arrays.stream(array).filter(Objects::nonNull).allMatch(one -> one instanceof LiteralOparand || one instanceof NumberOperand || one instanceof ClassOperand || one instanceof StaticClassPropertyOperand || one instanceof  NullOperand))
         {
             constant = true;
             Object[] instance = new Object[array.length];

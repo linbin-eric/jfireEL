@@ -11,7 +11,6 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 @Warmup(iterations = 2, time = 2)
 @Measurement(iterations = 3, time = 3)
-@Fork(5)
+@Fork(3)
 @State(Scope.Benchmark)
 public class PropertyBenchMark
 {

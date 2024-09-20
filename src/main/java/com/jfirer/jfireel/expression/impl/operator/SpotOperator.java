@@ -7,9 +7,11 @@ import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.CompileInstanceMethod;
 import com.jfirer.jfireel.expression.impl.operand.method.InstanceMethod;
-import com.jfirer.jfireel.expression.impl.operand.PropertyReadOperand;
+import com.jfirer.jfireel.expression.impl.operand.property.CompilePropertyReadOperand;
+import com.jfirer.jfireel.expression.impl.operand.property.InstancePropertyReadOperand;
 import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.StaticMethod;
+import com.jfirer.jfireel.expression.impl.operand.property.StaticClassPropertyOperand;
 import lombok.Data;
 
 import java.util.Deque;
@@ -74,18 +76,18 @@ public class SpotOperator implements Operator
             VariableOperand variableOperand = (VariableOperand) processStack.pop();
             if (typeOperand instanceof ClassOperand)
             {
-                parseContext.getOperandStack().push(new PropertyReadOperand.StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                parseContext.getOperandStack().push(new StaticClassPropertyOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
             }
             else
             {
                 ELConfig config = parseContext.getConfig();
                 if (config.isPropertyReadUseCompile())
                 {
-                    parseContext.getOperandStack().push(new PropertyReadOperand.CompilePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                    parseContext.getOperandStack().push(new CompilePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
                 }
                 else
                 {
-                    parseContext.getOperandStack().push(new PropertyReadOperand.InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                    parseContext.getOperandStack().push(new InstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
                 }
             }
         }
