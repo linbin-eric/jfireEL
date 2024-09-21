@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class CompileConstructorMethod implements Operand
 {
-    private volatile Operand operand;
+    private Operand operand;
 
     public CompileConstructorMethod(Class ckazz, Operand[] argOperands, String fragment, ELConfig elConfig)
     {

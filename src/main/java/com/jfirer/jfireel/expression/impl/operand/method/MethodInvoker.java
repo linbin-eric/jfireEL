@@ -403,7 +403,19 @@ public interface MethodInvoker
                 }
                 else
                 {
-                    builder.append("(").append(SmcHelper.getReferenceName(ReflectUtil.getBoxedTypeOrOrigin(parameterTypes[i]), classModel)).append(")MethodInvoker.compatibleValues(argOperand_").append(i).append(".calculate(contextParam),classId_").append(i).append(")");
+                    switch (classIds[i])
+                    {
+                        case ReflectUtil.PRIMITIVE_INT, ReflectUtil.CLASS_INT -> builder.append("((Number)argOperand_").append(i).append(".calculate(contextParam)).intValue()");
+                        case ReflectUtil.PRIMITIVE_BYTE, ReflectUtil.CLASS_BYTE -> builder.append("((Number)argOperand_").append(i).append(".calculate(contextParam)).byteValue()");
+                        case ReflectUtil.PRIMITIVE_SHORT,
+                             ReflectUtil.CLASS_SHORT -> builder.append("((Number)argOperand_").append(i).append(".calculate(contextParam)).shortValue()");
+                        case ReflectUtil.PRIMITIVE_LONG, ReflectUtil.CLASS_LONG -> builder.append("((Number)argOperand_").append(i).append(".calculate(contextParam)).longValue()");
+                        case ReflectUtil.PRIMITIVE_FLOAT,
+                             ReflectUtil.CLASS_FLOAT -> builder.append("((Number)argOperand_").append(i).append(".calculate(contextParam)).floatValue()");
+                        case ReflectUtil.PRIMITIVE_DOUBLE,
+                             ReflectUtil.CLASS_DOUBLE -> builder.append("((Number)argOperand_").append(i).append(".calculate(contextParam)).doubleValue()");
+                        default -> builder.append("(").append(SmcHelper.getReferenceName(ReflectUtil.getBoxedTypeOrOrigin(parameterTypes[i]), classModel)).append(")argOperand_").append(i).append(".calculate(contextParam)");
+                    }
                 }
                 if (i != parameterTypes.length - 1)
                 {

@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class UnionBenchmark
 {
-    String  content                                      = "person.setAge(person.age-6);";
-    Operand stand                                        = Expression.parse(content);
-    Operand method                                       = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true));
-    Operand methodWithoutCompatibility                   = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
-    Operand methodWithoutCompatibilityAndProperty        = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true));
-    Operand methodWithoutCompatibilityAndPropertyAndMath = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(false).setDisableCompileMethodCompatibleValue(false).setPropertyReadUseCompile(false).setMathUseCompile(true));
+    String  content                               = "person.setAge(person.getAge()-6);";
+    Operand stand                                 = Expression.parse(content);
+    Operand method                                = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true));
+    Operand methodWithoutCompatibility            = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
+    Operand methodWithoutCompatibilityAndProperty = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true));
+    Operand math                                  = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true).setMathUseCompile(true));
     private HashMap<String, Object> map = new HashMap<>();
 
     @Setup
@@ -43,28 +43,28 @@ public class UnionBenchmark
         blackhole.consume(stand.calculate(map));
     }
 
-//    @Benchmark
+    @Benchmark
     public void method(Blackhole blackhole)
     {
         blackhole.consume(method.calculate(map));
     }
 
-//    @Benchmark
+    @Benchmark
     public void methodWithoutCompatibility(Blackhole blackhole)
     {
         blackhole.consume(methodWithoutCompatibility.calculate(map));
     }
 
-//    @Benchmark
+    @Benchmark
     public void methodWithoutCompatibilityAndProperty(Blackhole blackhole)
     {
         blackhole.consume(methodWithoutCompatibilityAndProperty.calculate(map));
     }
 
     @Benchmark
-    public void methodWithoutCompatibilityAndPropertyAndMath(Blackhole blackhole)
+    public void math(Blackhole blackhole)
     {
-        blackhole.consume(methodWithoutCompatibilityAndPropertyAndMath.calculate(map));
+        blackhole.consume(math.calculate(map));
     }
 
     public static void main(String[] args) throws RunnerException

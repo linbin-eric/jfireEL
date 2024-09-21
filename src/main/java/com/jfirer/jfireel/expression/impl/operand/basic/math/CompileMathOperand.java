@@ -2,15 +2,14 @@ package com.jfirer.jfireel.expression.impl.operand.basic.math;
 
 import com.jfirer.baseutil.STR;
 import com.jfirer.baseutil.smc.model.ClassModel;
+import com.jfirer.baseutil.smc.model.FieldModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
 import com.jfirer.jfireel.expression.Operand;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.SneakyThrows;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 public class CompileMathOperand implements ChangeRuntimeOperand, Operand
 {
@@ -50,127 +49,418 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
             Object     rightValue = right.calculate(contextParam);
             ClassModel classModel = new ClassModel("MinusOperand_" + COUNTER.getAndIncrement());
             classModel.addImport(Number.class);
-            classModel.addInterface(BiFunction.class);
-            MethodModel methodModel = new MethodModel(BiFunction.class.getDeclaredMethod("apply", Object.class, Object.class), classModel);
-            methodModel.setParamterNames("a", "b");
-            StringBuilder builder = new StringBuilder();
+            classModel.addInterface(Operand.class);
+            classModel.addField(new FieldModel("left", Operand.class, classModel), new FieldModel("right", Operand.class, classModel));
+            classModel.addConstructor("this.left=$0;this.right=$1;", Operand.class, Operand.class);
+            MethodModel methodModel = new MethodModel(Operand.class.getDeclaredMethod("calculate", Map.class), classModel);
+            methodModel.setParamterNames("contextParam");
+            StringBuilder builder        = new StringBuilder();
+            Object        thisTimeResult = null;
+            builder.append("""
+                                   Object leftValue = left.calculate(contextParam);
+                                   Object rightValue = right.calculate(contextParam);
+                                   """);
             if (leftValue instanceof Number && rightValue instanceof Number)
             {
                 if (leftValue instanceof BigDecimal || rightValue instanceof BigDecimal)
                 {
                     switch (mathOperator)
                     {
-                        case "-" -> builder.append("return new BigDecimal(a.toString()).subtract(new BigDecimal(a.toString()));");
-                        case "+" -> builder.append("return new BigDecimal(leftValue.toString()).add(new BigDecimal(rightValue.toString()));");
-                        case "*" -> builder.append("return new BigDecimal(leftValue.toString()).multiply(new BigDecimal(rightValue.toString()));");
-                        case "/" -> builder.append("return new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()));");
-                        case ">" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) > 0;");
-                        case ">=" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) >= 0;");
-                        case "<" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) < 0;");
-                        case "<=" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) <= 0;");
-                        case "==" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) == 0;");
-                        case "!=" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) != 0;");
-                        case "%" -> builder.append("return new BigDecimal(leftValue.toString()).remainder(new BigDecimal(rightValue.toString()));");
-                    }
-                }
-                if (leftValue instanceof Integer || leftValue instanceof Short || leftValue instanceof Byte)
-                {
-                    if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-                    {
-                        builder.append(STR.format("return ((Number)a).intValue() {} ((Number)b).intValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Long b)
-                    {
-                        builder.append(STR.format("return ((Number)a).intValue() {} ((Number)b).longValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Float b)
-                    {
-                        builder.append(STR.format("return ((Number)a).intValue() {} ((Number)b).floatValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Double b)
-                    {
-                        builder.append(STR.format("return ((Number)a).intValue() {} ((Number)b).doubleValue();", mathOperator));
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                else if (leftValue instanceof Long)
-                {
-                    long a = ((Long) leftValue).longValue();
-                    if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-                    {
-                        builder.append(STR.format("return ((Number)a).longValue() {} ((Number)b).intValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Long b)
-                    {
-                        builder.append(STR.format("return ((Number)a).longValue() {} ((Number)b).longValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Float b)
-                    {
-                        builder.append(STR.format("return ((Number)a).longValue() {} ((Number)b).floatValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Double b)
-                    {
-                        builder.append(STR.format("return ((Number)a).longValue() {} ((Number)b).doubleValue();", mathOperator));
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                else if (leftValue instanceof Float number)
-                {
-                    float a = number.floatValue();
-                    if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-                    {
-                        builder.append(STR.format("return ((Number)a).floatValue() {} ((Number)b).intValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Long b)
-                    {
-                        builder.append(STR.format("return ((Number)a).floatValue() {} ((Number)b).longValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Float b)
-                    {
-                        builder.append(STR.format("return ((Number)a).floatValue() {} ((Number)b).floatValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Double b)
-                    {
-                        builder.append(STR.format("return ((Number)a).floatValue() {} ((Number)b).doubleValue();", mathOperator));
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                else if (leftValue instanceof Double number)
-                {
-                    double a = number.doubleValue();
-                    if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
-                    {
-                        builder.append(STR.format("return ((Number)a).doubleValue() {} ((Number)b).intValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Long b)
-                    {
-                        builder.append(STR.format("return ((Number)a).doubleValue() {} ((Number)b).longValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Float b)
-                    {
-                        builder.append(STR.format("return ((Number)a).doubleValue() {} ((Number)b).floatValue();", mathOperator));
-                    }
-                    else if (rightValue instanceof Double b)
-                    {
-                        builder.append(STR.format("return ((Number)a).doubleValue() {} ((Number)b).doubleValue();", mathOperator));
-                    }
-                    else
-                    {
-                        throw new IllegalArgumentException();
+                        case "-" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).subtract(new BigDecimal(rightValue.toString()));");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).subtract(new BigDecimal(rightValue.toString()));
+                        }
+                        case "+" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).add(new BigDecimal(rightValue.toString()));");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).add(new BigDecimal(rightValue.toString()));
+                        }
+                        case "*" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).multiply(new BigDecimal(rightValue.toString()));");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).multiply(new BigDecimal(rightValue.toString()));
+                        }
+                        case "/" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()));");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).divide(new BigDecimal(rightValue.toString()));
+                        }
+                        case ">" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) > 0;");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) > 0;
+                        }
+                        case ">=" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) >= 0;");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) >= 0;
+                        }
+                        case "<" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) < 0;");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) < 0;
+                        }
+                        case "<=" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) <= 0;");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) <= 0;
+                        }
+                        case "==" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) == 0;");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) == 0;
+                        }
+                        case "!=" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) != 0;");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) != 0;
+                        }
+                        case "%" ->
+                        {
+                            builder.append("return new BigDecimal(leftValue.toString()).remainder(new BigDecimal(rightValue.toString()));");
+                            thisTimeResult = new BigDecimal(leftValue.toString()).remainder(new BigDecimal(rightValue.toString()));
+                        }
                     }
                 }
                 else
                 {
-                    throw new IllegalArgumentException();
+                    if (leftValue instanceof Integer || leftValue instanceof Short || leftValue instanceof Byte)
+                    {
+                        if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).intValue() {} ((Number)leftValue).intValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).intValue() - ((Number) rightValue).intValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).intValue() + ((Number) rightValue).intValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).intValue() * ((Number) rightValue).intValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).intValue() / ((Number) rightValue).intValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).intValue() > ((Number) rightValue).intValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).intValue() >= ((Number) rightValue).intValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).intValue() < ((Number) rightValue).intValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).intValue() <= ((Number) rightValue).intValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).intValue() == ((Number) rightValue).intValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).intValue() != ((Number) rightValue).intValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).intValue() % ((Number) rightValue).intValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Long b)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).intValue() {} ((Number)leftValue).longValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).intValue() - ((Number) rightValue).longValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).intValue() + ((Number) rightValue).longValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).intValue() * ((Number) rightValue).longValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).intValue() / ((Number) rightValue).longValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).intValue() > ((Number) rightValue).longValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).intValue() >= ((Number) rightValue).longValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).intValue() < ((Number) rightValue).longValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).intValue() <= ((Number) rightValue).longValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).intValue() == ((Number) rightValue).longValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).intValue() != ((Number) rightValue).longValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).intValue() % ((Number) rightValue).longValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Float b)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).intValue() {} ((Number)leftValue).floatValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).intValue() - ((Number) rightValue).floatValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).intValue() + ((Number) rightValue).floatValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).intValue() * ((Number) rightValue).floatValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).intValue() / ((Number) rightValue).floatValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).intValue() > ((Number) rightValue).floatValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).intValue() >= ((Number) rightValue).floatValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).intValue() < ((Number) rightValue).floatValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).intValue() <= ((Number) rightValue).floatValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).intValue() == ((Number) rightValue).floatValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).intValue() != ((Number) rightValue).floatValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).intValue() % ((Number) rightValue).floatValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Double b)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).intValue() {} ((Number)leftValue).doubleValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).intValue() - ((Number) rightValue).doubleValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).intValue() + ((Number) rightValue).doubleValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).intValue() * ((Number) rightValue).doubleValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).intValue() / ((Number) rightValue).doubleValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).intValue() > ((Number) rightValue).doubleValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).intValue() >= ((Number) rightValue).doubleValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).intValue() < ((Number) rightValue).doubleValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).intValue() <= ((Number) rightValue).doubleValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).intValue() == ((Number) rightValue).doubleValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).intValue() != ((Number) rightValue).doubleValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).intValue() % ((Number) rightValue).doubleValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else
+                        {
+                            throw new IllegalArgumentException();
+                        }
+                    }
+                    else if (leftValue instanceof Long)
+                    {
+                        if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).longValue() {} ((Number)leftValue).intValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).longValue() - ((Number) rightValue).intValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).longValue() + ((Number) rightValue).intValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).longValue() * ((Number) rightValue).intValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).longValue() / ((Number) rightValue).intValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).longValue() > ((Number) rightValue).intValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).longValue() >= ((Number) rightValue).intValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).longValue() < ((Number) rightValue).intValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).longValue() <= ((Number) rightValue).intValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).longValue() == ((Number) rightValue).intValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).longValue() != ((Number) rightValue).intValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).longValue() % ((Number) rightValue).intValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Long b)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).longValue() {} ((Number)leftValue).longValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).longValue() - ((Number) rightValue).longValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).longValue() + ((Number) rightValue).longValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).longValue() * ((Number) rightValue).longValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).longValue() / ((Number) rightValue).longValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).longValue() > ((Number) rightValue).longValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).longValue() >= ((Number) rightValue).longValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).longValue() < ((Number) rightValue).longValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).longValue() <= ((Number) rightValue).longValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).longValue() == ((Number) rightValue).longValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).longValue() != ((Number) rightValue).longValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).longValue() % ((Number) rightValue).longValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Float b)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).longValue() {} ((Number)leftValue).floatValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).longValue() - ((Number) rightValue).floatValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).longValue() + ((Number) rightValue).floatValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).longValue() * ((Number) rightValue).floatValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).longValue() / ((Number) rightValue).floatValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).longValue() > ((Number) rightValue).floatValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).longValue() >= ((Number) rightValue).floatValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).longValue() < ((Number) rightValue).floatValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).longValue() <= ((Number) rightValue).floatValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).longValue() == ((Number) rightValue).floatValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).longValue() != ((Number) rightValue).floatValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).longValue() % ((Number) rightValue).floatValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Double b)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).longValue() {} ((Number)leftValue).doubleValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).longValue() - ((Number) rightValue).doubleValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).longValue() + ((Number) rightValue).doubleValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).longValue() * ((Number) rightValue).doubleValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).longValue() / ((Number) rightValue).doubleValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).longValue() > ((Number) rightValue).doubleValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).longValue() >= ((Number) rightValue).doubleValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).longValue() < ((Number) rightValue).doubleValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).longValue() <= ((Number) rightValue).doubleValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).longValue() == ((Number) rightValue).doubleValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).longValue() != ((Number) rightValue).doubleValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).longValue() % ((Number) rightValue).doubleValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else
+                        {
+                            throw new IllegalArgumentException();
+                        }
+                    }
+                    else if (leftValue instanceof Float)
+                    {
+                        if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).floatValue() {} ((Number)leftValue).intValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).floatValue() - ((Number) rightValue).intValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).floatValue() + ((Number) rightValue).intValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).floatValue() * ((Number) rightValue).intValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).floatValue() / ((Number) rightValue).intValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).floatValue() > ((Number) rightValue).intValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).floatValue() >= ((Number) rightValue).intValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).floatValue() < ((Number) rightValue).intValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).floatValue() <= ((Number) rightValue).intValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).floatValue() == ((Number) rightValue).intValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).floatValue() != ((Number) rightValue).intValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).floatValue() % ((Number) rightValue).intValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Long)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).floatValue() {} ((Number)leftValue).longValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).floatValue() - ((Number) rightValue).longValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).floatValue() + ((Number) rightValue).longValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).floatValue() * ((Number) rightValue).longValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).floatValue() / ((Number) rightValue).longValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).floatValue() > ((Number) rightValue).longValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).floatValue() >= ((Number) rightValue).longValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).floatValue() < ((Number) rightValue).longValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).floatValue() <= ((Number) rightValue).longValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).floatValue() == ((Number) rightValue).longValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).floatValue() != ((Number) rightValue).longValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).floatValue() % ((Number) rightValue).longValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Float)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).floatValue() {} ((Number)leftValue).floatValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).floatValue() - ((Number) rightValue).floatValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).floatValue() + ((Number) rightValue).floatValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).floatValue() * ((Number) rightValue).floatValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).floatValue() / ((Number) rightValue).floatValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).floatValue() > ((Number) rightValue).floatValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).floatValue() >= ((Number) rightValue).floatValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).floatValue() < ((Number) rightValue).floatValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).floatValue() <= ((Number) rightValue).floatValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).floatValue() == ((Number) rightValue).floatValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).floatValue() != ((Number) rightValue).floatValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).floatValue() % ((Number) rightValue).floatValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Double)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).floatValue() {} ((Number)leftValue).doubleValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).floatValue() - ((Number) rightValue).doubleValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).floatValue() + ((Number) rightValue).doubleValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).floatValue() * ((Number) rightValue).doubleValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).floatValue() / ((Number) rightValue).doubleValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).floatValue() > ((Number) rightValue).doubleValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).floatValue() >= ((Number) rightValue).doubleValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).floatValue() < ((Number) rightValue).doubleValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).floatValue() <= ((Number) rightValue).doubleValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).floatValue() == ((Number) rightValue).doubleValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).floatValue() != ((Number) rightValue).doubleValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).floatValue() % ((Number) rightValue).doubleValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else
+                        {
+                            throw new IllegalArgumentException();
+                        }
+                    }
+                    else if (leftValue instanceof Double)
+                    {
+                        if (rightValue instanceof Integer || rightValue instanceof Short || rightValue instanceof Byte)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).doubleValue() {} ((Number)leftValue).intValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).doubleValue() - ((Number) rightValue).intValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).doubleValue() + ((Number) rightValue).intValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).doubleValue() * ((Number) rightValue).intValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).doubleValue() / ((Number) rightValue).intValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).doubleValue() > ((Number) rightValue).intValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).doubleValue() >= ((Number) rightValue).intValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).doubleValue() < ((Number) rightValue).intValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).doubleValue() <= ((Number) rightValue).intValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).doubleValue() == ((Number) rightValue).intValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).doubleValue() != ((Number) rightValue).intValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).doubleValue() % ((Number) rightValue).intValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Long)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).doubleValue() {} ((Number)leftValue).longValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).doubleValue() - ((Number) rightValue).longValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).doubleValue() + ((Number) rightValue).longValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).doubleValue() * ((Number) rightValue).longValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).doubleValue() / ((Number) rightValue).longValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).doubleValue() > ((Number) rightValue).longValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).doubleValue() >= ((Number) rightValue).longValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).doubleValue() < ((Number) rightValue).longValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).doubleValue() <= ((Number) rightValue).longValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).doubleValue() == ((Number) rightValue).longValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).doubleValue() != ((Number) rightValue).longValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).doubleValue() % ((Number) rightValue).longValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Float)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).doubleValue() {} ((Number)leftValue).floatValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).doubleValue() - ((Number) rightValue).floatValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).doubleValue() + ((Number) rightValue).floatValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).doubleValue() * ((Number) rightValue).floatValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).doubleValue() / ((Number) rightValue).floatValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).doubleValue() > ((Number) rightValue).floatValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).doubleValue() >= ((Number) rightValue).floatValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).doubleValue() < ((Number) rightValue).floatValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).doubleValue() <= ((Number) rightValue).floatValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).doubleValue() == ((Number) rightValue).floatValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).doubleValue() != ((Number) rightValue).floatValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).doubleValue() % ((Number) rightValue).floatValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else if (rightValue instanceof Double)
+                        {
+                            builder.append(STR.format("return ((Number)leftValue).doubleValue() {} ((Number)leftValue).doubleValue();", mathOperator));
+                            switch (mathOperator)
+                            {
+                                case "-" -> thisTimeResult = ((Number) leftValue).doubleValue() - ((Number) rightValue).doubleValue();
+                                case "+" -> thisTimeResult = ((Number) leftValue).doubleValue() + ((Number) rightValue).doubleValue();
+                                case "*" -> thisTimeResult = ((Number) leftValue).doubleValue() * ((Number) rightValue).doubleValue();
+                                case "/" -> thisTimeResult = ((Number) leftValue).doubleValue() / ((Number) rightValue).doubleValue();
+                                case ">" -> thisTimeResult = ((Number) leftValue).doubleValue() > ((Number) rightValue).doubleValue();
+                                case ">=" -> thisTimeResult = ((Number) leftValue).doubleValue() >= ((Number) rightValue).doubleValue();
+                                case "<" -> thisTimeResult = ((Number) leftValue).doubleValue() < ((Number) rightValue).doubleValue();
+                                case "<=" -> thisTimeResult = ((Number) leftValue).doubleValue() <= ((Number) rightValue).doubleValue();
+                                case "==" -> thisTimeResult = ((Number) leftValue).doubleValue() == ((Number) rightValue).doubleValue();
+                                case "!=" -> thisTimeResult = ((Number) leftValue).doubleValue() != ((Number) rightValue).doubleValue();
+                                case "%" -> thisTimeResult = ((Number) leftValue).doubleValue() % ((Number) rightValue).doubleValue();
+                                default -> throw new IllegalArgumentException();
+                            }
+                        }
+                        else
+                        {
+                            throw new IllegalArgumentException();
+                        }
+                    }
+                    else
+                    {
+                        throw new IllegalArgumentException();
+                    }
                 }
             }
             else
@@ -183,7 +473,7 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
                         {
                             builder.append("""
                                                    StringBuilder builder = new Stringbuilder();
-                                                   return builder.append(a).append(b).toString();""");
+                                                   return builder.append(leftValue).append(rightValue).toString();""");
                         }
                         else
                         {
@@ -193,38 +483,38 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
                     case "==" ->
                     {
                         builder.append("""
-                                               if (a == null)
+                                               if (leftValue == null)
                                                                        {
-                                                                           return b == null;
+                                                                           return rightValue == null;
                                                                        }
                                                                        else
                                                                        {
-                                                                           if (b == null)
+                                                                           if (rightValue == null)
                                                                            {
                                                                                return false;
                                                                            }
                                                                            else
                                                                            {
-                                                                               return a.equals(b);
+                                                                               return leftValue.equals(rightValue);
                                                                            }
                                                                        }""");
                     }
                     case "!=" ->
                     {
                         builder.append("""
-                                               if (a == null)
+                                               if (leftValue == null)
                                                                        {
-                                                                           return b != null;
+                                                                           return rightValue != null;
                                                                        }
                                                                        else
                                                                        {
-                                                                           if (b == null)
+                                                                           if (rightValue == null)
                                                                            {
                                                                                return false;
                                                                            }
                                                                            else
                                                                            {
-                                                                               return !a.equals(b);
+                                                                               return !leftValue.equals(rightValue);
                                                                            }
                                                                        }""");
                     }
@@ -233,28 +523,10 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
             }
             methodModel.setBody(builder.toString());
             classModel.putMethodModel(methodModel);
-            System.out.println(classModel.toString());
-            Class<BiFunction> compile        = (Class<BiFunction>) COMPILE_HELPER.compile(classModel);
-            BiFunction        biFunction     = compile.getConstructor().newInstance();
-            RuntimeOperand    runtimeOperand = new RuntimeOperand(left, right, biFunction);
-            changeRuntimeOperand.newOperand(runtimeOperand);
-            return biFunction.apply(leftValue, rightValue);
-        }
-    }
-
-    @Data
-    class RuntimeOperand implements Operand
-    {
-        final private Operand                            left;
-        final private Operand                            right;
-        final         BiFunction<Object, Object, Object> operand;
-
-        @Override
-        public Object calculate(Map<String, Object> contextParam)
-        {
-            Object leftValue  = left.calculate(contextParam);
-            Object rightValue = right.calculate(contextParam);
-            return operand.apply(leftValue, rightValue);
+            Class<Operand> compile = (Class<Operand>) COMPILE_HELPER.compile(classModel);
+            Operand        operand = compile.getConstructor(Operand.class, Operand.class).newInstance(left, right);
+            changeRuntimeOperand.newOperand(operand);
+            return thisTimeResult;
         }
     }
 }
