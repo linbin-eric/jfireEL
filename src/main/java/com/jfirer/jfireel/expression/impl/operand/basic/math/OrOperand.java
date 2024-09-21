@@ -1,6 +1,7 @@
-package com.jfirer.jfireel.expression.impl.operand.basic;
+package com.jfirer.jfireel.expression.impl.operand.basic.math;
 
 import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.impl.operand.basic.BasicOperandImpl;
 
 import java.util.Map;
 

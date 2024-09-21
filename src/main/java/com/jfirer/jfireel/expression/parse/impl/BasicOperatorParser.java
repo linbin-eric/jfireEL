@@ -1,12 +1,12 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
+import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.basic.AndOperand;
-import com.jfirer.jfireel.expression.impl.operand.basic.BasicOperandImpl;
-import com.jfirer.jfireel.expression.impl.operand.basic.OrOperand;
-import com.jfirer.jfireel.expression.impl.operand.basic.PlusOperand;
+import com.jfirer.jfireel.expression.impl.operand.basic.NotEqOperand;
+import com.jfirer.jfireel.expression.impl.operand.basic.math.*;
 import com.jfirer.jfireel.expression.impl.operator.*;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -15,6 +15,7 @@ public class BasicOperatorParser implements TokenParser
     @Override
     public boolean parse(ParseContext parseContext)
     {
+        ELConfig elConfig = parseContext.getConfig();
         String   el       = parseContext.getEl();
         int      index    = parseContext.getIndex();
         char     c        = el.charAt(index);
@@ -23,10 +24,10 @@ public class BasicOperatorParser implements TokenParser
         switch (c)
         {
             case '+' -> operator = new BasicOperator(2, fragment, PlusOperand::new);
-            case '-' -> operator = new BasicOperator(2, fragment, BasicOperandImpl.MinusOperand::new);
-            case '*' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.TimesOperand::new);
-            case '/' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.DivisionOperand::new);
-            case '%' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.RemainOperand::new);
+            case '-' -> operator = new BasicOperator(2, fragment, elConfig.isMinusUseCompile() ? CompileMinusOperand::new : MinusOperand::new);
+            case '*' -> operator = new BasicOperator(3, fragment, TimesOperand::new);
+            case '/' -> operator = new BasicOperator(3, fragment, DivisionOperand::new);
+            case '%' -> operator = new BasicOperator(3, fragment, RemainOperand::new);
             case '?' -> operator = new QuestionOperator();
             case ':' -> operator = new ColonOperator(fragment);
             case '.' -> operator = new SpotOperator(fragment);
@@ -34,7 +35,7 @@ public class BasicOperatorParser implements TokenParser
             case '[' -> operator = new LeftBracketOperator(fragment);
             case ']' -> operator = new AbstractRightOperator.RightBracketOperator(fragment);
             case ';' -> operator = new SemicolonOperator(fragment);
-            case '{'->operator = new LeftAngleBracketOperator(fragment);
+            case '{' -> operator = new LeftAngleBracketOperator(fragment);
             case '}' -> operator = new AbstractRightOperator.RightAngleBracketOperator(fragment);
         }
         if (operator != null)
@@ -50,12 +51,12 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator(1, fragment, BasicOperandImpl.GeOperand::new).push(parseContext);
+                    new BasicOperator(1, fragment, GeOperand::new).push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else
                 {
-                    new BasicOperator(1, fragment, BasicOperandImpl.GtOperand::new).push(parseContext);
+                    new BasicOperator(1, fragment, GtOperand::new).push(parseContext);
                     parseContext.setIndex(index + 1);
                 }
                 return true;
@@ -64,12 +65,12 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator(1, fragment, BasicOperandImpl.LeOperand::new).push(parseContext);
+                    new BasicOperator(1, fragment, LeOperand::new).push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else
                 {
-                    new BasicOperator(1, fragment, BasicOperandImpl.LtOperand::new).push(parseContext);
+                    new BasicOperator(1, fragment, LtOperand::new).push(parseContext);
                     parseContext.setIndex(index + 1);
                 }
                 return true;
@@ -78,7 +79,7 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator(1, fragment, BasicOperandImpl.EqOperand::new).push(parseContext);
+                    new BasicOperator(1, fragment, EqOperand::new).push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else
@@ -92,7 +93,7 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator(1, fragment, BasicOperandImpl.NotEqOperand::new).push(parseContext);
+                    new BasicOperator(1, fragment, NotEqOperand::new).push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else
