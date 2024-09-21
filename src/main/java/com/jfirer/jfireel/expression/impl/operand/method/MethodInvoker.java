@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 @FunctionalInterface
 public interface MethodInvoker
 {
+    Object invoke(Object instance, Operand[] methodParams, Map<String, Object> contextParam);
+
     static Object compatibleValues(Object value, int classId)
     {
         switch (classId)
@@ -396,6 +398,4 @@ public interface MethodInvoker
             return (Operand) compile.getConstructor(Operand[].class, int[].class).newInstance(argOperands, classIds);
         }
     }
-
-    Object invoke(Object instance, Operand[] methodParams, Map<String, Object> contextParam);
 }

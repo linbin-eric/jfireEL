@@ -3,7 +3,10 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.TokenType;
-import com.jfirer.jfireel.expression.impl.operand.BasicOperandImpl;
+import com.jfirer.jfireel.expression.impl.operand.basic.AndOperand;
+import com.jfirer.jfireel.expression.impl.operand.basic.BasicOperandImpl;
+import com.jfirer.jfireel.expression.impl.operand.basic.OrOperand;
+import com.jfirer.jfireel.expression.impl.operand.basic.PlusOperand;
 import com.jfirer.jfireel.expression.impl.operator.*;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -19,7 +22,7 @@ public class BasicOperatorParser implements TokenParser
         String   fragment = el.substring(0, index);
         switch (c)
         {
-            case '+' -> operator = new BasicOperator(2, fragment, BasicOperandImpl.PlusOperand::new);
+            case '+' -> operator = new BasicOperator(2, fragment, PlusOperand::new);
             case '-' -> operator = new BasicOperator(2, fragment, BasicOperandImpl.MinusOperand::new);
             case '*' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.TimesOperand::new);
             case '/' -> operator = new BasicOperator(3, fragment, BasicOperandImpl.DivisionOperand::new);
@@ -102,7 +105,7 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '&')
                 {
-                    new BasicOperator(0, fragment, BasicOperandImpl.AndOperand::new).push(parseContext);
+                    new BasicOperator(0, fragment, AndOperand::new).push(parseContext);
                     parseContext.setIndex(index + 2);
                     return true;
                 }
@@ -115,7 +118,7 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '|')
                 {
-                    new BasicOperator(0, fragment, BasicOperandImpl.OrOperand::new).push(parseContext);
+                    new BasicOperator(0, fragment, OrOperand::new).push(parseContext);
                     parseContext.setIndex(index + 2);
                     return true;
                 }
