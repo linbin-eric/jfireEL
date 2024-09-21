@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.infra.Blackhole;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -662,7 +665,7 @@ public class FunctionTest extends TestSupport
     }
 
     @Data
-    public class Person
+    public static class Person
     {
         int age;
 
@@ -901,5 +904,31 @@ public class FunctionTest extends TestSupport
         Operand parse2    = Expression.parse("new @(com.jfirer.jfireel.TestSupport$Home)()", new ELConfig().setMethodInvokeUseCompile(true));
         Object  calculate = parse2.calculate();
         assertTrue(calculate instanceof Home);
+    }
+
+    @Test
+    public void test83()
+    {
+        String content = "3*5-2+16/4";
+        assertEquals(Expression.parse(content).calculate(), Expression.parse(content, new ELConfig().setMathUseCompile(true)).calculate());
+    }
+
+    @Test
+    public void test84()
+    {
+        String                  content                                      = "person.setAge(p2.age+6);";
+        Operand                 stand                                        = Expression.parse(content);
+        Operand                 method                                       = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true));
+        Operand                 methodWithoutCompatibility                   = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
+        Operand                 methodWithoutCompatibilityAndProperty        = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true));
+        Operand                 methodWithoutCompatibilityAndPropertyAndMath = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(false).setDisableCompileMethodCompatibleValue(false).setPropertyReadUseCompile(false).setMathUseCompile(true));
+        HashMap<String, Object> map                                          = new HashMap<>();
+        FunctionTest.Person     person                                       = new FunctionTest.Person(1);
+        FunctionTest.Person     p2                                           = new FunctionTest.Person(2);
+        map.put("person", person);
+        map.put("p2", p2);
+        Object a = stand.calculate(map);
+        Object b = methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+   methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
     }
 }

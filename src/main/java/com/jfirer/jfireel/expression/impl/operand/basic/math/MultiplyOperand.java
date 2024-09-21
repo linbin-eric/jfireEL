@@ -4,9 +4,9 @@ import com.jfirer.jfireel.expression.Operand;
 
 import java.math.BigDecimal;
 
-public class TimesOperand extends MathOperand
+public class MultiplyOperand extends MathOperand
 {
-    public TimesOperand(String mathOperator, Operand left, Operand right, String fragment)
+    public MultiplyOperand(String mathOperator, Operand left, Operand right, String fragment)
     {
         super(mathOperator, left, right, fragment);
     }

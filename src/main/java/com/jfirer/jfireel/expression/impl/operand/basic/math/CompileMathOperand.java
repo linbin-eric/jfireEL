@@ -69,6 +69,8 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
                         case "<" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) < 0;");
                         case "<=" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) <= 0;");
                         case "==" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) == 0;");
+                        case "!=" -> builder.append("return new BigDecimal(leftValue.toString()).compareTo(new BigDecimal(rightValue.toString())) != 0;");
+                        case "%" -> builder.append("return new BigDecimal(leftValue.toString()).remainder(new BigDecimal(rightValue.toString()));");
                     }
                 }
                 if (leftValue instanceof Integer || leftValue instanceof Short || leftValue instanceof Byte)
@@ -231,6 +233,7 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
             }
             methodModel.setBody(builder.toString());
             classModel.putMethodModel(methodModel);
+            System.out.println(classModel.toString());
             Class<BiFunction> compile        = (Class<BiFunction>) COMPILE_HELPER.compile(classModel);
             BiFunction        biFunction     = compile.getConstructor().newInstance();
             RuntimeOperand    runtimeOperand = new RuntimeOperand(left, right, biFunction);

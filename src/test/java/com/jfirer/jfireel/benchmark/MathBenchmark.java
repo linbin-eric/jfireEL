@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class MathBenchmark
 {
-    private Operand             operand      = Expression.parse("5-1");
-    private Operand             operand2     = Expression.parse("5-1", new ELConfig().setMinusUseCompile(true));
+    private Operand             operand      = Expression.parse("5+1");
+    private Operand             operand2     = Expression.parse("5+1", new ELConfig().setMathUseCompile(true));
     private Map<String, Object> contextParam = new HashMap<>();
 
     @Benchmark

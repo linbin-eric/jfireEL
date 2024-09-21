@@ -25,5 +25,16 @@ public class ELConfig
      * 在方法入参值都是正确类型的情况下，这会提升方法调用的性能。但是如果类型不兼容，则会导致运行异常的错误。
      */
     private             boolean  disableCompileMethodCompatibleValue = false;
+    private             boolean  mathUseCompile                      = false;
+    private             boolean  plusUseCompile                      = false;
     private             boolean  minusUseCompile                     = false;
+    private             boolean  multiplyUseCompile                  = false;
+    private             boolean  divideUseCompile                    = false;
+    private             boolean  remainUseCompile                    = false;
+    private             boolean  geUseCompile                        = false;
+    private             boolean  gtUseCompile                        = false;
+    private             boolean  leUseCompile                        = false;
+    private             boolean  ltUseCompile                        = false;
+    private             boolean  eqUseCompile                        = false;
+    private             boolean  neUseCompile                        = false;
 }

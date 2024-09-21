@@ -329,10 +329,21 @@ public interface MethodInvoker
         {
             if (instanceOperand != null)
             {
-                methodModel.setBody(STR.format("""
-                                                       {} instance = ({}) instanceOperand.calculate(contextParam);
-                                                       return instance.{}();
-                                                       """, referenceName, referenceName, executable.getName()));
+                if (ReflectUtil.getBoxedTypeOrOrigin(((Method) executable).getReturnType()) == Void.class)
+                {
+                    methodModel.setBody(STR.format("""
+                                                           {} instance = ({}) instanceOperand.calculate(contextParam);
+                                                           instance.{}();
+                                                           return null;
+                                                           """, referenceName, referenceName, executable.getName()));
+                }
+                else
+                {
+                    methodModel.setBody(STR.format("""
+                                                           {} instance = ({}) instanceOperand.calculate(contextParam);
+                                                           return instance.{}();
+                                                           """, referenceName, referenceName, executable.getName()));
+                }
             }
             else
             {
@@ -351,10 +362,18 @@ public interface MethodInvoker
             String format;
             if (instanceOperand != null)
             {
-                format = STR.format("""
-                                            {} instance = ({}) instanceOperand.calculate(contextParam);
-                                            return instance.{}(
-                                            """, referenceName, referenceName, executable.getName());
+                if (ReflectUtil.getBoxedTypeOrOrigin(((Method) executable).getReturnType()) == Void.class)
+                {
+                    format = STR.format("""
+                                                {} instance = ({}) instanceOperand.calculate(contextParam);
+                                                instance.{}(""", referenceName, referenceName, executable.getName());
+                }
+                else
+                {
+                    format = STR.format("""
+                                                {} instance = ({}) instanceOperand.calculate(contextParam);
+                                                return instance.{}(""", referenceName, referenceName, executable.getName());
+                }
             }
             else
             {
@@ -364,7 +383,14 @@ public interface MethodInvoker
                 }
                 else
                 {
-                    format = STR.format("return {}.{}(", referenceName, executable.getName());
+                    if (ReflectUtil.getBoxedTypeOrOrigin(((Method) executable).getReturnType()) == Void.class)
+                    {
+                        format = STR.format("{}.{}(", referenceName, executable.getName());
+                    }
+                    else
+                    {
+                        format = STR.format("return {}.{}(", referenceName, executable.getName());
+                    }
                 }
             }
             builder = new StringBuilder();
@@ -384,7 +410,11 @@ public interface MethodInvoker
                     builder.append(",");
                 }
             }
-            builder.append(");");
+            builder.append(");\r\n");
+            if (executable instanceof Method method && ReflectUtil.getBoxedTypeOrOrigin(method.getReturnType()) == Void.class)
+            {
+                builder.append("return null;");
+            }
             methodModel.setBody(format + builder);
         }
         classModel.putMethodModel(methodModel);
