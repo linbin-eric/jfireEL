@@ -8,9 +8,9 @@ import java.util.Map;
 
 abstract class MathOperand extends BasicOperandImpl
 {
-    public MathOperand(Operand left, Operand right, String fragment)
+    public MathOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

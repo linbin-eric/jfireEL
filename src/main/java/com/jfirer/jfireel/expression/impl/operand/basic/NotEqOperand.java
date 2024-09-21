@@ -9,10 +9,10 @@ public class NotEqOperand extends BasicOperandImpl
 {
     private EqOperand eqOperand;
 
-    public NotEqOperand(Operand left, Operand right, String fragment)
+    public NotEqOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
-        eqOperand = new EqOperand(left, right, fragment);
+        super(operator, left, right, fragment);
+        eqOperand = new EqOperand(operator, left, right, fragment);
     }
 
     @Override

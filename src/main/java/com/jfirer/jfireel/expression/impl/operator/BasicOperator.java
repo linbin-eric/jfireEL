@@ -9,6 +9,7 @@ import java.util.Deque;
 
 public class BasicOperator implements Operator
 {
+    private String       operator;
     private int          priority;
     private String       fragment;
     private BasicOperand constructor;
@@ -16,11 +17,12 @@ public class BasicOperator implements Operator
     @FunctionalInterface
     public interface BasicOperand
     {
-        Operand apply(Operand left, Operand right, String fragment);
+        Operand apply(String operator, Operand left, Operand right, String fragment);
     }
 
-    public BasicOperator(int priority, String fragment, BasicOperand constructor)
+    public BasicOperator(String operator, int priority, String fragment, BasicOperand constructor)
     {
+        this.operator    = operator;
         this.priority    = priority;
         this.fragment    = fragment;
         this.constructor = constructor;
@@ -50,6 +52,6 @@ public class BasicOperator implements Operator
         Deque<Operand> operandStack = parseContext.getOperandStack();
         Operand        right        = operandStack.pop();
         Operand        left         = operandStack.pop();
-        operandStack.push(constructor.apply(left, right, fragment));
+        operandStack.push(constructor.apply(operator, left, right, fragment));
     }
 }

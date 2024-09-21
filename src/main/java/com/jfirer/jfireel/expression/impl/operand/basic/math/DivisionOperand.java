@@ -7,9 +7,9 @@ import java.math.RoundingMode;
 
 public class DivisionOperand extends MathOperand
 {
-    public DivisionOperand(Operand left, Operand right, String fragment)
+    public DivisionOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

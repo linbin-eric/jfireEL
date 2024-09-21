@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class LeOperand extends MathOperand
 {
-    public LeOperand(Operand left, Operand right, String fragment)
+    public LeOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override
@@ -112,6 +112,7 @@ public class LeOperand extends MathOperand
     {
         return a <= b;
     }
+
     @Override
     protected Object processOther(Object leftValue, Object rightValue)
     {

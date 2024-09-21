@@ -6,9 +6,9 @@ import java.util.Map;
 
 public class AndOperand extends BasicOperandImpl
 {
-    public AndOperand(Operand left, Operand right, String fragment)
+    public AndOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

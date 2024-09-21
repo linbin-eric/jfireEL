@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class EqOperand extends MathOperand
 {
-    public EqOperand(Operand left, Operand right, String fragment)
+    public EqOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

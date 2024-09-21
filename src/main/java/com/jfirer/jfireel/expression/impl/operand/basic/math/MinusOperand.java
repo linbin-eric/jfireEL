@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class MinusOperand extends MathOperand
 {
-    public MinusOperand(Operand left, Operand right, String fragment)
+    public MinusOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

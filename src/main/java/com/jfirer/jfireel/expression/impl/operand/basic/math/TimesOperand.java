@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class TimesOperand extends MathOperand
 {
-    public TimesOperand(Operand left, Operand right, String fragment)
+    public TimesOperand(String mathOperator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(mathOperator, left, right, fragment);
     }
 
     @Override

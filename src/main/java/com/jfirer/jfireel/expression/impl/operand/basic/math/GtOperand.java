@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class GtOperand extends MathOperand
 {
-    public GtOperand(Operand left, Operand right, String fragment)
+    public GtOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

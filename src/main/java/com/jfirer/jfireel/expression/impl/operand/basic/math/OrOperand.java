@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class OrOperand extends BasicOperandImpl
 {
-    public OrOperand(Operand left, Operand right, String fragment)
+    public OrOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

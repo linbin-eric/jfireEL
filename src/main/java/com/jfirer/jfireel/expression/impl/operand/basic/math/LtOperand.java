@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 public class LtOperand extends MathOperand
 {
-    public LtOperand(Operand left, Operand right, String fragment)
+    public LtOperand(String operator, Operand left, Operand right, String fragment)
     {
-        super(left, right, fragment);
+        super(operator, left, right, fragment);
     }
 
     @Override

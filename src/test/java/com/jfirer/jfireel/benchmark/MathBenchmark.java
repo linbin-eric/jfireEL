@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class MathBenchmark
 {
     private Operand             operand      = Expression.parse("5-1");
-    private Operand             operand2     = Expression.parse("5-1", new ELConfig().setMethodInvokeUseCompile(true));
+    private Operand             operand2     = Expression.parse("5-1", new ELConfig().setMinusUseCompile(true));
     private Map<String, Object> contextParam = new HashMap<>();
 
     @Benchmark
