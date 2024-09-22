@@ -1,4 +1,4 @@
-package com.jfirer.jfireel.expression.impl.operand.basic.math;
+package com.jfirer.jfireel.expression.impl.operand.basic.math.standard;
 
 import com.jfirer.jfireel.expression.Operand;
 

@@ -6,7 +6,8 @@ import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.basic.AndOperand;
 import com.jfirer.jfireel.expression.impl.operand.basic.NotEqOperand;
-import com.jfirer.jfireel.expression.impl.operand.basic.math.*;
+import com.jfirer.jfireel.expression.impl.operand.basic.math.compile.CompileMathOperand;
+import com.jfirer.jfireel.expression.impl.operand.basic.math.standard.*;
 import com.jfirer.jfireel.expression.impl.operator.*;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -56,7 +57,7 @@ public class BasicOperatorParser implements TokenParser
                 }
                 else
                 {
-                    new BasicOperator(">", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGtUseCompile())? CompileMathOperand::new : GtOperand::new).push(parseContext);
+                    new BasicOperator(">", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGtUseCompile()) ? CompileMathOperand::new : GtOperand::new).push(parseContext);
                     parseContext.setIndex(index + 1);
                 }
                 return true;

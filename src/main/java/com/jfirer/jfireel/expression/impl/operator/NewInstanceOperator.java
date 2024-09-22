@@ -4,8 +4,8 @@ import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
-import com.jfirer.jfireel.expression.impl.operand.method.CompileConstructorMethod;
-import com.jfirer.jfireel.expression.impl.operand.method.ConstructorMethod;
+import com.jfirer.jfireel.expression.impl.operand.method.compile.CompileConstructorMethod;
+import com.jfirer.jfireel.expression.impl.operand.method.standard.ConstructorMethod;
 import lombok.Data;
 
 import java.util.Deque;

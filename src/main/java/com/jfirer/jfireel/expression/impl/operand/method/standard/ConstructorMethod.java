@@ -1,7 +1,9 @@
-package com.jfirer.jfireel.expression.impl.operand.method;
+package com.jfirer.jfireel.expression.impl.operand.method.standard;
 
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.impl.operand.method.MethodInvokeOperand;
+import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Constructor;

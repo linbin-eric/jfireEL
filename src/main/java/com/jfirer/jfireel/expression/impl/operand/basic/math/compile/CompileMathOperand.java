@@ -1,10 +1,11 @@
-package com.jfirer.jfireel.expression.impl.operand.basic.math;
+package com.jfirer.jfireel.expression.impl.operand.basic.math.compile;
 
 import com.jfirer.baseutil.STR;
 import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.FieldModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
 import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.impl.operand.basic.math.ChangeRuntimeOperand;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 

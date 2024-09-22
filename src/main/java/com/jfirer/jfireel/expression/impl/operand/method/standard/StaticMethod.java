@@ -1,7 +1,9 @@
-package com.jfirer.jfireel.expression.impl.operand.method;
+package com.jfirer.jfireel.expression.impl.operand.method.standard;
 
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.impl.operand.method.MethodInvokeOperand;
+import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Executable;
@@ -10,14 +12,14 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 
-public class InstanceMethod extends MethodInvokeOperand
+public class StaticMethod extends MethodInvokeOperand
 {
-    private Operand instanceOperand;
+    private Class ckazz;
 
-    public InstanceMethod(Operand instanceOperand, String methodName, Operand[] argOperands, String fragment, Map<Executable, MethodInvoker> methodInvokeAccelerators)
+    public StaticMethod(Class ckass, String methodName, Operand[] methodParams, String fragment, Map<Executable, MethodInvoker> methodInvokeAccelerators)
     {
-        super(methodName, argOperands, fragment, methodInvokeAccelerators);
-        this.instanceOperand = instanceOperand;
+        super(methodName, methodParams, fragment, methodInvokeAccelerators);
+        this.ckazz = ckass;
     }
 
     @SneakyThrows
@@ -30,18 +32,13 @@ public class InstanceMethod extends MethodInvokeOperand
             {
                 if (!init)
                 {
-                    Object instance = instanceOperand.calculate(contextParam);
-                    if (instance == null)
-                    {
-                        throw new IllegalStateException("方法调用，但是调用对象为空，请检查是否变量名错误，异常位置为" + fragment);
-                    }
-                    Object[]    args       = Arrays.stream(argOperands).map(operand -> operand.calculate(contextParam)).toArray();
-                    Method      executable = (Method) MethodInvoker.findExecutable(instance.getClass(), args, memberName);
-                    final int[] classIds   = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
+                    Object[] methodParamValues = Arrays.stream(argOperands).map(operand -> operand.calculate(contextParam)).toArray(Object[]::new);
+                    Method   executable        = (Method) MethodInvoker.findExecutable(ckazz, methodParamValues, memberName);
                     if (executable == null)
                     {
                         throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + memberName + "。异常解析位置为" + fragment);
                     }
+                    final int[] classIds = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
                     invoker = methodInvokeAccelerators.getOrDefault(executable, (obj, argOperands, context) -> {
                         Object[] _args = new Object[argOperands.length];
                         for (int i = 0; i < _args.length; i++)
@@ -50,7 +47,7 @@ public class InstanceMethod extends MethodInvokeOperand
                         }
                         try
                         {
-                            return executable.invoke(obj, MethodInvoker.compatibleValues(_args, classIds));
+                            return executable.invoke(null, MethodInvoker.compatibleValues(_args, classIds));
                         }
                         catch (IllegalAccessException | InvocationTargetException e)
                         {
@@ -58,10 +55,10 @@ public class InstanceMethod extends MethodInvokeOperand
                         }
                     });
                     init    = true;
-                    return executable.invoke(instance, MethodInvoker.compatibleValues(args, classIds));
+                    return executable.invoke(null, MethodInvoker.compatibleValues(methodParamValues, classIds));
                 }
             }
         }
-        return invoker.invoke(instanceOperand.calculate(contextParam), argOperands, contextParam);
+        return invoker.invoke(null, argOperands, contextParam);
     }
 }

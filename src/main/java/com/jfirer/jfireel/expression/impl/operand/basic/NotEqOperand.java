@@ -1,7 +1,7 @@
 package com.jfirer.jfireel.expression.impl.operand.basic;
 
 import com.jfirer.jfireel.expression.Operand;
-import com.jfirer.jfireel.expression.impl.operand.basic.math.EqOperand;
+import com.jfirer.jfireel.expression.impl.operand.basic.math.standard.EqOperand;
 
 import java.util.Map;
 
