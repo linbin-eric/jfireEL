@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class UnionBenchmark
 {
-    String  content                               = "person.setAge(person.getAge()-6);";
+    String  content                               = "person.setAge(person.age-6);";
     Operand stand                                 = Expression.parse(content);
     Operand method                                = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true));
     Operand methodWithoutCompatibility            = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
-    Operand methodWithoutCompatibilityAndProperty = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true));
-    Operand math                                  = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true).setMathUseCompile(true));
+    Operand methodWithoutCompatibilityAndProperty = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(false));
+    Operand math                                  = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(false).setMathUseCompile(true));
     private HashMap<String, Object> map = new HashMap<>();
 
     @Setup
