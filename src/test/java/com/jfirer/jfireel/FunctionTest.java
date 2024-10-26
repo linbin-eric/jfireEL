@@ -9,9 +9,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.infra.Blackhole;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -929,6 +926,16 @@ public class FunctionTest extends TestSupport
         map.put("p2", p2);
         Object a = stand.calculate(map);
         Object b = methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
-   methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+        methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+    }
+
+    @Test
+    public void test85()
+    {
+        Operand     parse     = Expression.parse("<<'12','222'>>");
+        Set<String> calculate = (Set<String>) parse.calculate();
+        assertTrue(calculate.contains("12"));
+        assertTrue(calculate.contains("222"));
+        assertTrue(calculate.size() == 2);
     }
 }

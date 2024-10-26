@@ -36,8 +36,8 @@ public class BasicOperatorParser implements TokenParser
             case '[' -> operator = new LeftBracketOperator(fragment);
             case ']' -> operator = new AbstractRightOperator.RightBracketOperator(fragment);
             case ';' -> operator = new SemicolonOperator(fragment);
-            case '{' -> operator = new LeftAngleBracketOperator(fragment);
-            case '}' -> operator = new AbstractRightOperator.RightAngleBracketOperator(fragment);
+            case '{' -> operator = new LeftBraceOperator(fragment);
+            case '}' -> operator = new AbstractRightOperator.RightBraceOperator(fragment);
         }
         if (operator != null)
         {
@@ -55,6 +55,10 @@ public class BasicOperatorParser implements TokenParser
                     new BasicOperator(">=", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGeUseCompile()) ? CompileMathOperand::new : GeOperand::new).push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
+                else if(index+1<el.length() && el.charAt(index+1)=='>'){
+                    new AbstractRightOperator.SetEnd(fragment).push(parseContext);
+                    parseContext.setIndex(index+2);
+                }
                 else
                 {
                     new BasicOperator(">", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGtUseCompile()) ? CompileMathOperand::new : GtOperand::new).push(parseContext);
@@ -67,6 +71,11 @@ public class BasicOperatorParser implements TokenParser
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
                     new BasicOperator("<=", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isLeUseCompile()) ? CompileMathOperand::new : LeOperand::new).push(parseContext);
+                    parseContext.setIndex(index + 2);
+                }
+                else if (index + 1 < el.length() && el.charAt(index + 1) == '<')
+                {
+                    new SetStartOperator(fragment).push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else

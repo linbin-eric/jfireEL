@@ -1,7 +1,7 @@
 package com.jfirer.jfireel.expression;
 
+import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.format.FormatToken;
-import com.jfirer.jfireel.expression.impl.operand.LeftAngleBracketOperand;
 import com.jfirer.jfireel.expression.impl.operand.MethodStructureOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import com.jfirer.jfireel.expression.parse.TokenParser;
@@ -176,7 +176,7 @@ public class ParseContext
         {
             processStack.push(operandStack.pop());
         }
-        if (processStack.stream().filter(operand -> operand instanceof LeftAngleBracketOperand).findAny().isPresent())
+        if (processStack.stream().filter(operand -> operand == PlaceHolder.LEFT_BRACE).findAny().isPresent())
         {
             throw new IllegalStateException("当前表达式解析出现异常，代码中{}没有完全配对");
         }

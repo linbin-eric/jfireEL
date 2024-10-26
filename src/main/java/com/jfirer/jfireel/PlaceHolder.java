@@ -12,21 +12,27 @@ public interface PlaceHolder extends Operand
     }
 
     /**
-     * 代表左侧的'['占位符
+     * 代表左侧的'['占位符,方括号
      */
-    PlaceHolder LEFT_BRACKET       = new PlaceHolder()
+    PlaceHolder LEFT_BRACKET = new PlaceHolder()
     {
     };
     /**
-     * 代表左侧的'{'占位符
+     * 代表左侧的'{'占位符，大括号
      */
-    PlaceHolder LEFT_ANGLE_BRACKET = new PlaceHolder()
+    PlaceHolder LEFT_BRACE   = new PlaceHolder()
     {
     };
     /**
-     * 代表左侧的'('占位符
+     * 代表左侧的'('占位符，圆括号
      */
-    PlaceHolder LEFT_PAREN         = new PlaceHolder()
+    PlaceHolder LEFT_PAREN   = new PlaceHolder()
+    {
+    };
+    /**
+     * 代表左侧的<%，
+     */
+    PlaceHolder SET_START    = new PlaceHolder()
     {
     };
 }

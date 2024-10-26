@@ -11,7 +11,7 @@ import lombok.Data;
 import java.util.Deque;
 
 @Data
-public class LeftAngleBracketOperator implements Operator
+public class LeftBraceOperator implements Operator
 {
     private final String fragment;
 
@@ -25,7 +25,7 @@ public class LeftAngleBracketOperator implements Operator
     public void push(ParseContext parseContext)
     {
         parseContext.getOperatorStack().push(this);
-        parseContext.getOperandStack().push(PlaceHolder.LEFT_ANGLE_BRACKET);
+        parseContext.getOperandStack().push(PlaceHolder.LEFT_BRACE);
         parseContext.setLastToken(TokenType.OPERATOR);
     }
 

@@ -38,13 +38,13 @@ public abstract class AbstractRightOperator implements Operator
         throw new UnsupportedOperationException();
     }
 
-    public static class RightAngleBracketOperator extends AbstractRightOperator
+    public static class RightBraceOperator extends AbstractRightOperator
     {
         private final String fragment;
 
-        public RightAngleBracketOperator(String fragment)
+        public RightBraceOperator(String fragment)
         {
-            super(LeftAngleBracketOperator.class, PlaceHolder.LEFT_ANGLE_BRACKET);
+            super(LeftBraceOperator.class, PlaceHolder.LEFT_BRACE);
             this.fragment = fragment;
         }
 
@@ -79,6 +79,23 @@ public abstract class AbstractRightOperator implements Operator
         public RightParenOperator(String fragment)
         {
             super(LeftParenOperator.class, PlaceHolder.LEFT_PAREN);
+            this.fragment = fragment;
+        }
+
+        @Override
+        public int priority()
+        {
+            return 0;
+        }
+    }
+
+    public static class SetEnd extends AbstractRightOperator
+    {
+        private final String fragment;
+
+        public SetEnd(String fragment)
+        {
+            super(SetStartOperator.class, PlaceHolder.SET_START);
             this.fragment = fragment;
         }
 
