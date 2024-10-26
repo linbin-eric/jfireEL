@@ -44,6 +44,7 @@ public interface Operand
                     {
                         map.put(valueAccessor.getField().getName(), valueAccessor.get(obj));
                     }
+                    map.put("$obj", obj);
                 };
             });
             InnerContextParam innerContextParam = INNER_CONTEXT_PARAM.get();
