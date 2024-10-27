@@ -39,6 +39,11 @@ public class ParseContext
     private        Deque<Operand>                                                  operandStack             = new LinkedList<>();
     private        Deque<Operator>                                                 operatorStack            = new LinkedList<>();
     private        Deque<Operand>                                                  processStack             = new LinkedList<>();
+    /**
+     * 只增加，每次识别到一个内容就往里添加
+     */
+    @Setter(AccessLevel.NONE)
+    private        Deque<Object>                                                   recognizeToken           = new LinkedList<>();
     private final  String                                                          el;
     private        int                                                             index;
     @Setter(AccessLevel.NONE)
@@ -48,7 +53,6 @@ public class ParseContext
     private        Map<Executable, MethodInvoker>                                  methodInvokeAccelerators = new HashMap<>();
     private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
     private        boolean                                                         hasReturnToken           = false;
-    private        TokenType                                                       lastToken                = TokenType.NONE;
     private        ELConfig                                                        config;
 
     public ParseContext(String el)

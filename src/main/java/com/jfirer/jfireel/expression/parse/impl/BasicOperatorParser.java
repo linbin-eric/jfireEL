@@ -3,7 +3,6 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.basic.AndOperand;
 import com.jfirer.jfireel.expression.impl.operand.basic.NotEqOperand;
 import com.jfirer.jfireel.expression.impl.operand.basic.math.compile.CompileMathOperand;
@@ -34,16 +33,16 @@ public class BasicOperatorParser implements TokenParser
             case '.' -> operator = new SpotOperator(fragment);
             case ',' -> operator = new CommaOperator(fragment);
             case '[' -> operator = new LeftBracketOperator(fragment);
-            case ']' -> operator = new AbstractRightOperator.RightBracketOperator(fragment);
+            case ']' -> operator = new RightBracketOperator(fragment);
             case ';' -> operator = new SemicolonOperator(fragment);
             case '{' -> operator = new LeftBraceOperator(fragment);
-            case '}' -> operator = new AbstractRightOperator.RightBraceOperator(fragment);
+            case '}' -> operator = new RightBraceOperator(fragment);
         }
         if (operator != null)
         {
             operator.push(parseContext);
             parseContext.setIndex(index + 1);
-            parseContext.setLastToken(TokenType.OPERATOR);
+            parseContext.getRecognizeToken().add(operator);
             return true;
         }
         switch (c)
@@ -52,59 +51,73 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator(">=", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGeUseCompile()) ? CompileMathOperand::new : GeOperand::new).push(parseContext);
+                    operator = new BasicOperator(">=", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGeUseCompile()) ? CompileMathOperand::new : GeOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
-                else if(index+1<el.length() && el.charAt(index+1)=='>'){
-                    new AbstractRightOperator.SetEnd(fragment).push(parseContext);
-                    parseContext.setIndex(index+2);
+                else if (index + 1 < el.length() && el.charAt(index + 1) == '>')
+                {
+                    operator = new SetEndOperator(fragment);
+                    operator.push(parseContext);
+                    parseContext.setIndex(index + 2);
                 }
                 else
                 {
-                    new BasicOperator(">", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGtUseCompile()) ? CompileMathOperand::new : GtOperand::new).push(parseContext);
+                    operator = new BasicOperator(">", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isGtUseCompile()) ? CompileMathOperand::new : GtOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 1);
                 }
+                parseContext.getRecognizeToken().add(operator);
                 return true;
             }
             case '<' ->
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator("<=", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isLeUseCompile()) ? CompileMathOperand::new : LeOperand::new).push(parseContext);
+                    operator = new BasicOperator("<=", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isLeUseCompile()) ? CompileMathOperand::new : LeOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else if (index + 1 < el.length() && el.charAt(index + 1) == '<')
                 {
-                    new SetStartOperator(fragment).push(parseContext);
+                    operator = new SetStartOperator(fragment);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else
                 {
-                    new BasicOperator("<", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isLtUseCompile()) ? CompileMathOperand::new : LtOperand::new).push(parseContext);
+                    operator = new BasicOperator("<", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isLtUseCompile()) ? CompileMathOperand::new : LtOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 1);
                 }
+                parseContext.getRecognizeToken().add(operator);
                 return true;
             }
             case '=' ->
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator("==", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isEqUseCompile()) ? CompileMathOperand::new : EqOperand::new).push(parseContext);
+                    operator = new BasicOperator("==", 1, fragment, (elConfig.isMathUseCompile() || elConfig.isEqUseCompile()) ? CompileMathOperand::new : EqOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 2);
                 }
                 else
                 {
-                    new AssignOperator(fragment).push(parseContext);
+                    operator = new AssignOperator(fragment);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 1);
                 }
+                parseContext.getRecognizeToken().add(operator);
                 return true;
             }
             case '!' ->
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '=')
                 {
-                    new BasicOperator("!=", 1, fragment, NotEqOperand::new).push(parseContext);
+                    operator = new BasicOperator("!=", 1, fragment, NotEqOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 2);
+                    parseContext.getRecognizeToken().add(operator);
                 }
                 else
                 {
@@ -116,8 +129,10 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '&')
                 {
-                    new BasicOperator("&&", 0, fragment, AndOperand::new).push(parseContext);
+                    operator = new BasicOperator("&&", 0, fragment, AndOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 2);
+                    parseContext.getRecognizeToken().add(operator);
                     return true;
                 }
                 else
@@ -129,8 +144,10 @@ public class BasicOperatorParser implements TokenParser
             {
                 if (index + 1 < el.length() && el.charAt(index + 1) == '|')
                 {
-                    new BasicOperator("||", 0, fragment, OrOperand::new).push(parseContext);
+                    operator = new BasicOperator("||", 0, fragment, OrOperand::new);
+                    operator.push(parseContext);
                     parseContext.setIndex(index + 2);
+                    parseContext.getRecognizeToken().add(operator);
                     return true;
                 }
                 else

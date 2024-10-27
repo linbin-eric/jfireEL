@@ -4,7 +4,6 @@ import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import lombok.Data;
 
@@ -26,7 +25,6 @@ public class LeftBraceOperator implements Operator
     {
         parseContext.getOperatorStack().push(this);
         parseContext.getOperandStack().push(PlaceHolder.LEFT_BRACE);
-        parseContext.setLastToken(TokenType.OPERATOR);
     }
 
     @Override
@@ -34,7 +32,7 @@ public class LeftBraceOperator implements Operator
     {
         Deque<Operand> processStack = parseContext.getProcessStack();
         Deque<Operand> operandStack = parseContext.getOperandStack();
-        Operand[] array = processStack.toArray(Operand[]::new);
+        Operand[]      array        = processStack.toArray(Operand[]::new);
         processStack.clear();
         Operand top = operandStack.peek();
         if (top instanceof IfOperand == false && top instanceof ElseIfOperand == false && top instanceof ForOperand == false && top instanceof ElseOperand == false)

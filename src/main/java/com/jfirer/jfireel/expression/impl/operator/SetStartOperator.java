@@ -4,7 +4,6 @@ import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.SetOperand;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -31,7 +30,6 @@ public class SetStartOperator implements Operator
     {
         parseContext.getOperatorStack().push(this);
         parseContext.getOperandStack().push(PlaceHolder.SET_START);
-        parseContext.setLastToken(TokenType.OPERATOR);
     }
 
     @Override
@@ -41,7 +39,6 @@ public class SetStartOperator implements Operator
         Operand[]      operands     = processStack.stream().toArray(Operand[]::new);
         processStack.clear();
         parseContext.getOperandStack().push(new SetOperand(operands));
-        parseContext.setLastToken(TokenType.OPERAND);
     }
 
     @Override

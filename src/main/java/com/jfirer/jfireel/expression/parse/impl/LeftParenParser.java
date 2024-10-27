@@ -1,7 +1,6 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operator.LeftParenOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -14,9 +13,10 @@ public class LeftParenParser implements TokenParser
         int    index = parseContext.getIndex();
         if (el.charAt(index) == '(')
         {
-            new LeftParenOperator(el.substring(0, index)).push(parseContext);
+            LeftParenOperator leftParenOperator = new LeftParenOperator(el.substring(0, index));
+            leftParenOperator.push(parseContext);
             parseContext.setIndex(index + 1);
-            parseContext.setLastToken(TokenType.OPERATOR);
+            parseContext.getRecognizeToken().add(leftParenOperator);
             return true;
         }
         else

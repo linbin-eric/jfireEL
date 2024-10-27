@@ -1,7 +1,6 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.LiteralOparand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -73,7 +72,8 @@ public class LiteralParser implements TokenParser
             throw new IllegalStateException("字符串中存在错误的字面量，没有使用" + flag + "将字面量前后包围。错误范围在" + el.substring(0, parseContext.getIndex()));
         }
         parseContext.setIndex(index + 1);
-        parseContext.getOperandStack().push(new LiteralOparand(builder.toString()));
-        parseContext.setLastToken(TokenType.OPERAND);
+        LiteralOparand literalOparand = new LiteralOparand(builder.toString());
+        parseContext.getOperandStack().push(literalOparand);
+        parseContext.getRecognizeToken().add(literalOparand);
     }
 }

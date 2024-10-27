@@ -58,10 +58,10 @@ public class FunctionTest extends TestSupport
     @Test
     public void test4()
     {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("1");
         list.add("2");
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("list", list);
         assertEquals("2", Expression.parse("list[3-2]").calculate(vars));
     }
@@ -271,7 +271,7 @@ public class FunctionTest extends TestSupport
     public void test33()
     {
         Operand lexer = Expression.parse("1+2");
-        assertEquals(3, ((Number) lexer.calculate(new HashMap<String, Object>())).intValue());
+        assertEquals(3, ((Number) lexer.calculate(new HashMap<>())).intValue());
         assertEquals(3, ((Number) lexer.calculate(null)).intValue());
     }
 
@@ -353,8 +353,8 @@ public class FunctionTest extends TestSupport
         assertEquals(1, ((Number) Expression.parse("3-2+1>1?1:2").calculate()).intValue());
         assertEquals(1, ((Number) Expression.parse("3-2+1>1?2-1:2").calculate()).intValue());
         assertEquals(2, ((Number) Expression.parse("3-2+1<1?2:1+1").calculate()).intValue());
-        Map<String, Object> vars  = new HashMap<String, Object>();
-        Map<String, Object> param = new HashMap<String, Object>();
+        Map<String, Object> vars  = new HashMap<>();
+        Map<String, Object> param = new HashMap<>();
         param.put("b", false);
         vars.put("map", param);
         assertEquals(2, ((Number) Expression.parse("map['b']?3:1*2").calculate(vars)).intValue());

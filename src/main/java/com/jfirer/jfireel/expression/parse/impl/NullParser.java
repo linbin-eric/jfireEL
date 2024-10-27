@@ -1,7 +1,6 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.NullOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -14,9 +13,10 @@ public class NullParser implements TokenParser
         int    index = parseContext.getIndex();
         if (el.charAt(index) == 'n' && index + 4 < el.length() && el.substring(index, index + 4).equalsIgnoreCase("null"))
         {
-            parseContext.getOperandStack().push(new NullOperand());
+            NullOperand nullOperand = new NullOperand();
+            parseContext.getOperandStack().push(nullOperand);
             parseContext.setIndex(index + 4);
-            parseContext.setLastToken(TokenType.OPERAND);
+            parseContext.getRecognizeToken().add(nullOperand);
             return true;
         }
         else

@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.CharType;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.NumberOperand;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
@@ -64,9 +63,10 @@ public class NumberParser implements TokenParser
         {
             index++;
         }
-        String numStr = el.substring(parseContext.getIndex(), index);
-        parseContext.getOperandStack().push(new NumberOperand(numStr, el.substring(0, index)));
+        String        numStr        = el.substring(parseContext.getIndex(), index);
+        NumberOperand numberOperand = new NumberOperand(numStr, el.substring(0, index));
+        parseContext.getOperandStack().push(numberOperand);
         parseContext.setIndex(index);
-        parseContext.setLastToken(TokenType.OPERAND);
+        parseContext.getRecognizeToken().add(numberOperand);
     }
 }

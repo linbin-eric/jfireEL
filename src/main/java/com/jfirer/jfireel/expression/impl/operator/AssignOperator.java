@@ -3,7 +3,6 @@ package com.jfirer.jfireel.expression.impl.operator;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.AssignOperand;
 import com.jfirer.jfireel.expression.impl.operand.CreateVariableOperand;
 import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
@@ -37,7 +36,6 @@ public class AssignOperator implements Operator
             operatorStack.pop().onPop(parseContext);
         }
         parseContext.getOperatorStack().push(this);
-        parseContext.setLastToken(TokenType.OPERATOR);
     }
 
     @Override

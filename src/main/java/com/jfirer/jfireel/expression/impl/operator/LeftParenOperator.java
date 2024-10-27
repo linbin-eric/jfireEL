@@ -4,11 +4,9 @@ import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.TokenType;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import lombok.Data;
 
-import java.awt.event.PaintEvent;
 import java.util.Deque;
 import java.util.List;
 
@@ -41,7 +39,7 @@ public class LeftParenOperator implements Operator
     public void push(ParseContext parseContext)
     {
         Deque<Operand> operandStack = parseContext.getOperandStack();
-        if (operandStack.peek() instanceof InnerCallOperand)
+        if (parseContext.getRecognizeToken().peekLast() instanceof InnerCallOperand)
         {
             type = INNER_CALL;
         }
@@ -54,15 +52,15 @@ public class LeftParenOperator implements Operator
         {
             type = CLASS;
         }
-        else if (operandStack.peek() instanceof IfOperand)
+        else if (parseContext.getRecognizeToken().peekLast() instanceof IfOperand)
         {
             type = IF;
         }
-        else if (operandStack.peek() instanceof ForOperand)
+        else if (parseContext.getRecognizeToken().peekLast() instanceof ForOperand)
         {
             type = FOR;
         }
-        else if (operandStack.peek() instanceof ElseIfOperand)
+        else if (parseContext.getRecognizeToken().peekLast() instanceof ElseIfOperand)
         {
             type = ELSE_IF;
         }
@@ -75,7 +73,6 @@ public class LeftParenOperator implements Operator
             type = PURE_LEFT_BRACKETS;
         }
         parseContext.getOperatorStack().push(this);
-        parseContext.setLastToken(TokenType.OPERATOR);
         parseContext.getOperandStack().push(PlaceHolder.LEFT_PAREN);
     }
 
