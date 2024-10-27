@@ -4,6 +4,7 @@ import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
 import com.jfirer.baseutil.smc.compiler.CompileHelper;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,9 @@ public interface Operand
         {
             Class<?> ckass = objParam.getClass();
             BiConsumer<Object, Map<String, Object>> computed = translator.computeIfAbsent(ckass, type -> {
-                ValueAccessor[] array = Stream.iterate(type, t -> t != HashMap.class && t != Object.class, t -> t.getSuperclass()).flatMap(t -> Arrays.stream(t.getDeclaredFields()).map(ValueAccessor::compile)).toArray(ValueAccessor[]::new);
+                ValueAccessor[] array = Stream.iterate(type, t -> t != HashMap.class && t != Object.class, t -> t.getSuperclass()).flatMap(t -> Arrays.stream(t.getDeclaredFields())//
+                                                                                                                                                      .filter(field -> Modifier.isStatic(field.getModifiers()) == false)//
+                                                                                                                                                      .map(ValueAccessor::compile)).toArray(ValueAccessor[]::new);
                 return (obj, map) -> {
                     for (ValueAccessor valueAccessor : array)
                     {
