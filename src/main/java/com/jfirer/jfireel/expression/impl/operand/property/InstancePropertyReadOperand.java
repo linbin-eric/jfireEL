@@ -40,7 +40,7 @@ public class InstancePropertyReadOperand implements Operand
                     }
                     else
                     {
-                        valueAccessor = ValueAccessor.compile(field);
+                        valueAccessor = ValueAccessor.standard(field);
                         return valueAccessor.get(instance);
                     }
                 }
