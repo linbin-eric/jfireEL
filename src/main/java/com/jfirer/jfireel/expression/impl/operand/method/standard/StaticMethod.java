@@ -38,6 +38,7 @@ public class StaticMethod extends MethodInvokeOperand
                     {
                         throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + memberName + "。异常解析位置为" + fragment);
                     }
+                    executable.setAccessible(true);
                     final int[] classIds = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
                     invoker = methodInvokeAccelerators.getOrDefault(executable, (obj, argOperands, context) -> {
                         Object[] _args = new Object[argOperands.length];

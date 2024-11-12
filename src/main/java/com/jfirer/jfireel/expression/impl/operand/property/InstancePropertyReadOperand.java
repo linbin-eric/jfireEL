@@ -29,23 +29,34 @@ public class InstancePropertyReadOperand implements Operand
             {
                 if (init == false)
                 {
-                    init = true;
-                    Object                   instance = typeOperand.calculate(contextParam);
+                    Object instance = typeOperand.calculate(contextParam);
+                    if (instance == null)
+                    {
+                        throw new NullPointerException("需要解析属性，但是对象为空，解析片段为:" + fragment);
+                    }
                     Field                    field    = Operand.findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
                     Function<Object, Object> function = propertyReadAccelerators.get(field);
                     if (function != null)
                     {
                         propertyGetter = function;
+                        init           = true;
                         return function.apply(instance);
                     }
                     else
                     {
                         valueAccessor = ValueAccessor.standard(field);
+                        init          = true;
                         return valueAccessor.get(instance);
                     }
                 }
             }
         }
-        return valueAccessor != null ? valueAccessor.get(typeOperand.calculate(contextParam)) : propertyGetter.apply(typeOperand.calculate(contextParam));
+        Object instance = typeOperand.calculate(contextParam);
+        if (instance == null)
+        {
+            throw new NullPointerException("需要读取属性"+propertyNameOperand.getVariable()+"但是对象为空");
+        }
+        return valueAccessor != null ? valueAccessor.get(instance) : propertyGetter.apply(instance);
+
     }
 }

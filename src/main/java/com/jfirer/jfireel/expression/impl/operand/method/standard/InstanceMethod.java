@@ -44,6 +44,7 @@ public class InstanceMethod extends MethodInvokeOperand
                     {
                         throw new IllegalArgumentException("解析过程中发现未能发现匹配的方法,方法名为:" + memberName + "。异常解析位置为" + fragment);
                     }
+                    executable.setAccessible(true);
                     invoker = methodInvokeAccelerators.getOrDefault(executable, (obj, argOperands, context) -> {
                         Object[] _args = new Object[argOperands.length];
                         for (int i = 0; i < _args.length; i++)
