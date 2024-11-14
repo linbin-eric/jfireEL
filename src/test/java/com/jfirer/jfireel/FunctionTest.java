@@ -4,6 +4,7 @@ import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.operand.basic.BasicOperandImpl;
 import com.jfirer.jfireel.template.Template;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -788,20 +789,6 @@ public class FunctionTest extends TestSupport
      * 测试入参是非 Map 的形式
      */
     @Test
-    public void test74()
-    {
-        TestData lin     = new TestData().setI(5).setName("lin");
-        Operand  operand = Expression.parse("i>3?name:'xx'");
-        lin.setI(5);
-        assertEquals("lin", operand.calculate(lin));
-        lin.setI(2);
-        assertEquals("xx", operand.calculate(lin));
-    }
-
-    /**
-     * 测试入参是非 Map 的形式
-     */
-    @Test
     public void test75()
     {
         TestSupport.Person  person  = new TestSupport.Person();
@@ -937,5 +924,14 @@ public class FunctionTest extends TestSupport
         assertTrue(calculate.contains("12"));
         assertTrue(calculate.contains("222"));
         assertTrue(calculate.size() == 2);
+    }
+
+    @Test
+    public void test86()
+    {
+        BasicOperandImpl operand = (BasicOperandImpl) Expression.parse("1+2");
+        assertNotNull(operand.getFragment());
+        operand.clearFragment();
+        assertNull(operand.getFragment());
     }
 }

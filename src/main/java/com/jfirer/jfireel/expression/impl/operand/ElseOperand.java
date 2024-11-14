@@ -15,4 +15,10 @@ public class ElseOperand implements Operand
     {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void clearFragment()
+    {
+        body.clearFragment();
+    }
 }

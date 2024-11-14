@@ -14,11 +14,19 @@ public class InstancePropertyReadOperand implements Operand
 {
     protected final  Operand                              typeOperand;
     protected final  VariableOperand                      propertyNameOperand;
-    protected final  String                               fragment;
+    protected        String                               fragment;
     protected final  Map<Field, Function<Object, Object>> propertyReadAccelerators;
     private volatile boolean                              init = false;
     private          Function<Object, Object>             propertyGetter;
     private          ValueAccessor                        valueAccessor;
+
+    public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+    {
+        this.typeOperand              = typeOperand;
+        this.propertyNameOperand      = propertyNameOperand;
+        this.fragment                 = fragment;
+        this.propertyReadAccelerators = propertyReadAccelerators;
+    }
 
     @Override
     public Object calculate(Map<String, Object> contextParam)
@@ -54,9 +62,16 @@ public class InstancePropertyReadOperand implements Operand
         Object instance = typeOperand.calculate(contextParam);
         if (instance == null)
         {
-            throw new NullPointerException("需要读取属性"+propertyNameOperand.getVariable()+"但是对象为空");
+            throw new NullPointerException("需要读取属性" + propertyNameOperand.getVariable() + "但是对象为空");
         }
         return valueAccessor != null ? valueAccessor.get(instance) : propertyGetter.apply(instance);
+    }
 
+    @Override
+    public void clearFragment()
+    {
+        fragment = null;
+        typeOperand.clearFragment();
+        propertyNameOperand.clearFragment();
     }
 }

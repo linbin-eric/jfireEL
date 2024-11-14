@@ -20,7 +20,7 @@ public class ArrayOperand implements Operand
     public ArrayOperand(Operand[] array)
     {
         this.array = array;
-        if (Arrays.stream(array).filter(Objects::nonNull).allMatch(one -> one instanceof LiteralOparand || one instanceof NumberOperand || one instanceof ClassOperand || one instanceof StaticClassPropertyOperand || one instanceof  NullOperand))
+        if (Arrays.stream(array).filter(Objects::nonNull).allMatch(one -> one instanceof LiteralOparand || one instanceof NumberOperand || one instanceof ClassOperand || one instanceof StaticClassPropertyOperand || one instanceof NullOperand))
         {
             constant = true;
             Object[] instance = new Object[array.length];
@@ -70,5 +70,14 @@ public class ArrayOperand implements Operand
             instance[i] = array[i].calculate(contextParam);
         }
         return instance;
+    }
+
+    @Override
+    public void clearFragment()
+    {
+        for (Operand each : array)
+        {
+            each.clearFragment();
+        }
     }
 }

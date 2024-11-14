@@ -57,12 +57,12 @@ public class Expression
 
     public static Operand parse(String el)
     {
-        return new ParseContext(ELConfig.DEFAULT_CONFIG, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parseMutli();
+        return new ParseContext(ELConfig.DEFAULT_CONFIG, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parse();
     }
 
     public static Operand parse(String el, ELConfig config)
     {
-        return new ParseContext(config, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parseMutli();
+        return new ParseContext(config, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parse();
     }
 
     /**
@@ -78,7 +78,7 @@ public class Expression
     public static String format(String content)
     {
         ParseContext parseContext = new ParseContext(ELConfig.DEFAULT_CONFIG, content, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators);
-        parseContext.parseMutli();
+        parseContext.parse();
         List<FormatToken> formatTokens = parseContext.getFormatTokens();
         StringBuilder     builder      = new StringBuilder();
         FormatContext     context      = new FormatContext();

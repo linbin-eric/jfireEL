@@ -25,6 +25,12 @@ public class CompilePropertyReadOperand implements Operand
     }
 
     @Override
+    public void clearFragment()
+    {
+        handler.clearFragment();
+    }
+
+    @Override
     public Object calculate(Map<String, Object> contextParam)
     {
         return handler.calculate(contextParam);
@@ -65,6 +71,13 @@ public class CompilePropertyReadOperand implements Operand
             Operand  operand = (Operand) compile.getConstructor(Operand.class).newInstance(instanceOperand);
             CompilePropertyReadOperand.this.handler = operand;
             return field.get(instance);
+        }
+
+        @Override
+        public void clearFragment()
+        {
+            fragment = null;
+            instanceOperand.clearFragment();
         }
     }
 }

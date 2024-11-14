@@ -22,6 +22,12 @@ public class AssignOperand implements Operand
         return null;
     }
 
+    @Override
+    public void clearFragment()
+    {
+        value.clearFragment();
+    }
+
     public static class CreateVariableAndAssignOperand extends AssignOperand
     {
         public CreateVariableAndAssignOperand(String name, Operand value)

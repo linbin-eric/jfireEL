@@ -33,4 +33,11 @@ public class ContainerOperand implements Operand
             return Array.get(instance, calculate.intValue());
         }
     }
+
+    @Override
+    public void clearFragment()
+    {
+        container.clearFragment();
+        index.clearFragment();
+    }
 }

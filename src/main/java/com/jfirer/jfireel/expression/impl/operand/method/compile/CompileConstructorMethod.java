@@ -26,6 +26,12 @@ public class CompileConstructorMethod implements Operand
         return operand.calculate(contextParam);
     }
 
+    @Override
+    public void clearFragment()
+    {
+        operand.clearFragment();
+    }
+
     @AllArgsConstructor
     class AnalyseOperand implements Operand
     {
@@ -49,6 +55,16 @@ public class CompileConstructorMethod implements Operand
             CompileConstructorMethod.this.operand = MethodInvoker.make(null, executable, argOperands, classIds, elConfig);
             executable.setAccessible(true);
             return executable.newInstance(MethodInvoker.compatibleValues(args, classIds));
+        }
+
+        @Override
+        public void clearFragment()
+        {
+            for (Operand each : argOperands)
+            {
+                each.clearFragment();
+            }
+            fragment = null;
         }
     }
 }

@@ -19,6 +19,10 @@ public interface Operand
         return calculate(new HashMap<>());
     }
 
+    default void clearFragment()
+    {
+    }
+
     static Field findField(Class<?> ckass, String fieldName, String fragment)
     {
         while (ckass != Object.class)

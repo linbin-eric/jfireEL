@@ -27,6 +27,12 @@ public class CompileInstanceMethod implements Operand
         return operand.calculate(contextParam);
     }
 
+    @Override
+    public void clearFragment()
+    {
+        operand.clearFragment();
+    }
+
     @Data
     @AllArgsConstructor
     class OneshotAnalyseOperand implements Operand
@@ -56,6 +62,17 @@ public class CompileInstanceMethod implements Operand
             CompileInstanceMethod.this.operand = MethodInvoker.make(instanceOperand, executable, argOperands, classIds, elConfig);
             executable.setAccessible(true);
             return executable.invoke(instance, MethodInvoker.compatibleValues(args, classIds));
+        }
+
+        @Override
+        public void clearFragment()
+        {
+            for (Operand each : argOperands)
+            {
+                each.clearFragment();
+            }
+            fragment = null;
+            instanceOperand.clearFragment();
         }
     }
 }

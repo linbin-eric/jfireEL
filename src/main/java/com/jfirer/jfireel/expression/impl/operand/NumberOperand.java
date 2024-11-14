@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class NumberOperand implements Operand
 {
-    private final String fragment;
+    private       String fragment;
     private final Object value;
 
     public NumberOperand(String numStr, String fragment)
@@ -42,5 +42,11 @@ public class NumberOperand implements Operand
     public Object calculate(Map<String, Object> contextParam)
     {
         return value;
+    }
+
+    @Override
+    public void clearFragment()
+    {
+        fragment = null;
     }
 }

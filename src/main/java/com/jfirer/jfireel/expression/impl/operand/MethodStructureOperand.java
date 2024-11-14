@@ -64,4 +64,13 @@ public class MethodStructureOperand implements Operand
         }
         return calculate;
     }
+
+    @Override
+    public void clearFragment()
+    {
+        for (Operand each : execs)
+        {
+            each.clearFragment();
+        }
+    }
 }

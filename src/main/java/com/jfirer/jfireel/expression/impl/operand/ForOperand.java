@@ -10,10 +10,15 @@ import java.util.Map;
 @Data
 public class ForOperand implements Operand
 {
-    private       String                 itemName;
-    private       Operand                itemsContainer;
-    private       MethodStructureOperand body;
-    private final String                 fragment;
+    private String                 itemName;
+    private Operand                itemsContainer;
+    private MethodStructureOperand body;
+    private String                 fragment;
+
+    public ForOperand(String fragment)
+    {
+        this.fragment = fragment;
+    }
 
     @Override
     public Object calculate(Map<String, Object> contextParam)
@@ -233,5 +238,13 @@ public class ForOperand implements Operand
         {
             throw new IllegalArgumentException("无法识别for 循环中的循环变量，请检查 EL 表达式的相关位置：" + fragment);
         }
+    }
+
+    @Override
+    public void clearFragment()
+    {
+        fragment = null;
+        itemsContainer.clearFragment();
+        body.clearFragment();
     }
 }

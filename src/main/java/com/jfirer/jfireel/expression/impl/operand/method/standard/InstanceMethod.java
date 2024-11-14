@@ -67,4 +67,11 @@ public class InstanceMethod extends MethodInvokeOperand
         }
         return invoker.invoke(instanceOperand.calculate(contextParam), argOperands, contextParam);
     }
+
+    @Override
+    public void clearFragment()
+    {
+        super.clearFragment();
+        instanceOperand.clearFragment();
+    }
 }

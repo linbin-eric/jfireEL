@@ -126,50 +126,6 @@ public class ParseContext
         }
         catch (Throwable e)
         {
-            throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index), e);
-        }
-        if (operandStack.size() == 1)
-        {
-            return operandStack.pop();
-        }
-        else
-        {
-            throw new IllegalStateException("解析表达式异常，解析完毕后剩余的操作数大于 1 个");
-        }
-    }
-
-    public Operand parseMutli()
-    {
-        try
-        {
-            int length = el.length();
-            while (index != length)
-            {
-                int oldVersionOfIndex = index;
-                for (TokenParser each : parsers)
-                {
-                    if (each.parse(this))
-                    {
-                        break;
-                    }
-                }
-                if (oldVersionOfIndex == index)
-                {
-                    throw new IllegalStateException("无法解析表达式，当前解析进度为:" + el.substring(0, oldVersionOfIndex));
-                }
-                String trim = el.substring(oldVersionOfIndex, index).trim();
-                if (trim.equals("") == false)
-                {
-                    formatTokens.add(FormatToken.of(trim));
-                }
-            }
-            while (operatorStack.isEmpty() == false)
-            {
-                operatorStack.pop().onPop(this);
-            }
-        }
-        catch (Throwable e)
-        {
             throw new IllegalStateException("当前表达式解析出现异常，异常位置为" + el.substring(0, index) + ".[详细异常信息为:" + e.getMessage() + "]", e);
         }
         if (processStack.isEmpty() == false)

@@ -19,4 +19,9 @@ public class ReturnWithValueOperand implements Operand
         return new ProcessControlResult(ControlFlag.RETURN_WITH_VALUE, calculate);
     }
 
+    @Override
+    public void clearFragment()
+    {
+        valueOperand.clearFragment();
+    }
 }

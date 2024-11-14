@@ -10,11 +10,20 @@ import java.util.function.BiFunction;
 public class InnerCallOperand implements Operand
 {
     private final BiFunction<Map<String, Object>, Operand[], Object> function;
-    private       Operand[]                                         methodParams;
+    private       Operand[]                                          methodParams;
 
     @Override
     public Object calculate(Map<String, Object> contextParam)
     {
         return function.apply(contextParam, methodParams);
+    }
+
+    @Override
+    public void clearFragment()
+    {
+        for (Operand methodParam : methodParams)
+        {
+            methodParam.clearFragment();
+        }
     }
 }

@@ -54,4 +54,19 @@ public class IfOperand implements Operand
             return null;
         }
     }
+
+    @Override
+    public void clearFragment()
+    {
+        condition.clearFragment();
+        body.clearFragment();
+        if (elseIfOperands != null)
+        {
+            elseIfOperands.forEach(Operand::clearFragment);
+        }
+        if (elseOperand != null)
+        {
+            elseOperand.clearFragment();
+        }
+    }
 }

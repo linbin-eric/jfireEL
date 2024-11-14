@@ -20,4 +20,11 @@ public class NotEqOperand extends BasicOperandImpl
     {
         return !(Boolean) eqOperand.calculate(contextParam);
     }
+
+    @Override
+    public void clearFragment()
+    {
+        super.clearFragment();
+        eqOperand.clearFragment();
+    }
 }

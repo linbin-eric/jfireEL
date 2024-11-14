@@ -45,4 +45,13 @@ public class SetOperand implements Operand
         }
         return set;
     }
+
+    @Override
+    public void clearFragment()
+    {
+        for (Operand each : array)
+        {
+            each.clearFragment();
+        }
+    }
 }

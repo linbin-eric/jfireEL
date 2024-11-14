@@ -25,4 +25,12 @@ public class QuestionOperand implements Operand
             return right.calculate(contextParam);
         }
     }
+
+    @Override
+    public void clearFragment()
+    {
+        condition.clearFragment();
+        left.clearFragment();
+        right.clearFragment();
+    }
 }

@@ -16,4 +16,10 @@ public class ElseIfOperand implements Operand
     {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void clearFragment()
+    {
+        condition.clearFragment();
+    }
 }

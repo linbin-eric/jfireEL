@@ -16,4 +16,10 @@ public class InOperand implements Operand
     {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void clearFragment()
+    {
+        itemsContainer.clearFragment();
+    }
 }

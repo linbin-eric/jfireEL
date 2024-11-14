@@ -28,6 +28,12 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
     }
 
     @Override
+    public void clearFragment()
+    {
+        runtime.clearFragment();
+    }
+
+    @Override
     public void newOperand(Operand operand)
     {
         this.runtime = operand;
@@ -528,6 +534,14 @@ public class CompileMathOperand implements ChangeRuntimeOperand, Operand
             Operand        operand = compile.getConstructor(Operand.class, Operand.class).newInstance(left, right);
             changeRuntimeOperand.newOperand(operand);
             return thisTimeResult;
+        }
+
+        @Override
+        public void clearFragment()
+        {
+            left.clearFragment();
+            right.clearFragment();
+            fragment = null;
         }
     }
 }
