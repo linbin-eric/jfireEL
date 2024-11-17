@@ -14,6 +14,7 @@ public class ELConfig
      * 建议是关闭
      */
     private             boolean  propertyReadUseCompile              = false;
+    private             boolean  sharePropertyRead                   = false;
     /**
      * 实例方法的调用采用编译形式
      * 在intel平台上性能测试能和通过lambda对方法引用一致，在mac平台上则是lambda性能的三分之二。

@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression.impl.operand.property;
 
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
 import com.jfirer.jfireel.expression.Operand;
-import com.jfirer.jfireel.expression.impl.operand.VariableOperand;
 import lombok.Data;
 
 import java.lang.reflect.Field;
@@ -12,18 +11,18 @@ import java.util.function.Function;
 @Data
 public class InstancePropertyReadOperand implements Operand
 {
-    protected final  Operand                              typeOperand;
-    protected final  VariableOperand                      propertyNameOperand;
+    protected final  Operand                              instanceOperand;
+    protected final  String                               propertyName;
     protected        String                               fragment;
     protected final  Map<Field, Function<Object, Object>> propertyReadAccelerators;
     private volatile boolean                              init = false;
     private          Function<Object, Object>             propertyGetter;
     private          ValueAccessor                        valueAccessor;
 
-    public InstancePropertyReadOperand(Operand typeOperand, VariableOperand propertyNameOperand, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+    public InstancePropertyReadOperand(Operand instanceOperand, String propertyName, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
     {
-        this.typeOperand              = typeOperand;
-        this.propertyNameOperand      = propertyNameOperand;
+        this.instanceOperand          = instanceOperand;
+        this.propertyName             = propertyName;
         this.fragment                 = fragment;
         this.propertyReadAccelerators = propertyReadAccelerators;
     }
@@ -37,12 +36,12 @@ public class InstancePropertyReadOperand implements Operand
             {
                 if (init == false)
                 {
-                    Object instance = typeOperand.calculate(contextParam);
+                    Object instance = instanceOperand.calculate(contextParam);
                     if (instance == null)
                     {
                         throw new NullPointerException("需要解析属性，但是对象为空，解析片段为:" + fragment);
                     }
-                    Field                    field    = Operand.findField(instance.getClass(), propertyNameOperand.getVariable(), fragment);
+                    Field                    field    = Operand.findField(instance.getClass(), propertyName, fragment);
                     Function<Object, Object> function = propertyReadAccelerators.get(field);
                     if (function != null)
                     {
@@ -59,10 +58,10 @@ public class InstancePropertyReadOperand implements Operand
                 }
             }
         }
-        Object instance = typeOperand.calculate(contextParam);
+        Object instance = instanceOperand.calculate(contextParam);
         if (instance == null)
         {
-            throw new NullPointerException("需要读取属性" + propertyNameOperand.getVariable() + "但是对象为空");
+            throw new NullPointerException("需要读取属性" + propertyName + "但是对象为空");
         }
         return valueAccessor != null ? valueAccessor.get(instance) : propertyGetter.apply(instance);
     }
@@ -71,7 +70,6 @@ public class InstancePropertyReadOperand implements Operand
     public void clearFragment()
     {
         fragment = null;
-        typeOperand.clearFragment();
-        propertyNameOperand.clearFragment();
+        instanceOperand.clearFragment();
     }
 }
