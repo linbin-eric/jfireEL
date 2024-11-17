@@ -12,7 +12,6 @@ import com.jfirer.jfireel.expression.impl.operand.method.standard.InstanceMethod
 import com.jfirer.jfireel.expression.impl.operand.method.standard.StaticMethod;
 import com.jfirer.jfireel.expression.impl.operand.property.CompilePropertyReadOperand;
 import com.jfirer.jfireel.expression.impl.operand.property.InstancePropertyReadOperand;
-import com.jfirer.jfireel.expression.impl.operand.property.ShareInstancePropertyReadOperand;
 import com.jfirer.jfireel.expression.impl.operand.property.StaticClassPropertyOperand;
 import lombok.Data;
 
@@ -94,13 +93,9 @@ public class SpotOperator implements Operator
                 {
                     parseContext.getOperandStack().push(new CompilePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable()));
                 }
-                else if (config.isSharePropertyRead())
-                {
-                    parseContext.getOperandStack().push(new ShareInstancePropertyReadOperand(typeOperand, variableOperand, fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
-                }
                 else
                 {
-                    parseContext.getOperandStack().push(new InstancePropertyReadOperand(typeOperand, variableOperand.getVariable(), fragment + "." + variableOperand.getVariable(), parseContext.getPropertyReadAccelerators()));
+                    parseContext.getOperandStack().push(new InstancePropertyReadOperand(typeOperand, variableOperand.getVariable(), fragment + "." + variableOperand.getVariable(), parseContext));
                 }
             }
         }

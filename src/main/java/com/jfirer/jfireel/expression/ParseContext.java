@@ -15,14 +15,13 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Data
 @Accessors(chain = true)
 public class ParseContext
 {
-    private static TokenParser[]                                                   parsers                  = new TokenParser[]{//
+    private static TokenParser[]                        parsers                  = new TokenParser[]{//
             new SkipIgnoreToken(),//
             new NumberParser(),//
             new BooleanParser(),//
@@ -36,24 +35,24 @@ public class ParseContext
             new LeftParenParser(),//
             new RightParenParser(),//
     };
-    private        Deque<Operand>                                                  operandStack             = new LinkedList<>();
-    private        Deque<Operator>                                                 operatorStack            = new LinkedList<>();
-    private        Deque<Operand>                                                  processStack             = new LinkedList<>();
+    private        Deque<Operand>                       operandStack             = new LinkedList<>();
+    private        Deque<Operator>                      operatorStack            = new LinkedList<>();
+    private        Deque<Operand>                       processStack             = new LinkedList<>();
     /**
      * 只增加，每次识别到一个内容就往里添加
      */
     @Setter(AccessLevel.NONE)
-    private        Deque<Object>                                                   recognizeToken           = new LinkedList<>();
-    private final  String                                                          el;
-    private        int                                                             index;
+    private        Deque<Object>                        recognizeToken           = new LinkedList<>();
+    private final  String                               el;
+    private        int                                  index;
     @Setter(AccessLevel.NONE)
-    private        Map<String, Class<?>>                                           className                = new HashMap<>();
+    private        Map<String, Class<?>>                className                = new HashMap<>();
     @Setter(AccessLevel.NONE)
-    private        Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls               = new HashMap<>();
-    private        Map<Executable, MethodInvoker>                                  methodInvokeAccelerators = new HashMap<>();
-    private        Map<Field, Function<Object, Object>>                            propertyReadAccelerators = new HashMap<>();
-    private        boolean                                                         hasReturnToken           = false;
-    private        ELConfig                                                        config;
+    private        Map<String, MethodInvoker>           innerCalls               = new HashMap<>();
+    private        Map<Executable, MethodInvoker>       methodInvokeAccelerators = new HashMap<>();
+    private        Map<Field, Function<Object, Object>> propertyReadAccelerators = new HashMap<>();
+    private        boolean                              hasReturnToken           = false;
+    private        ELConfig                             config;
 
     public ParseContext(String el)
     {
@@ -67,7 +66,7 @@ public class ParseContext
         this.config = elConfig;
     }
 
-    public ParseContext(ELConfig config, String el, Map<String, Class<?>> className, Map<String, BiFunction<Map<String, Object>, Operand[], Object>> innerCalls, Map<Method, MethodInvoker> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+    public ParseContext(ELConfig config, String el, Map<String, Class<?>> className, Map<String, MethodInvoker> innerCalls, Map<Method, MethodInvoker> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators)
     {
         this.config = config;
         this.el     = el;

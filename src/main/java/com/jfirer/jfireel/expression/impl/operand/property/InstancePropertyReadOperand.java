@@ -1,7 +1,9 @@
 package com.jfirer.jfireel.expression.impl.operand.property;
 
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
+import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
+import com.jfirer.jfireel.expression.ParseContext;
 import lombok.Data;
 
 import java.lang.reflect.Field;
@@ -14,17 +16,17 @@ public class InstancePropertyReadOperand implements Operand
     protected final  Operand                              instanceOperand;
     protected final  String                               propertyName;
     protected        String                               fragment;
-    protected final  Map<Field, Function<Object, Object>> propertyReadAccelerators;
+    protected final  Map<Field, Function<Object, Object>> propertyAccelerators;
     private volatile boolean                              init = false;
     private          Function<Object, Object>             propertyGetter;
     private          ValueAccessor                        valueAccessor;
 
-    public InstancePropertyReadOperand(Operand instanceOperand, String propertyName, String fragment, Map<Field, Function<Object, Object>> propertyReadAccelerators)
+    public InstancePropertyReadOperand(Operand instanceOperand, String propertyName, String fragment, ParseContext parseContext)
     {
-        this.instanceOperand          = instanceOperand;
-        this.propertyName             = propertyName;
-        this.fragment                 = fragment;
-        this.propertyReadAccelerators = propertyReadAccelerators;
+        this.instanceOperand      = instanceOperand;
+        this.propertyName         = propertyName;
+        this.fragment             = fragment;
+        this.propertyAccelerators = parseContext.getPropertyReadAccelerators();
     }
 
     @Override
@@ -42,7 +44,7 @@ public class InstancePropertyReadOperand implements Operand
                         throw new NullPointerException("需要解析属性，但是对象为空，解析片段为:" + fragment);
                     }
                     Field                    field    = Operand.findField(instance.getClass(), propertyName, fragment);
-                    Function<Object, Object> function = propertyReadAccelerators.get(field);
+                    Function<Object, Object> function = propertyAccelerators.get(field);
                     if (function != null)
                     {
                         propertyGetter = function;
@@ -51,7 +53,7 @@ public class InstancePropertyReadOperand implements Operand
                     }
                     else
                     {
-                        valueAccessor = ValueAccessor.standard(field);
+                        valueAccessor = Expression.SHARE_VALUEACCESSOR_CACHE.computeIfAbsent(field, ValueAccessor::standard);
                         init          = true;
                         return valueAccessor.get(instance);
                     }

@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 @Warmup(iterations = 2, time = 2)
 @Measurement(iterations = 3, time = 3)
-@Fork(3)
 @State(Scope.Benchmark)
+@Fork(1)
 public class PropertyBenchMark
 {
     public    Map<String, Object> vars = new HashMap<String, Object>();
@@ -27,7 +27,6 @@ public class PropertyBenchMark
     Operand lexer_3     = Expression.parse("home.person");
     Operand lexer_accel;
     Operand compileRead = Expression.parse("home.person", new ELConfig().setPropertyReadUseCompile(true));
-    Operand shareRead   = Expression.parse("home.person", new ELConfig().setSharePropertyRead(true));
 
     public static void main(String[] args) throws RunnerException
     {
@@ -74,13 +73,6 @@ public class PropertyBenchMark
     public void testCompile(Blackhole blackhole)
     {
         Object calculate = compileRead.calculate(vars);
-        blackhole.consume(calculate);
-    }
-
-    @Benchmark
-    public void testShareRead(Blackhole blackhole)
-    {
-        Object calculate = shareRead.calculate(vars);
         blackhole.consume(calculate);
     }
 }

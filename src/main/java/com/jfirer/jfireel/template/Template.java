@@ -9,7 +9,7 @@ public class Template
 {
     static
     {
-        Expression.registerInnerCall("out", (map, array) -> {
+        Expression.registerInnerCall("out", (obj, array, map) -> {
             StringBuilder out = (StringBuilder) map.get("outputStr");
             out.append(array[0].calculate(map));
             return null;
