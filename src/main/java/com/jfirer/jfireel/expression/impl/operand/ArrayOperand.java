@@ -75,9 +75,12 @@ public class ArrayOperand implements Operand
     @Override
     public void clearFragment()
     {
-        for (Operand each : array)
+        if (array != null)
         {
-            each.clearFragment();
+            for (Operand each : array)
+            {
+                each.clearFragment();
+            }
         }
     }
 }

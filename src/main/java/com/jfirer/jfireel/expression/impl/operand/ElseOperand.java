@@ -19,6 +19,9 @@ public class ElseOperand implements Operand
     @Override
     public void clearFragment()
     {
-        body.clearFragment();
+        if (body != null)
+        {
+            body.clearFragment();
+        }
     }
 }

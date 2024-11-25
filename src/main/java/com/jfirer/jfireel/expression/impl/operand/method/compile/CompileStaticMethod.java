@@ -60,9 +60,12 @@ public class CompileStaticMethod implements Operand
         @Override
         public void clearFragment()
         {
-            for (Operand each : argOperands)
+            if (argOperands != null)
             {
-                each.clearFragment();
+                for (Operand each : argOperands)
+                {
+                    each.clearFragment();
+                }
             }
             fragment = null;
         }

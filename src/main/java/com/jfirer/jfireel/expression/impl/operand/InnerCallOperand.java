@@ -21,9 +21,12 @@ public class InnerCallOperand implements Operand
     @Override
     public void clearFragment()
     {
-        for (Operand methodParam : methodParams)
+        if (methodParams != null)
         {
-            methodParam.clearFragment();
+            for (Operand methodParam : methodParams)
+            {
+                methodParam.clearFragment();
+            }
         }
     }
 }

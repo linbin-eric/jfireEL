@@ -28,9 +28,12 @@ public abstract class MethodInvokeOperand implements Operand
     public void clearFragment()
     {
         fragment = null;
-        for (Operand each : argOperands)
+        if (argOperands != null)
         {
-            each.clearFragment();
+            for (Operand each : argOperands)
+            {
+                each.clearFragment();
+            }
         }
     }
 }
