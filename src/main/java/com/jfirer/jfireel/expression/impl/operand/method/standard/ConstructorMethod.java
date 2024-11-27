@@ -33,7 +33,7 @@ public class ConstructorMethod extends MethodInvokeOperand
             {
                 if (!init)
                 {
-                    Object[]    args       = Arrays.stream(argOperands).map(Operand::calculate).toArray();
+                    Object[]    args       = Arrays.stream(argOperands).map(operand -> operand.calculate(contextParam)).toArray();
                     Executable  executable = MethodInvoker.findExecutable(ckass, args, memberName);
                     final int[] classIds   = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
                     if (executable == null)
