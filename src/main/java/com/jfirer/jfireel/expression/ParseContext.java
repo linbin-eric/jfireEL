@@ -56,24 +56,17 @@ public class ParseContext
 
     public ParseContext(String el)
     {
-        this.el     = el;
-        this.config = ELConfig.DEFAULT_CONFIG;
+        this(el, ELConfig.DEFAULT_CONFIG);
     }
 
     public ParseContext(String el, ELConfig elConfig)
     {
         this.el     = el;
         this.config = elConfig;
-    }
-
-    public ParseContext(ELConfig config, String el, Map<String, Class<?>> className, Map<String, MethodInvoker> innerCalls, Map<Method, MethodInvoker> methodInvokeAccelerators, Map<Field, Function<Object, Object>> propertyReadAccelerators)
-    {
-        this.config = config;
-        this.el     = el;
-        this.className.putAll(className);
-        this.innerCalls.putAll(innerCalls);
-        this.methodInvokeAccelerators.putAll(methodInvokeAccelerators);
-        this.propertyReadAccelerators.putAll(propertyReadAccelerators);
+        this.className.putAll(Expression.className);
+        this.innerCalls.putAll(Expression.innerCalls);
+        this.methodInvokeAccelerators.putAll(Expression.methodInvokeAccelerators);
+        this.propertyReadAccelerators.putAll(Expression.propertyReadAccelerators);
     }
 
     public void registerClass(String name, Class<?> ckass)

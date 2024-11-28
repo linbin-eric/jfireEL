@@ -20,23 +20,19 @@ public class Expression
     /**
      * 提前注册的类的简单名，可以在 EL 表达式中被识别
      */
-    private static      Map<String, Class<?>>                className                 = new ConcurrentHashMap<>();
+    public static       Map<String, Class<?>>                className                 = new ConcurrentHashMap<>();
     /**
      * 提前注册的EL 内部调用，可以在 EL 表达式中被识别
      */
-    private static      Map<String, MethodInvoker>           innerCalls                = new ConcurrentHashMap<>();
+    public static       Map<String, MethodInvoker>           innerCalls                = new ConcurrentHashMap<>();
     /**
      * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
      */
-    private static      Map<Method, MethodInvoker>           methodInvokeAccelerators  = new ConcurrentHashMap<>();
+    public static       Map<Method, MethodInvoker>           methodInvokeAccelerators  = new ConcurrentHashMap<>();
     /**
      * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
      */
-    private static      Map<Field, Function<Object, Object>> propertyReadAccelerators  = new ConcurrentHashMap<>();
-
-    public record Tuper(Class ckass, String extendMethodName)
-    {
-    }
+    public static       Map<Field, Function<Object, Object>> propertyReadAccelerators  = new ConcurrentHashMap<>();
 
     public static void registerClass(String name, Class<?> ckass)
     {
@@ -60,12 +56,12 @@ public class Expression
 
     public static Operand parse(String el)
     {
-        return new ParseContext(ELConfig.DEFAULT_CONFIG, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parse();
+        return new ParseContext(el).parse();
     }
 
     public static Operand parse(String el, ELConfig config)
     {
-        return new ParseContext(config, el, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators).parse();
+        return new ParseContext(el, config).parse();
     }
 
     /**
@@ -80,7 +76,7 @@ public class Expression
      */
     public static String format(String content)
     {
-        ParseContext parseContext = new ParseContext(ELConfig.DEFAULT_CONFIG, content, className, innerCalls, methodInvokeAccelerators, propertyReadAccelerators);
+        ParseContext parseContext = new ParseContext(content);
         parseContext.parse();
         List<FormatToken> formatTokens = parseContext.getFormatTokens();
         StringBuilder     builder      = new StringBuilder();
