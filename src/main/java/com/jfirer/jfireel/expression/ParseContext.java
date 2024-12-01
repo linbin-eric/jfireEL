@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression;
 
 import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.format.FormatToken;
+import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.MethodStructureOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import com.jfirer.jfireel.expression.parse.TokenParser;
@@ -27,7 +28,7 @@ public class ParseContext
             new BooleanParser(),//
             new NullParser(),//
             new ExtraExecuteParser(),//
-            new InnnerCallParser(),//
+            new InnnerCallOrFunctionCallParser(),//
             new StaticClassParser(),//
             new VariableParser(),//
             new LiteralParser(),//
@@ -49,6 +50,7 @@ public class ParseContext
     private        Map<String, Class<?>>                className                = new HashMap<>();
     @Setter(AccessLevel.NONE)
     private        Map<String, MethodInvoker>           innerCalls               = new HashMap<>();
+    private        Map<String, FunctionCallOperand>     funcationCalls           = new HashMap<>();
     private        Map<Executable, MethodInvoker>       methodInvokeAccelerators = new HashMap<>();
     private        Map<Field, Function<Object, Object>> propertyReadAccelerators = new HashMap<>();
     private        boolean                              hasReturnToken           = false;
@@ -65,6 +67,7 @@ public class ParseContext
         this.config = elConfig;
         this.className.putAll(Expression.className);
         this.innerCalls.putAll(Expression.innerCalls);
+        this.funcationCalls.putAll(Expression.FUNCTION_CALL_OPERAND_MAP);
         this.methodInvokeAccelerators.putAll(Expression.methodInvokeAccelerators);
         this.propertyReadAccelerators.putAll(Expression.propertyReadAccelerators);
     }

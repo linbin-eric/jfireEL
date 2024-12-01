@@ -3,11 +3,14 @@ package com.jfirer.jfireel.expression;
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
 import com.jfirer.jfireel.expression.format.FormatContext;
 import com.jfirer.jfireel.expression.format.FormatToken;
+import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +28,7 @@ public class Expression
      * 提前注册的EL 内部调用，可以在 EL 表达式中被识别
      */
     public static       Map<String, MethodInvoker>           innerCalls                = new ConcurrentHashMap<>();
+    public static final Map<String, FunctionCallOperand>     FUNCTION_CALL_OPERAND_MAP = new HashMap<>();
     /**
      * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
      */
@@ -52,6 +56,31 @@ public class Expression
     public static void registerAccelerateInvoker(Method method, MethodInvoker methodInvoker)
     {
         methodInvokeAccelerators.put(method, methodInvoker);
+    }
+
+    public static void registerFunctionCall(String content)
+    {
+        content = content.trim();
+        if (!content.startsWith("function "))
+        {
+            throw new IllegalArgumentException("function 函数定义错误");
+        }
+        FunctionCallOperand functionCallOperand = new FunctionCallOperand();
+        content = content.substring(9);
+        int    index        = content.indexOf("(");
+        String functionName = content.substring(0, index).trim();
+        functionCallOperand.setFunctionName(functionName);
+        int    index2     = content.indexOf(")");
+        String paramNames = content.substring(index + 1, index2);
+        functionCallOperand.setParamNames(Arrays.stream(paramNames.split(",")).map(String::trim).toArray(String[]::new));
+        content = content.substring(index2 + 1).trim();
+        if (content.charAt(0) != '{' || content.charAt(content.length() - 1) != '}')
+        {
+            throw new IllegalArgumentException("function 函数定义错误");
+        }
+        content = content.substring(1, content.length() - 1);
+        functionCallOperand.setFunction(parse(content));
+        FUNCTION_CALL_OPERAND_MAP.put(functionName, functionCallOperand);
     }
 
     public static Operand parse(String el)

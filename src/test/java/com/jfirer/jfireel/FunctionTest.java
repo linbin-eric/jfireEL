@@ -934,4 +934,16 @@ public class FunctionTest extends TestSupport
         operand.clearFragment();
         assertNull(operand.getFragment());
     }
+
+    @Test
+    public void test87()
+    {
+        String function = """
+                function plus(a,b)
+                {
+                   return a+b;
+                }""";
+        Expression.registerFunctionCall(function);
+
+    }
 }

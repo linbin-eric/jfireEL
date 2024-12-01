@@ -8,7 +8,7 @@ import com.jfirer.jfireel.expression.parse.TokenParser;
 
 import java.util.Set;
 
-public class InnnerCallParser implements TokenParser
+public class InnnerCallOrFunctionCallParser implements TokenParser
 {
     @Override
     public boolean parse(ParseContext parseContext)
@@ -48,6 +48,9 @@ public class InnnerCallParser implements TokenParser
                 parseContext.getRecognizeToken().add(innerCallOperand);
                 parseContext.setIndex(index);
                 return true;
+            }
+            else if(parseContext.getFuncationCalls().containsKey(el.substring(parseContext.getIndex(), index))  && parseContext.getOperatorStack().peek() instanceof SpotOperator == false){
+
             }
             else
             {
