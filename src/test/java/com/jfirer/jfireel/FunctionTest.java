@@ -939,6 +939,8 @@ public class FunctionTest extends TestSupport
     public void test87()
     {
         String function = """
+                # 这是第一行注释
+                # 这是第二行注释
                 function plus(a,b)
                 {
                    return a+b;

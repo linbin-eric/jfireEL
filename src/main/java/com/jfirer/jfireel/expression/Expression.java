@@ -61,6 +61,15 @@ public class Expression
     public static void registerFunctionCall(String content)
     {
         content = content.trim();
+        while (content.charAt(0) == '#')
+        {
+            int i = content.indexOf("\n");
+            if (i == -1)
+            {
+                throw new IllegalArgumentException("#符号并未单独占据一行，错误");
+            }
+            content = content.substring(i + 1);
+        }
         if (!content.startsWith("function "))
         {
             throw new IllegalArgumentException("function 函数定义错误");
