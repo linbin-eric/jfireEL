@@ -20,6 +20,7 @@ public class LeftParenOperator implements Operator
     public static final int    FOR                = 7;
     public static final int    INNER_CALL         = 8;
     public static final int    CLASS              = 9;
+    public static final int FUNCTION_CALL = 10;
     private final       String fragment;
     private             int    type;
 
@@ -42,6 +43,10 @@ public class LeftParenOperator implements Operator
         if (parseContext.getRecognizeToken().peekLast() instanceof InnerCallOperand)
         {
             type = INNER_CALL;
+        }
+        else if (parseContext.getRecognizeToken().peekLast() instanceof FunctionCallOperand)
+        {
+            type = FUNCTION_CALL;
         }
         else if (parseContext.getOperatorStack().peek() instanceof SpotOperator)
         {
@@ -88,6 +93,14 @@ public class LeftParenOperator implements Operator
                 processStack.clear();
                 InnerCallOperand peek = (InnerCallOperand) parseContext.getOperandStack().peek();
                 peek.setMethodParams(list.toArray(Operand[]::new));
+            }
+            case FUNCTION_CALL ->
+            {
+                Deque<Operand> processStack = parseContext.getProcessStack();
+                List<Operand>  list         = processStack.stream().toList();
+                processStack.clear();
+                FunctionCallOperand peek = (FunctionCallOperand) parseContext.getOperandStack().peek();
+                peek.setArgs(list.toArray(Operand[]::new));
             }
             case METHOD ->
             {

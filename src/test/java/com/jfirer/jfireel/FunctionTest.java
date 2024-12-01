@@ -944,6 +944,8 @@ public class FunctionTest extends TestSupport
                    return a+b;
                 }""";
         Expression.registerFunctionCall(function);
-
+        Operand operand   = Expression.parse("plus(1,2)");
+        Integer calculate = (Integer) operand.calculate();
+        assertEquals(3, calculate.intValue());
     }
 }

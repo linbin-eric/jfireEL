@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.CharType;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.InnerCallOperand;
 import com.jfirer.jfireel.expression.impl.operator.SpotOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
@@ -49,8 +50,14 @@ public class InnnerCallOrFunctionCallParser implements TokenParser
                 parseContext.setIndex(index);
                 return true;
             }
-            else if(parseContext.getFuncationCalls().containsKey(el.substring(parseContext.getIndex(), index))  && parseContext.getOperatorStack().peek() instanceof SpotOperator == false){
-
+            else if (parseContext.getFuncationCalls().containsKey(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
+            {
+                FunctionCallOperand.FunctionCallData callData            = parseContext.getFuncationCalls().get(el.substring(parseContext.getIndex(), index));
+                FunctionCallOperand                  functionCallOperand = new FunctionCallOperand(callData.getParamNames(), callData.getFunction());
+                parseContext.getOperandStack().push(functionCallOperand);
+                parseContext.getRecognizeToken().add(functionCallOperand);
+                parseContext.setIndex(index);
+                return true;
             }
             else
             {

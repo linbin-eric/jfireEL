@@ -24,15 +24,15 @@ public class Expression
      * 提前注册的类的简单名，可以在 EL 表达式中被识别
      */
     public static       Map<String, Class<?>>                className                 = new ConcurrentHashMap<>();
+    public static final Map<String, FunctionCallOperand.FunctionCallData> FUNCTION_CALL_OPERAND_MAP = new HashMap<>();
     /**
      * 提前注册的EL 内部调用，可以在 EL 表达式中被识别
      */
-    public static       Map<String, MethodInvoker>           innerCalls                = new ConcurrentHashMap<>();
-    public static final Map<String, FunctionCallOperand>     FUNCTION_CALL_OPERAND_MAP = new HashMap<>();
+    public static       Map<String, MethodInvoker>                        innerCalls                = new ConcurrentHashMap<>();
     /**
      * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
      */
-    public static       Map<Method, MethodInvoker>           methodInvokeAccelerators  = new ConcurrentHashMap<>();
+    public static       Map<Method, MethodInvoker>                        methodInvokeAccelerators  = new ConcurrentHashMap<>();
     /**
      * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
      */
@@ -65,22 +65,22 @@ public class Expression
         {
             throw new IllegalArgumentException("function 函数定义错误");
         }
-        FunctionCallOperand functionCallOperand = new FunctionCallOperand();
+        FunctionCallOperand.FunctionCallData data = new FunctionCallOperand.FunctionCallData();
         content = content.substring(9);
         int    index        = content.indexOf("(");
         String functionName = content.substring(0, index).trim();
-        functionCallOperand.setFunctionName(functionName);
+        data.setFunctionName(functionName);
         int    index2     = content.indexOf(")");
         String paramNames = content.substring(index + 1, index2);
-        functionCallOperand.setParamNames(Arrays.stream(paramNames.split(",")).map(String::trim).toArray(String[]::new));
+        data.setParamNames(Arrays.stream(paramNames.split(",")).map(String::trim).toArray(String[]::new));
         content = content.substring(index2 + 1).trim();
         if (content.charAt(0) != '{' || content.charAt(content.length() - 1) != '}')
         {
             throw new IllegalArgumentException("function 函数定义错误");
         }
         content = content.substring(1, content.length() - 1);
-        functionCallOperand.setFunction(parse(content));
-        FUNCTION_CALL_OPERAND_MAP.put(functionName, functionCallOperand);
+        data.setFunction(parse(content));
+        FUNCTION_CALL_OPERAND_MAP.put(functionName, data);
     }
 
     public static Operand parse(String el)
