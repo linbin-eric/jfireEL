@@ -49,7 +49,7 @@ public class ConstructorMethod extends MethodInvokeOperand
                             Object[] _args = new Object[argOperands.length];
                             for (int i = 0; i < _args.length; i++)
                             {
-                                _args[i] = argOperands[i].calculate(contextParam);
+                                _args[i] = argOperands[i].calculate(context);
                             }
                             try
                             {
