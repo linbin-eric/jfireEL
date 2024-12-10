@@ -41,7 +41,7 @@ public class NewInstanceOperator implements Operator
         }
         else
         {
-            parseContext.getOperandStack().push(new ConstructorMethod(classOperand.getCkass(), array, fragment, parseContext.getMethodInvokeAccelerators()));
+            parseContext.getOperandStack().push(new ConstructorMethod(classOperand.getCkass(), array, fragment, parseContext.getMatrix()));
         }
     }
 }

@@ -1,9 +1,6 @@
 package com.jfirer.jfireel;
 
-import com.jfirer.jfireel.expression.ELConfig;
-import com.jfirer.jfireel.expression.Expression;
-import com.jfirer.jfireel.expression.Operand;
-import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.*;
 import com.jfirer.jfireel.expression.impl.operand.basic.BasicOperandImpl;
 import com.jfirer.jfireel.template.Template;
 import lombok.Data;
@@ -138,8 +135,9 @@ public class FunctionTest extends TestSupport
     @Test
     public void test14()
     {
-        ParseContext parseContext = new ParseContext("EnumTest$Name.dd");
-        parseContext.getClassName().put("EnumTest$Name", Name.class);
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("EnumTest$Name.dd", matrix);
+        matrix.registerClassName("EnumTest$Name", Name.class);
         assertEquals(FunctionTest.Name.dd, parseContext.parse().calculate());
     }
 
@@ -240,8 +238,9 @@ public class FunctionTest extends TestSupport
     @Test
     public void test29()
     {
-        ParseContext parseContext = new ParseContext("String.valueOf('ab')");
-        parseContext.registerClass("String", String.class);
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("String.valueOf('ab')", matrix);
+        matrix.registerClassName("String", String.class);
         Operand operand = parseContext.parse();
         String  result  = (String) operand.calculate();
         assertEquals("ab", result);
@@ -340,8 +339,9 @@ public class FunctionTest extends TestSupport
     @Test
     public void test41()
     {
-        ParseContext parseContext = new ParseContext("FunctionTest.age");
-        parseContext.getClassName().put(FunctionTest.class.getSimpleName(), FunctionTest.class);
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("FunctionTest.age", matrix);
+        matrix.registerClassName(FunctionTest.class.getSimpleName(), FunctionTest.class);
         Operand operand = parseContext.parse();
         int     result  = ((Number) operand.calculate()).intValue();
         assertEquals(age, result);
@@ -716,10 +716,11 @@ public class FunctionTest extends TestSupport
     {
         String value = person.age + "12";
         vars.put("value", value);
-        ParseContext  parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)", new ELConfig().setMethodInvokeUseCompile(false));
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)", matrix, new ELConfig().setMethodInvokeUseCompile(false));
         Method        bool         = Home.class.getDeclaredMethod("bool", boolean.class);
         AtomicBoolean called       = new AtomicBoolean(false);
-        parseContext.registerMethodInvokeAccelerator(bool, (instance, operands, map) -> {
+        matrix.registerAcceleratorForMethodInvoke(bool, (instance, operands, map) -> {
             called.set(true);
             return ((Home) instance).bool((Boolean) operands[0].calculate(map));
         });

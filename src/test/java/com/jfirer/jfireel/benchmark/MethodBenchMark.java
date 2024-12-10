@@ -1,10 +1,7 @@
 package com.jfirer.jfireel.benchmark;
 
 import com.jfirer.jfireel.TestSupport;
-import com.jfirer.jfireel.expression.ELConfig;
-import com.jfirer.jfireel.expression.Expression;
-import com.jfirer.jfireel.expression.Operand;
-import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.*;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.exception.ScriptEvalError;
@@ -44,7 +41,8 @@ public class MethodBenchMark
 
     public MethodBenchMark()
     {
-        ParseContext parseContext = new ParseContext("home.personAge2(5)");
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("home.personAge2(5)", matrix);
         Method       personAge2   = null;
         try
         {
@@ -54,7 +52,7 @@ public class MethodBenchMark
         {
             throw new RuntimeException(e);
         }
-        parseContext.registerMethodInvokeAccelerator(personAge2, (instance, operands, map) -> ((TestSupport.Home) instance).personAge2((Integer) operands[0].calculate(map)));
+        matrix.registerAcceleratorForMethodInvoke(personAge2, (instance, operands, map) -> ((TestSupport.Home) instance).personAge2((Integer) operands[0].calculate(map)));
         lexer_new_lambda = parseContext.parse();
     }
 

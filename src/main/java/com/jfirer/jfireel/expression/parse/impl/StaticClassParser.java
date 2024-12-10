@@ -1,21 +1,20 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.CharType;
+import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.ClassOperand;
 import com.jfirer.jfireel.expression.impl.operator.SpotOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
-
-import java.util.Map;
 
 public class StaticClassParser implements TokenParser
 {
     @Override
     public boolean parse(ParseContext parseContext)
     {
-        int                   index           = parseContext.getIndex();
-        String                el              = parseContext.getEl();
-        Map<String, Class<?>> staticClassName = parseContext.getClassName();
+        int    index  = parseContext.getIndex();
+        String el     = parseContext.getEl();
+        Matrix matrix = parseContext.getMatrix();
         if (el.charAt(index) == '@' && index + 1 < el.length() && el.charAt(index + 1) == '(')
         {
             index += 2;
@@ -48,9 +47,9 @@ public class StaticClassParser implements TokenParser
             {
                 index += 1;
             }
-            if (staticClassName.containsKey(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
+            if (matrix.findClassByName(el.substring(parseContext.getIndex(), index)) != null && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
-                ClassOperand classOperand = new ClassOperand(staticClassName.get(el.substring(parseContext.getIndex(), index)));
+                ClassOperand classOperand = new ClassOperand(matrix.findClassByName(el.substring(parseContext.getIndex(), index)));
                 parseContext.getOperandStack().push(classOperand);
                 parseContext.setIndex(index);
                 parseContext.getRecognizeToken().add(classOperand);

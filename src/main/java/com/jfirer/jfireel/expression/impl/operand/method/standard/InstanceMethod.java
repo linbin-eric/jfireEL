@@ -2,12 +2,12 @@ package com.jfirer.jfireel.expression.impl.operand.method.standard;
 
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.Expression;
+import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvokeOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import lombok.SneakyThrows;
 
-import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -17,9 +17,9 @@ public class InstanceMethod extends MethodInvokeOperand
 {
     private Operand instanceOperand;
 
-    public InstanceMethod(Operand instanceOperand, String methodName, Operand[] argOperands, String fragment, Map<Executable, MethodInvoker> methodInvokeAccelerators)
+    public InstanceMethod(Operand instanceOperand, String methodName, Operand[] argOperands, String fragment, Matrix matrix)
     {
-        super(methodName, argOperands, fragment, methodInvokeAccelerators);
+        super(methodName, argOperands, fragment, matrix);
         this.instanceOperand = instanceOperand;
     }
 
@@ -46,7 +46,7 @@ public class InstanceMethod extends MethodInvokeOperand
                     }
                     final int[] classIds = Arrays.stream(executable.getParameterTypes()).mapToInt(ReflectUtil::getClassId).toArray();
                     executable.setAccessible(true);
-                    invoker = methodInvokeAccelerators.get(executable);
+                    invoker = matrix.findAcceleratorForMethodInvoke(executable);
                     if (invoker == null)
                     {
                         invoker = Expression.SHARE_METHODINVOKER.computeIfAbsent(executable, m -> (Object obj, Operand[] argOperands, Map<String, Object> context) -> {

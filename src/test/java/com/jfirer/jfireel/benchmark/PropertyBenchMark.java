@@ -1,10 +1,7 @@
 package com.jfirer.jfireel.benchmark;
 
 import com.jfirer.jfireel.TestSupport;
-import com.jfirer.jfireel.expression.ELConfig;
-import com.jfirer.jfireel.expression.Expression;
-import com.jfirer.jfireel.expression.Operand;
-import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.*;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
@@ -37,15 +34,16 @@ public class PropertyBenchMark
     @Setup
     public void before()
     {
-        ParseContext parseContext = new ParseContext("home.person");
+        Matrix matrix = new Matrix("default", null);
         try
         {
-            parseContext.registerPropertyReadAccelerator(TestSupport.Home.class.getDeclaredField("person"), v -> ((TestSupport.Home) v).getPerson());
+            matrix.registerAcceleratorForPropertyRead(TestSupport.Home.class.getDeclaredField("person"), v -> ((TestSupport.Home) v).getPerson());
         }
         catch (NoSuchFieldException e)
         {
             throw new RuntimeException(e);
         }
+        ParseContext parseContext = new ParseContext("home.person", matrix);
         lexer_accel = parseContext.parse();
         TestSupport.Home home = new TestSupport.Home();
         person      = new TestSupport.Person();

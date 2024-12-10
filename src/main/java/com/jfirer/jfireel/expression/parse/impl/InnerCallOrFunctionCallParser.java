@@ -1,22 +1,21 @@
 package com.jfirer.jfireel.expression.parse.impl;
 
 import com.jfirer.jfireel.expression.CharType;
+import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.ParseContext;
 import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.InnerCallOperand;
 import com.jfirer.jfireel.expression.impl.operator.SpotOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 
-import java.util.Set;
-
-public class InnnerCallOrFunctionCallParser implements TokenParser
+public class InnerCallOrFunctionCallParser implements TokenParser
 {
     @Override
     public boolean parse(ParseContext parseContext)
     {
-        int         index          = parseContext.getIndex();
-        String      el             = parseContext.getEl();
-        Set<String> innerCallNames = parseContext.getInnerCalls().keySet();
+        int    index  = parseContext.getIndex();
+        String el     = parseContext.getEl();
+        Matrix matrix = parseContext.getMatrix();
         if (CharType.isAlphabet(el.charAt(index)))
         {
             index += 1;
@@ -42,17 +41,17 @@ public class InnnerCallOrFunctionCallParser implements TokenParser
                 }
             }
             index = mark;
-            if (innerCallNames.contains(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
+            if (matrix.findInnerCall(el.substring(parseContext.getIndex(), index)) != null && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
-                InnerCallOperand innerCallOperand = new InnerCallOperand(parseContext.getInnerCalls().get(el.substring(parseContext.getIndex(), index)));
+                InnerCallOperand innerCallOperand = new InnerCallOperand(matrix.findInnerCall(el.substring(parseContext.getIndex(), index)));
                 parseContext.getOperandStack().push(innerCallOperand);
                 parseContext.getRecognizeToken().add(innerCallOperand);
                 parseContext.setIndex(index);
                 return true;
             }
-            else if (parseContext.getFuncationCalls().containsKey(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
+            else if (matrix.findFunctionCall(el.substring(parseContext.getIndex(), index)) != null && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
-                FunctionCallOperand.FunctionCallData callData            = parseContext.getFuncationCalls().get(el.substring(parseContext.getIndex(), index));
+                FunctionCallOperand.FunctionCallData callData = matrix.findFunctionCall(el.substring(parseContext.getIndex(), index));
                 FunctionCallOperand                  functionCallOperand = new FunctionCallOperand(callData.getParamNames(), callData.getFunction());
                 parseContext.getOperandStack().push(functionCallOperand);
                 parseContext.getRecognizeToken().add(functionCallOperand);

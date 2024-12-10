@@ -2,6 +2,7 @@ package com.jfirer.jfireel.expression.impl.operand.method.standard;
 
 import com.jfirer.baseutil.reflect.ReflectUtil;
 import com.jfirer.jfireel.expression.Expression;
+import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvokeOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
@@ -17,9 +18,9 @@ public class ConstructorMethod extends MethodInvokeOperand
 {
     private Class ckass;
 
-    public ConstructorMethod(Class<?> ckass, Operand[] argOperands, String fragment, Map<Executable, MethodInvoker> methodInvokeAccelerators)
+    public ConstructorMethod(Class<?> ckass, Operand[] argOperands, String fragment, Matrix matrix)
     {
-        super(ckass.getName(), argOperands, fragment, methodInvokeAccelerators);
+        super(ckass.getName(), argOperands, fragment, matrix);
         this.ckass = ckass;
     }
 
@@ -42,7 +43,7 @@ public class ConstructorMethod extends MethodInvokeOperand
                     }
                     Constructor constructor = (Constructor) executable;
                     constructor.setAccessible(true);
-                    invoker = methodInvokeAccelerators.get(executable);
+                    invoker = matrix.findAcceleratorForMethodInvoke(executable);
                     if (invoker == null)
                     {
                         invoker = Expression.SHARE_METHODINVOKER.computeIfAbsent(executable, c -> (Object obj, Operand[] argOperands, Map<String, Object> context) -> {

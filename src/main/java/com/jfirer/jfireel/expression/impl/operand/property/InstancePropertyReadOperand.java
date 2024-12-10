@@ -2,8 +2,8 @@ package com.jfirer.jfireel.expression.impl.operand.property;
 
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
 import com.jfirer.jfireel.expression.Expression;
+import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.Operand;
-import com.jfirer.jfireel.expression.ParseContext;
 import lombok.Data;
 
 import java.lang.reflect.Field;
@@ -13,20 +13,20 @@ import java.util.function.Function;
 @Data
 public class InstancePropertyReadOperand implements Operand
 {
-    protected final  Operand                              instanceOperand;
-    protected final  String                               propertyName;
-    protected        String                               fragment;
-    protected final  Map<Field, Function<Object, Object>> propertyAccelerators;
-    private volatile boolean                              init = false;
-    private          Function<Object, Object>             propertyGetter;
-    private          ValueAccessor                        valueAccessor;
+    protected final  Operand                  instanceOperand;
+    protected final  String                   propertyName;
+    protected final  Matrix                   matrix;
+    protected        String                   fragment;
+    private volatile boolean                  init = false;
+    private          Function<Object, Object> propertyGetter;
+    private          ValueAccessor            valueAccessor;
 
-    public InstancePropertyReadOperand(Operand instanceOperand, String propertyName, String fragment, ParseContext parseContext)
+    public InstancePropertyReadOperand(Operand instanceOperand, String propertyName, String fragment, Matrix matrix)
     {
-        this.instanceOperand      = instanceOperand;
-        this.propertyName         = propertyName;
-        this.fragment             = fragment;
-        this.propertyAccelerators = parseContext.getPropertyReadAccelerators();
+        this.instanceOperand = instanceOperand;
+        this.propertyName    = propertyName;
+        this.fragment        = fragment;
+        this.matrix          = matrix;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class InstancePropertyReadOperand implements Operand
                         throw new NullPointerException("需要解析属性，但是对象为空，解析片段为:" + fragment);
                     }
                     Field                    field    = Operand.findField(instance.getClass(), propertyName, fragment);
-                    Function<Object, Object> function = propertyAccelerators.get(field);
+                    Function<Object, Object> function = matrix.findAcceleratorForPropertyRead(field);
                     if (function != null)
                     {
                         propertyGetter = function;
