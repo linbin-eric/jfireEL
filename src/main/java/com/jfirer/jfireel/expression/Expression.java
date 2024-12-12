@@ -14,8 +14,8 @@ import java.util.function.Function;
 
 public class Expression
 {
-    public static final Matrix              MATRIX     = new Matrix("default", null);
-    public static final Map<String, Matrix> NAME_SPACE = new ConcurrentHashMap<>();
+    public static final Matrix                         MATRIX                    = new Matrix("default", null);
+    public static final Map<String, Matrix>            NAME_SPACE                = new ConcurrentHashMap<>();
     public static final Map<Field, ValueAccessor>      SHARE_VALUEACCESSOR_CACHE = new ConcurrentHashMap<>();
     public static final Map<Executable, MethodInvoker> SHARE_METHODINVOKER       = new ConcurrentHashMap<>();
 
@@ -94,9 +94,12 @@ public class Expression
         Matrix matrix = NAME_SPACE.get(matrixName);
         if (matrix == null)
         {
-            throw new NullPointerException("命名空间:" + matrixName + "不存在");
+            return parse(el);
         }
-        return parse(el, matrix);
+        else
+        {
+            return parse(el, matrix);
+        }
     }
 
     public static Operand parse(String el, Matrix matrix, ELConfig config)
@@ -109,9 +112,12 @@ public class Expression
         Matrix matrix = NAME_SPACE.get(matrixName);
         if (matrix == null)
         {
-            throw new NullPointerException("命名空间:" + matrixName + "不存在");
+            return parse(el, config);
         }
-        return parse(el, matrix, config);
+        else
+        {
+            return parse(el, matrix, config);
+        }
     }
 
     public static Operand parse(String el, ELConfig config)
