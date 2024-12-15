@@ -3,13 +3,16 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.CharType;
 import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.ParseContext;
+import com.jfirer.jfireel.expression.impl.CompileStaticCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.InnerCallOperand;
 import com.jfirer.jfireel.expression.impl.operator.SpotOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
+import lombok.SneakyThrows;
 
 public class InnerCallOrFunctionCallParser implements TokenParser
 {
+    @SneakyThrows
     @Override
     public boolean parse(ParseContext parseContext)
     {
@@ -55,6 +58,15 @@ public class InnerCallOrFunctionCallParser implements TokenParser
                 FunctionCallOperand                  functionCallOperand = new FunctionCallOperand(callData.getParamNames(), callData.getFunction());
                 parseContext.getOperandStack().push(functionCallOperand);
                 parseContext.getRecognizeToken().add(functionCallOperand);
+                parseContext.setIndex(index);
+                return true;
+            }
+            else if (matrix.findMethodHandle(el.substring(parseContext.getIndex(), index)) != null && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
+            {
+                Class<? extends CompileStaticCallOperand> ckass   = matrix.findMethodHandle(el.substring(parseContext.getIndex(), index));
+                CompileStaticCallOperand                  operand = ckass.getConstructor().newInstance();
+                parseContext.getOperandStack().push(operand);
+                parseContext.getRecognizeToken().add(operand);
                 parseContext.setIndex(index);
                 return true;
             }

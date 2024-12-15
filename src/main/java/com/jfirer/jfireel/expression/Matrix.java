@@ -1,5 +1,6 @@
 package com.jfirer.jfireel.expression;
 
+import com.jfirer.jfireel.expression.impl.CompileStaticCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import lombok.AccessLevel;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,28 +19,29 @@ import java.util.function.Function;
 @Setter(AccessLevel.NONE)
 public class Matrix
 {
-    private final String                                            name;
-    private final Matrix                                            parent;
+    private final String                                                 name;
+    private final Matrix                                                 parent;
     /**
      * 提前注册的简单类的名称
      */
-    private       Map<String, Class<?>>                             className                  = new HashMap<>();
+    private       Map<String, Class<?>>                                  className                  = new HashMap<>();
     /**
      * 注册的内部调用方法
      */
-    private       Map<String, MethodInvoker>                        innerCalls                 = new HashMap<>();
+    private       Map<String, MethodInvoker>                             innerCalls                 = new HashMap<>();
     /**
      * 注册的自定义方法
      */
-    private       Map<String, FunctionCallOperand.FunctionCallData> functionCalls              = new HashMap<>();
+    private       Map<String, FunctionCallOperand.FunctionCallData>      functionCalls              = new HashMap<>();
+    private       Map<String, Class<? extends CompileStaticCallOperand>> methodHandles              = new HashMap<>();
     /**
      * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
      */
-    private       Map<Executable, MethodInvoker>                    acceleratorForMethodInvoke = new HashMap<>();
+    private       Map<Executable, MethodInvoker>                         acceleratorForMethodInvoke = new HashMap<>();
     /**
      * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
      */
-    private       Map<Field, Function<Object, Object>>              acceleratorForPropertyRead = new HashMap<>();
+    private       Map<Field, Function<Object, Object>>                   acceleratorForPropertyRead = new HashMap<>();
 
     public void registerClassName(String name, Class clazz)
     {
@@ -48,6 +51,11 @@ public class Matrix
     public void registerInnerCall(String name, MethodInvoker function)
     {
         innerCalls.put(name, function);
+    }
+
+    public void registerMethodHandle(String name, Method method)
+    {
+        methodHandles.put(name, CompileStaticCallOperand.make(method));
     }
 
     public void registerAcceleratorForPropertyRead(Field field, Function<Object, Object> accelerator)
@@ -142,5 +150,15 @@ public class Matrix
             return callData;
         }
         return parent != null ? parent.findFunctionCall(name) : null;
+    }
+
+    public Class<? extends CompileStaticCallOperand> findMethodHandle(String name)
+    {
+        Class<? extends CompileStaticCallOperand> ckass = methodHandles.get(name);
+        if (ckass != null)
+        {
+            return ckass;
+        }
+        return parent != null ? parent.findMethodHandle(name) : null;
     }
 }
