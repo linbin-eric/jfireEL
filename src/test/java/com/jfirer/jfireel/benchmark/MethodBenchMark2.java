@@ -1,6 +1,6 @@
 package com.jfirer.jfireel.benchmark;
 
-import com.jfirer.jfireel.MethodHandleCall;
+import com.jfirer.jfireel.ReferenceCall;
 import com.jfirer.jfireel.expression.ELConfig;
 import com.jfirer.jfireel.expression.Expression;
 import com.jfirer.jfireel.expression.Operand;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class MethodBenchMark2
 {
     private Operand innerCall;
-    private Operand methodHandleCall;
+    private Operand referenceCall;
     private Operand staticCall;
     private Map     map = Map.of();
 
@@ -31,7 +31,7 @@ public class MethodBenchMark2
         return a + b;
     }
 
-    @MethodHandleCall
+    @ReferenceCall
     public static Integer plus2(Integer a, Integer b)
     {
         return a + b;
@@ -47,11 +47,11 @@ public class MethodBenchMark2
     public void before()
     {
         Expression.registerInnerCall("plus", MethodBenchMark2::plus);
-        Expression.scanForMethodHandle(MethodBenchMark2.class);
+        Expression.scanForReferenceCall(MethodBenchMark2.class);
         Expression.registerClass("MethodBenchMark2", MethodBenchMark2.class);
-        innerCall        = Expression.parse("plus(1,2)");
-        methodHandleCall = Expression.parse("plus2(1,2)");
-        staticCall       = Expression.parse("MethodBenchMark2.plus2(1,2)", new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
+        innerCall     = Expression.parse("plus(1,2)");
+        referenceCall = Expression.parse("plus2(1,2)");
+        staticCall    = Expression.parse("MethodBenchMark2.plus2(1,2)", new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
     }
 
     @Benchmark
@@ -61,9 +61,9 @@ public class MethodBenchMark2
     }
 
     @Benchmark
-    public void testMethodCall()
+    public void testReferenceCall()
     {
-        methodHandleCall.calculate(map);
+        referenceCall.calculate(map);
     }
 
     @Benchmark

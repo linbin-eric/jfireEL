@@ -1,7 +1,9 @@
 package com.jfirer.jfireel.expression;
 
-import com.jfirer.jfireel.expression.impl.CompileStaticCallOperand;
+import com.jfirer.jfireel.expression.impl.operand.CallOperand;
 import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
+import com.jfirer.jfireel.expression.impl.operand.InnerCallOperand;
+import com.jfirer.jfireel.expression.impl.operand.ReferenceCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -10,38 +12,32 @@ import lombok.Setter;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Data
 @Setter(AccessLevel.NONE)
 public class Matrix
 {
-    private final String                                                 name;
-    private final Matrix                                                 parent;
+    private final String                                       name;
+    private final Matrix                                       parent;
     /**
      * 提前注册的简单类的名称
      */
-    private       Map<String, Class<?>>                                  className                  = new HashMap<>();
-    /**
-     * 注册的内部调用方法
-     */
-    private       Map<String, MethodInvoker>                             innerCalls                 = new HashMap<>();
-    /**
-     * 注册的自定义方法
-     */
-    private       Map<String, FunctionCallOperand.FunctionCallData>      functionCalls              = new HashMap<>();
-    private       Map<String, Class<? extends CompileStaticCallOperand>> methodHandles              = new HashMap<>();
+    private       Map<String, Class<?>>                        className                  = new HashMap<>();
+    private       Map<String, Supplier<? extends CallOperand>> callMap                    = new HashMap<>();
     /**
      * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
      */
-    private       Map<Executable, MethodInvoker>                         acceleratorForMethodInvoke = new HashMap<>();
+    private       Map<Executable, MethodInvoker>               acceleratorForMethodInvoke = new HashMap<>();
     /**
      * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
      */
-    private       Map<Field, Function<Object, Object>>                   acceleratorForPropertyRead = new HashMap<>();
+    private       Map<Field, Function<Object, Object>>         acceleratorForPropertyRead = new HashMap<>();
 
     public void registerClassName(String name, Class clazz)
     {
@@ -50,12 +46,20 @@ public class Matrix
 
     public void registerInnerCall(String name, MethodInvoker function)
     {
-        innerCalls.put(name, function);
+        callMap.put(name, () -> new InnerCallOperand(function));
     }
 
-    public void registerMethodHandle(String name, Method method)
+    public void registerReferenceCall(String name, Method method)
     {
-        methodHandles.put(name, CompileStaticCallOperand.make(method));
+        int modifiers = method.getModifiers();
+        if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
+        {
+            callMap.put(name, ReferenceCallOperand.make(method));
+        }
+        else
+        {
+            throw new IllegalArgumentException("方法" + name + "不是静态的，或者不是public的");
+        }
     }
 
     public void registerAcceleratorForPropertyRead(Field field, Function<Object, Object> accelerator)
@@ -84,22 +88,20 @@ public class Matrix
         {
             throw new IllegalArgumentException("function 函数定义错误");
         }
-        FunctionCallOperand.FunctionCallData data = new FunctionCallOperand.FunctionCallData();
         content = content.substring(9);
-        int    index        = content.indexOf("(");
-        String functionName = content.substring(0, index).trim();
-        data.setFunctionName(functionName);
-        int    index2     = content.indexOf(")");
-        String paramNames = content.substring(index + 1, index2);
-        data.setParamNames(Arrays.stream(paramNames.split(",")).map(String::trim).toArray(String[]::new));
+        int      index             = content.indexOf("(");
+        String   functionName      = content.substring(0, index).trim();
+        int      index2            = content.indexOf(")");
+        String   paramNameContents = content.substring(index + 1, index2);
+        String[] paramNames        = Arrays.stream(paramNameContents.split(",")).map(String::trim).toArray(String[]::new);
         content = content.substring(index2 + 1).trim();
         if (content.charAt(0) != '{' || content.charAt(content.length() - 1) != '}')
         {
             throw new IllegalArgumentException("function 函数定义错误");
         }
         content = content.substring(1, content.length() - 1);
-        data.setFunction(Expression.parse(content, this));
-        functionCalls.put(functionName, data);
+        Operand operand = Expression.parse(content, this);
+        callMap.put(functionName, () -> new FunctionCallOperand(paramNames, operand));
     }
 
     public MethodInvoker findAcceleratorForMethodInvoke(Executable executable)
@@ -132,33 +134,13 @@ public class Matrix
         return parent != null ? parent.findClassByName(name) : null;
     }
 
-    public MethodInvoker findInnerCall(String name)
+    public Supplier<? extends CallOperand> findCallOperand(String name)
     {
-        MethodInvoker invoker = innerCalls.get(name);
-        if (invoker != null)
+        Supplier<? extends CallOperand> supplier = callMap.get(name);
+        if (supplier != null)
         {
-            return invoker;
+            return supplier;
         }
-        return parent != null ? parent.findInnerCall(name) : null;
-    }
-
-    public FunctionCallOperand.FunctionCallData findFunctionCall(String name)
-    {
-        FunctionCallOperand.FunctionCallData callData = functionCalls.get(name);
-        if (callData != null)
-        {
-            return callData;
-        }
-        return parent != null ? parent.findFunctionCall(name) : null;
-    }
-
-    public Class<? extends CompileStaticCallOperand> findMethodHandle(String name)
-    {
-        Class<? extends CompileStaticCallOperand> ckass = methodHandles.get(name);
-        if (ckass != null)
-        {
-            return ckass;
-        }
-        return parent != null ? parent.findMethodHandle(name) : null;
+        return parent != null ? parent.findCallOperand(name) : null;
     }
 }

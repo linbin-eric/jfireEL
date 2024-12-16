@@ -9,12 +9,11 @@ import java.util.Map;
 
 @Data
 @Accessors(chain = true)
-public class FunctionCallOperand implements Operand
+public class FunctionCallOperand extends CallOperand
 {
-    private final String[]  paramNames;
-    private final Operand   function;
-    private       String    functionName;
-    private       Operand[] args;
+    private final String[] paramNames;
+    private final Operand  function;
+    private       String   functionName;
 
     @Override
     public Object calculate(Map<String, Object> contextParam)
@@ -25,13 +24,5 @@ public class FunctionCallOperand implements Operand
             functionParam.put(paramNames[i], args[i].calculate(contextParam));
         }
         return function.calculate(functionParam);
-    }
-
-    @Data
-    public static class FunctionCallData
-    {
-        private String   functionName;
-        private String[] paramNames;
-        private Operand  function;
     }
 }

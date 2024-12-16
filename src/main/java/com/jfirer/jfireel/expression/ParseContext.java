@@ -24,7 +24,7 @@ public class ParseContext
             new BooleanParser(),//
             new NullParser(),//
             new ExtraExecuteParser(),//
-            new InnerCallOrFunctionCallParser(),//
+            new CallOperandParser(),//
             new StaticClassParser(),//
             new VariableParser(),//
             new LiteralParser(),//

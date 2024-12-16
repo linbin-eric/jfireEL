@@ -4,7 +4,6 @@ import com.jfirer.jfireel.PlaceHolder;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.impl.CompileStaticCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.*;
 import lombok.Data;
 
@@ -19,10 +18,8 @@ public class LeftParenOperator implements Operator
     public static final int    IF                 = 5;
     public static final int    ELSE_IF            = 6;
     public static final int    FOR                = 7;
-    public static final int    INNER_CALL         = 8;
+    public static final int    CALL_OPERAND       = 8;
     public static final int    CLASS              = 9;
-    public static final int FUNCTION_CALL      = 10;
-    public static final int METHOD_HANDLE_CALL = 11;
     private final       String fragment;
     private             int    type;
 
@@ -42,17 +39,9 @@ public class LeftParenOperator implements Operator
     public void push(ParseContext parseContext)
     {
         Deque<Operand> operandStack = parseContext.getOperandStack();
-        if (parseContext.getRecognizeToken().peekLast() instanceof InnerCallOperand)
+        if (parseContext.getRecognizeToken().peekLast() instanceof CallOperand)
         {
-            type = INNER_CALL;
-        }
-        else if (parseContext.getRecognizeToken().peekLast() instanceof FunctionCallOperand)
-        {
-            type = FUNCTION_CALL;
-        }
-        else if (parseContext.getRecognizeToken().peekLast() instanceof CompileStaticCallOperand)
-        {
-            type = METHOD_HANDLE_CALL;
+            type = CALL_OPERAND;
         }
         else if (parseContext.getOperatorStack().peek() instanceof SpotOperator)
         {
@@ -92,28 +81,12 @@ public class LeftParenOperator implements Operator
     {
         switch (type)
         {
-            case INNER_CALL ->
+            case CALL_OPERAND ->
             {
                 Deque<Operand> processStack = parseContext.getProcessStack();
                 List<Operand>  list         = processStack.stream().toList();
                 processStack.clear();
-                InnerCallOperand peek = (InnerCallOperand) parseContext.getOperandStack().peek();
-                peek.setMethodParams(list.toArray(Operand[]::new));
-            }
-            case FUNCTION_CALL ->
-            {
-                Deque<Operand> processStack = parseContext.getProcessStack();
-                List<Operand>  list         = processStack.stream().toList();
-                processStack.clear();
-                FunctionCallOperand peek = (FunctionCallOperand) parseContext.getOperandStack().peek();
-                peek.setArgs(list.toArray(Operand[]::new));
-            }
-            case METHOD_HANDLE_CALL ->
-            {
-                Deque<Operand> processStack = parseContext.getProcessStack();
-                List<Operand>  list         = processStack.stream().toList();
-                processStack.clear();
-                CompileStaticCallOperand peek = (CompileStaticCallOperand) parseContext.getOperandStack().peek();
+                CallOperand peek = (CallOperand) parseContext.getOperandStack().peek();
                 peek.setArgs(list.toArray(Operand[]::new));
             }
             case METHOD ->

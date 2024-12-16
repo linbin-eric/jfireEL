@@ -716,8 +716,8 @@ public class FunctionTest extends TestSupport
     {
         String value = person.age + "12";
         vars.put("value", value);
-        Matrix       matrix       = new Matrix("", null);
-        ParseContext parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)", matrix, new ELConfig().setMethodInvokeUseCompile(false));
+        Matrix        matrix       = new Matrix("", null);
+        ParseContext  parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)", matrix, new ELConfig().setMethodInvokeUseCompile(false));
         Method        bool         = Home.class.getDeclaredMethod("bool", boolean.class);
         AtomicBoolean called       = new AtomicBoolean(false);
         matrix.registerAcceleratorForMethodInvoke(bool, (instance, operands, map) -> {
@@ -950,5 +950,19 @@ public class FunctionTest extends TestSupport
         Operand operand   = Expression.parse("plus(1,2)");
         Integer calculate = (Integer) operand.calculate();
         assertEquals(3, calculate.intValue());
+    }
+
+    public static int plus(int a, int b)
+    {
+        return a + b;
+    }
+
+    @Test
+    public void test88() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("plus", FunctionTest.class.getDeclaredMethod("plus", int.class, int.class));
+        Operand operand = Expression.parse("plus(1,2)");
+        Integer result  = (Integer) operand.calculate();
+        assertEquals(3, result.intValue());
     }
 }

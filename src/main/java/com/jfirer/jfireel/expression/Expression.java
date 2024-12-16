@@ -1,7 +1,8 @@
 package com.jfirer.jfireel.expression;
 
+import com.jfirer.baseutil.StringUtil;
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
-import com.jfirer.jfireel.MethodHandleCall;
+import com.jfirer.jfireel.ReferenceCall;
 import com.jfirer.jfireel.expression.format.FormatContext;
 import com.jfirer.jfireel.expression.format.FormatToken;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
@@ -124,15 +125,35 @@ public class Expression
     }
 
     @SneakyThrows
-    public static void scanForMethodHandle(Class ckass)
+    public static void scanForReferenceCall(Class ckass)
     {
         for (Method method : ckass.getMethods())
         {
-            if (method.isAnnotationPresent(MethodHandleCall.class))
+            if (method.isAnnotationPresent(ReferenceCall.class))
             {
-                MATRIX.registerMethodHandle(method.getName(), method);
+                ReferenceCall referenceCall = method.getAnnotation(ReferenceCall.class);
+                String        callName      = StringUtil.isNotBlank(referenceCall.value()) ? referenceCall.value() : method.getName();
+                if (StringUtil.isNotBlank(referenceCall.matrixName()))
+                {
+                    registerReferenceCall(callName, method, referenceCall.matrixName());
+                }
+                else
+                {
+                    registerReferenceCall(callName, method);
+                }
             }
         }
+    }
+
+    public static void registerReferenceCall(String name, Method method)
+    {
+        MATRIX.registerReferenceCall(name, method);
+    }
+
+    public static void registerReferenceCall(String name, Method method, String matrixName)
+    {
+        Matrix matrix = NAME_SPACE.computeIfAbsent(matrixName, k -> new Matrix(k, MATRIX));
+        matrix.registerReferenceCall(name, method);
     }
 
     public static Operand parse(String el, ELConfig config)

@@ -7,6 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface MethodHandleCall
+public @interface ReferenceCall
 {
+    String value() default "";
+
+    String matrixName() default "";
 }

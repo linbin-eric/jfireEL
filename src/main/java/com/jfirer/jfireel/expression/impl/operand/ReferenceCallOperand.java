@@ -1,25 +1,25 @@
-package com.jfirer.jfireel.expression.impl;
+package com.jfirer.jfireel.expression.impl.operand;
 
 import com.jfirer.baseutil.STR;
 import com.jfirer.baseutil.smc.SmcHelper;
 import com.jfirer.baseutil.smc.model.ClassModel;
 import com.jfirer.baseutil.smc.model.MethodModel;
-import com.jfirer.jfireel.expression.Operand;
 import lombok.Data;
 import lombok.SneakyThrows;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Data
-public abstract class CompileStaticCallOperand implements Operand
+public abstract class ReferenceCallOperand extends CallOperand
 {
-    protected Operand[] args;
-
     @SneakyThrows
-    public static Class<? extends CompileStaticCallOperand> make(Method method)
+    public static Supplier<ReferenceCallOperand> make(Method method)
     {
-        ClassModel  classModel = new ClassModel(STR.format("{}_{}", "CompileStaticCallOperand", COUNTER.getAndIncrement()), CompileStaticCallOperand.class);
+        ClassModel  classModel = new ClassModel(STR.format("{}_{}", "ReferenceCallOperand", COUNTER.getAndIncrement()), ReferenceCallOperand.class);
         MethodModel model      = new MethodModel(classModel);
         model.setMethodName("calculate");
         model.setParamterTypes(Map.class);
@@ -66,7 +66,17 @@ public abstract class CompileStaticCallOperand implements Operand
             model.setBody(builder.toString());
             classModel.putMethodModel(model);
         }
-        Class<? extends CompileStaticCallOperand> compile = (Class<? extends CompileStaticCallOperand>) COMPILE_HELPER.compile(classModel);
-        return compile;
+        Class<ReferenceCallOperand>       compile     = (Class<ReferenceCallOperand>) COMPILE_HELPER.compile(classModel);
+        Constructor<ReferenceCallOperand> constructor = compile.getConstructor();
+        return () -> {
+            try
+            {
+                return constructor.newInstance();
+            }
+            catch (InstantiationException | IllegalAccessException | InvocationTargetException e)
+            {
+                throw new RuntimeException(e);
+            }
+        };
     }
 }
