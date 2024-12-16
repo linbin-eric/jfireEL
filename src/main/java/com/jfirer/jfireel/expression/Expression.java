@@ -1,12 +1,15 @@
 package com.jfirer.jfireel.expression;
 
 import com.jfirer.baseutil.reflect.valueaccessor.ValueAccessor;
+import com.jfirer.jfireel.MethodHandleCall;
 import com.jfirer.jfireel.expression.format.FormatContext;
 import com.jfirer.jfireel.expression.format.FormatToken;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -117,6 +120,18 @@ public class Expression
         else
         {
             return parse(el, matrix, config);
+        }
+    }
+
+    @SneakyThrows
+    public static void scanForMethodHandle(Class ckass)
+    {
+        for (Method method : ckass.getMethods())
+        {
+            if (method.isAnnotationPresent(MethodHandleCall.class))
+            {
+                MATRIX.registerMethodHandle(method.getName(), method);
+            }
         }
     }
 
