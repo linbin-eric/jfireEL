@@ -936,20 +936,15 @@ public class FunctionTest extends TestSupport
         assertNull(operand.getFragment());
     }
 
-    @Test
-    public void test87()
+    public static String print(String name, Object[] array)
     {
-        String function = """
-                # 这是第一行注释
-                # 这是第二行注释
-                function plus(a,b)
-                {
-                   return a+b;
-                }""";
-        Expression.registerFunctionCall(function);
-        Operand operand   = Expression.parse("plus(1,2)");
-        Integer calculate = (Integer) operand.calculate();
-        assertEquals(3, calculate.intValue());
+        StringBuilder builder = new StringBuilder();
+        builder.append(name);
+        for (Object o : array)
+        {
+            builder.append(o);
+        }
+        return builder.toString();
     }
 
     public static int plus(int a, int b)
@@ -964,5 +959,39 @@ public class FunctionTest extends TestSupport
         Operand operand = Expression.parse("plus(1,2)");
         Integer result  = (Integer) operand.calculate();
         assertEquals(3, result.intValue());
+    }
+
+    public static String print(String name, int i)
+    {
+        return name + i;
+    }
+
+    @Test
+    public void test87()
+    {
+        String function = """
+                # 这是第一行注释
+                # 这是第二行注释
+                function plus(a,b)
+                {
+                   return a+b;
+                }""";
+        Expression.registerFunctionCall(function, "test87");
+        Operand operand = Expression.parse("plus(1,2)", "test87");
+        Integer calculate = (Integer) operand.calculate();
+        assertEquals(3, calculate.intValue());
+    }
+
+    @Test
+    public void test89() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("print", FunctionTest.class.getDeclaredMethod("print", String.class, Object[].class), "test89");
+        Expression.registerReferenceCall("print", FunctionTest.class.getDeclaredMethod("print", String.class, int.class), "test89");
+        Operand operand = Expression.parse("""
+                                                   print('linbin',1,3,4)""", "test89");
+        assertEquals("linbin134", operand.calculate());
+        operand = Expression.parse("""
+                                           print('linbin',1)""", "test89");
+        assertEquals("linbin1", operand.calculate());
     }
 }

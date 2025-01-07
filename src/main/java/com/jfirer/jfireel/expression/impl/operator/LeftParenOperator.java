@@ -1,6 +1,7 @@
 package com.jfirer.jfireel.expression.impl.operator;
 
 import com.jfirer.jfireel.PlaceHolder;
+import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.Operand;
 import com.jfirer.jfireel.expression.Operator;
 import com.jfirer.jfireel.expression.ParseContext;
@@ -39,7 +40,7 @@ public class LeftParenOperator implements Operator
     public void push(ParseContext parseContext)
     {
         Deque<Operand> operandStack = parseContext.getOperandStack();
-        if (parseContext.getRecognizeToken().peekLast() instanceof CallOperand)
+        if (parseContext.getRecognizeToken().peekLast() instanceof CallOperand.CallOperandPlaceHolder)
         {
             type = CALL_OPERAND;
         }
@@ -86,8 +87,17 @@ public class LeftParenOperator implements Operator
                 Deque<Operand> processStack = parseContext.getProcessStack();
                 List<Operand>  list         = processStack.stream().toList();
                 processStack.clear();
-                CallOperand peek = (CallOperand) parseContext.getOperandStack().peek();
-                peek.setArgs(list.toArray(Operand[]::new));
+                //弹出占位符，放入真正的CallOperand
+                CallOperand.CallOperandPlaceHolder placeHolder = (CallOperand.CallOperandPlaceHolder) parseContext.getOperandStack().pop();
+                Operand[]                          args        = list.toArray(Operand[]::new);
+                Matrix                             matrix      = placeHolder.getMatrix();
+                CallOperand                        callOperand = matrix.findCallOperand(placeHolder.getName(), args);
+                if (callOperand == null)
+                {
+                    throw new IllegalArgumentException("无法找到有效的调用:" + placeHolder.getName());
+                }
+                callOperand.setArgs(args);
+                parseContext.getOperandStack().push(callOperand);
             }
             case METHOD ->
             {

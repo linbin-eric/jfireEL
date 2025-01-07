@@ -13,31 +13,28 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Data
 @Setter(AccessLevel.NONE)
 public class Matrix
 {
-    private final String                                       name;
-    private final Matrix                                       parent;
+    private final String                                         name;
+    private final Matrix                                         parent;
     /**
      * 提前注册的简单类的名称
      */
-    private       Map<String, Class<?>>                        className                  = new HashMap<>();
-    private       Map<String, Supplier<? extends CallOperand>> callMap                    = new HashMap<>();
+    private       Map<String, Class<?>>                          className                  = new HashMap<>();
+    private       Map<String, List<CallOperand.CallOperandData>> callMap                    = new HashMap<>();
     /**
      * 加速方法调用的实现。对应 method 不采取反射方式调用，使用对应的MethodInvokeHelper进行调用。
      */
-    private       Map<Executable, MethodInvoker>               acceleratorForMethodInvoke = new HashMap<>();
+    private       Map<Executable, MethodInvoker>                 acceleratorForMethodInvoke = new HashMap<>();
     /**
      * 加速属性的读取，对应属性的读取不采用反射的方式，采用对应的Function<Object, Object>来返回属性的值
      */
-    private       Map<Field, Function<Object, Object>>         acceleratorForPropertyRead = new HashMap<>();
+    private       Map<Field, Function<Object, Object>>           acceleratorForPropertyRead = new HashMap<>();
 
     public void registerClassName(String name, Class clazz)
     {
@@ -46,7 +43,8 @@ public class Matrix
 
     public void registerInnerCall(String name, MethodInvoker function)
     {
-        callMap.put(name, () -> new InnerCallOperand(function));
+        List<CallOperand.CallOperandData> list = callMap.computeIfAbsent(name, k -> new LinkedList<>());
+        list.add(new CallOperand.CallOperandData().setName(name).setParamCount(0).setSupportVariableParams(true).setConstructor(args -> new InnerCallOperand(function)));
     }
 
     public void registerReferenceCall(String name, Method method)
@@ -54,7 +52,15 @@ public class Matrix
         int modifiers = method.getModifiers();
         if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
         {
-            callMap.put(name, ReferenceCallOperand.make(method));
+            List<CallOperand.CallOperandData> list = callMap.computeIfAbsent(name, k -> new LinkedList<>());
+            if (method.getParameterCount() > 0)
+            {
+                list.add(new CallOperand.CallOperandData().setName(name).setParamCount(method.getParameterCount()).setSupportVariableParams(method.getParameterTypes()[method.getParameterCount() - 1].isArray()).setConstructor(args -> ReferenceCallOperand.make(method, args)));
+            }
+            else
+            {
+                list.add(new CallOperand.CallOperandData().setName(name).setParamCount(0).setSupportVariableParams(false).setConstructor(args -> ReferenceCallOperand.make(method, args)));
+            }
         }
         else
         {
@@ -100,8 +106,9 @@ public class Matrix
             throw new IllegalArgumentException("function 函数定义错误");
         }
         content = content.substring(1, content.length() - 1);
-        Operand operand = Expression.parse(content, this);
-        callMap.put(functionName, () -> new FunctionCallOperand(paramNames, operand));
+        Operand                           operand = Expression.parse(content, this);
+        List<CallOperand.CallOperandData> list    = callMap.computeIfAbsent(functionName, k -> new LinkedList<>());
+        list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(false).setParamCount(paramNames.length).setConstructor(args -> new FunctionCallOperand(paramNames, operand)));
     }
 
     public MethodInvoker findAcceleratorForMethodInvoke(Executable executable)
@@ -134,13 +141,39 @@ public class Matrix
         return parent != null ? parent.findClassByName(name) : null;
     }
 
-    public Supplier<? extends CallOperand> findCallOperand(String name)
+    public boolean existCallOperand(String name)
     {
-        Supplier<? extends CallOperand> supplier = callMap.get(name);
-        if (supplier != null)
+        return callMap.containsKey(name);
+    }
+
+    public CallOperand findCallOperand(String name, Operand[] args)
+    {
+        List<CallOperand.CallOperandData> list = callMap.get(name);
+        if (list != null)
         {
-            return supplier;
+            List<CallOperand.CallOperandData> result = list.stream().filter(c -> c.isSupportVariableParams() == false)//
+                                                           .filter(c -> c.getParamCount() == args.length)//
+                                                           .toList();
+            if (result.size() > 1)
+            {
+                throw new IllegalArgumentException("对调用:" + name + "进行方法定位，结果多于1个。");
+            }
+            else if (result.size() == 1)
+            {
+                return result.get(0).getConstructor().apply(args);
+            }
+            result = list.stream().filter(c -> c.isSupportVariableParams())//
+                         .filter(c -> c.getParamCount() <= args.length)//
+                         .toList();
+            if (result.size() > 1)
+            {
+                throw new IllegalArgumentException("对调用:" + name + "进行方法定位，结果多于1个。");
+            }
+            else if (result.size() == 1)
+            {
+                return result.get(0).getConstructor().apply(args);
+            }
         }
-        return parent != null ? parent.findCallOperand(name) : null;
+        return parent != null ? parent.findCallOperand(name, args) : null;
     }
 }

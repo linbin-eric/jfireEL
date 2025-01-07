@@ -42,11 +42,11 @@ public class CallOperandParser implements TokenParser
                 }
             }
             index = mark;
-            if (matrix.findCallOperand(el.substring(parseContext.getIndex(), index)) != null && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
+            if (matrix.existCallOperand(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
-                CallOperand callOperand = matrix.findCallOperand(el.substring(parseContext.getIndex(), index)).get();
-                parseContext.getOperandStack().push(callOperand);
-                parseContext.getRecognizeToken().add(callOperand);
+                CallOperand.CallOperandPlaceHolder placeHolder = new CallOperand.CallOperandPlaceHolder().setName(el.substring(parseContext.getIndex(), index)).setMatrix(matrix);
+                parseContext.getOperandStack().push(placeHolder);
+                parseContext.getRecognizeToken().add(placeHolder);
                 parseContext.setIndex(index);
                 return true;
             }
