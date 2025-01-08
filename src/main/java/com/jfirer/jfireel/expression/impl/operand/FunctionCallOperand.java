@@ -43,4 +43,32 @@ public class FunctionCallOperand extends CallOperand
         }
         return function.calculate(functionParam);
     }
+
+    @Override
+    public Object calculate(Object[] args)
+    {
+        Map<String, Object> functionParam = new HashMap<>();
+        if (supportVariableParams)
+        {
+            int len = paramNames.length - 1;
+            for (int i = 0; i < len; i++)
+            {
+                functionParam.put(paramNames[i], args[i]);
+            }
+            Object[] array = new Object[args.length - len];
+            for (int i = len; i < args.length; i++)
+            {
+                array[i - len] = args[i];
+            }
+            functionParam.put(paramNames[len], array);
+        }
+        else
+        {
+            for (int i = 0; i < paramNames.length; i++)
+            {
+                functionParam.put(paramNames[i], args[i]);
+            }
+        }
+        return function.calculate(functionParam);
+    }
 }

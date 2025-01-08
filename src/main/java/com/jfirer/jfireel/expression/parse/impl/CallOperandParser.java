@@ -3,7 +3,7 @@ package com.jfirer.jfireel.expression.parse.impl;
 import com.jfirer.jfireel.expression.CharType;
 import com.jfirer.jfireel.expression.Matrix;
 import com.jfirer.jfireel.expression.ParseContext;
-import com.jfirer.jfireel.expression.impl.operand.CallOperand;
+import com.jfirer.jfireel.expression.impl.operand.CallOperandPlaceHolder;
 import com.jfirer.jfireel.expression.impl.operator.SpotOperator;
 import com.jfirer.jfireel.expression.parse.TokenParser;
 import lombok.SneakyThrows;
@@ -44,7 +44,7 @@ public class CallOperandParser implements TokenParser
             index = mark;
             if (matrix.existCallOperand(el.substring(parseContext.getIndex(), index)) && parseContext.getOperatorStack().peek() instanceof SpotOperator == false)
             {
-                CallOperand.CallOperandPlaceHolder placeHolder = new CallOperand.CallOperandPlaceHolder().setName(el.substring(parseContext.getIndex(), index)).setMatrix(matrix);
+                CallOperandPlaceHolder placeHolder = new CallOperandPlaceHolder().setName(el.substring(parseContext.getIndex(), index)).setMatrix(matrix);
                 parseContext.getOperandStack().push(placeHolder);
                 parseContext.getRecognizeToken().add(placeHolder);
                 parseContext.setIndex(index);

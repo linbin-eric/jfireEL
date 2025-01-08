@@ -5,7 +5,6 @@ import com.jfirer.jfireel.expression.impl.operand.basic.BasicOperandImpl;
 import com.jfirer.jfireel.template.Template;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -107,24 +106,22 @@ public class FunctionTest extends TestSupport
         assertEquals(3, ((Number) Expression.parse("1+4/2").calculate()).intValue());
     }
 
-    @Test
-    public void test11()
+    @ReferenceCall(matrixName = "test92")
+    public static int minus(int a, int b)
     {
-        Assert.assertFalse((Boolean) Expression.parse("true && 1-2>0").calculate());
+        return a - b;
     }
 
-    @Test
-    public void test12()
+    @ReferenceCall(matrixName = "test92")
+    public static String minus(String a, String b)
     {
-        Assert.assertTrue((Boolean) Expression.parse("false || 2-1>0").calculate());
+        return a;
     }
 
-    @Test
-    public void test13()
+    @ReferenceCall(matrixName = "test93")
+    public static int minus2(int a, Object... b)
     {
-        Map<String, Object> m = new HashMap<>();
-        m.put("BLOODPRESSURE1", 100);
-        Assert.assertTrue((Boolean) Expression.parse("BLOODPRESSURE1<140&&BLOODPRESSURE1>90").calculate(m));
+        return a - ((Integer) b[0]);
     }
 
     enum Name
@@ -132,13 +129,10 @@ public class FunctionTest extends TestSupport
         dd
     }
 
-    @Test
-    public void test14()
+    @ReferenceCall(matrixName = "test93")
+    public static String minus2(String a, Object... b)
     {
-        Matrix       matrix       = new Matrix("", null);
-        ParseContext parseContext = new ParseContext("EnumTest$Name.dd", matrix);
-        matrix.registerClassName("EnumTest$Name", Name.class);
-        assertEquals(FunctionTest.Name.dd, parseContext.parse().calculate());
+        return a;
     }
 
     @Test
@@ -899,22 +893,9 @@ public class FunctionTest extends TestSupport
     }
 
     @Test
-    public void test84()
+    public void test11()
     {
-        String                  content                                      = "person.setAge(p2.age+6);";
-        Operand                 stand                                        = Expression.parse(content);
-        Operand                 method                                       = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true));
-        Operand                 methodWithoutCompatibility                   = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
-        Operand                 methodWithoutCompatibilityAndProperty        = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true));
-        Operand                 methodWithoutCompatibilityAndPropertyAndMath = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(false).setDisableCompileMethodCompatibleValue(false).setPropertyReadUseCompile(false).setMathUseCompile(true));
-        HashMap<String, Object> map                                          = new HashMap<>();
-        FunctionTest.Person     person                                       = new FunctionTest.Person(1);
-        FunctionTest.Person     p2                                           = new FunctionTest.Person(2);
-        map.put("person", person);
-        map.put("p2", p2);
-        Object a = stand.calculate(map);
-        Object b = methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
-        methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+        assertFalse((Boolean) Expression.parse("true && 1-2>0").calculate());
     }
 
     @Test
@@ -967,19 +948,9 @@ public class FunctionTest extends TestSupport
     }
 
     @Test
-    public void test87()
+    public void test12()
     {
-        String function = """
-                # 这是第一行注释
-                # 这是第二行注释
-                function plus(a,b)
-                {
-                   return a+b;
-                }""";
-        Expression.registerFunctionCall(function, "test87");
-        Operand operand   = Expression.parse("plus(1,2)", "test87");
-        Integer calculate = (Integer) operand.calculate();
-        assertEquals(3, calculate.intValue());
+        assertTrue((Boolean) Expression.parse("false || 2-1>0").calculate());
     }
 
     @Test
@@ -996,10 +967,62 @@ public class FunctionTest extends TestSupport
     }
 
     @Test
+    public void test13()
+    {
+        Map<String, Object> m = new HashMap<>();
+        m.put("BLOODPRESSURE1", 100);
+        assertTrue((Boolean) Expression.parse("BLOODPRESSURE1<140&&BLOODPRESSURE1>90").calculate(m));
+    }
+
+    @Test
+    public void test14()
+    {
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("EnumTest$Name.dd", matrix);
+        matrix.registerClassName("EnumTest$Name", Name.class);
+        assertEquals(Name.dd, parseContext.parse().calculate());
+    }
+
+    @Test
+    public void test84()
+    {
+        String                  content                                      = "person.setAge(p2.age+6);";
+        Operand                 stand                                        = Expression.parse(content);
+        Operand                 method                                       = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true));
+        Operand                 methodWithoutCompatibility                   = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
+        Operand                 methodWithoutCompatibilityAndProperty        = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true));
+        Operand                 methodWithoutCompatibilityAndPropertyAndMath = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(false).setDisableCompileMethodCompatibleValue(false).setPropertyReadUseCompile(false).setMathUseCompile(true));
+        HashMap<String, Object> map                                          = new HashMap<>();
+        Person person = new Person(1);
+        Person p2     = new Person(2);
+        map.put("person", person);
+        map.put("p2", p2);
+        Object a = stand.calculate(map);
+        Object b = methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+        methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+    }
+
+    @Test
+    public void test87()
+    {
+        String function = """
+                # 这是第一行注释
+                # 这是第二行注释
+                function plus(int a,int b)
+                {
+                   return a+b;
+                }""";
+        Expression.registerFunctionCall(function, "test87");
+        Operand operand   = Expression.parse("plus(1,2)", "test87");
+        Integer calculate = (Integer) operand.calculate();
+        assertEquals(3, calculate.intValue());
+    }
+
+    @Test
     public void test90()
     {
         Expression.registerFunctionCall("""
-                                                function plus(name,...nums)
+                                                function plus(String name,Object... nums)
                                                 {
                                                    var re = name;
                                                    for(each in nums)
@@ -1012,5 +1035,46 @@ public class FunctionTest extends TestSupport
         assertEquals("lin12", test90.calculate());
         test90 = Expression.parse("plus('lin',1,2,3)", "test90");
         assertEquals("lin123", test90.calculate());
+    }
+
+    @Test
+    public void test91()
+    {
+        Expression.registerFunctionCall("""
+                                                function plus(String a,String b){return a;}""", "test91");
+        Expression.registerFunctionCall("""
+                                                function plus(String a,int b){return a+b;}""", "test91");
+        Operand operand = Expression.parse("plus('a',1)", "test91");
+        assertEquals("a1", operand.calculate());
+        assertEquals("a1", operand.calculate());
+        operand = Expression.parse("plus('a','b')", "test91");
+        assertEquals("a", operand.calculate());
+        assertEquals("a", operand.calculate());
+    }
+
+    @Test
+    public void test92() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("minus", FunctionTest.class.getDeclaredMethod("minus", int.class, int.class), "test92");
+        Expression.registerReferenceCall("minus", FunctionTest.class.getDeclaredMethod("minus", String.class, String.class), "test92");
+        Operand operand = Expression.parse("minus(1,2)", "test92");
+        assertEquals(-1, operand.calculate());
+        assertEquals(-1, operand.calculate());
+        operand = Expression.parse("minus('a','b')", "test92");
+        assertEquals("a", operand.calculate());
+        assertEquals("a", operand.calculate());
+    }
+
+    @Test
+    public void test93() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("minus2", FunctionTest.class.getDeclaredMethod("minus2", int.class, Object[].class), "test93");
+        Expression.registerReferenceCall("minus2", FunctionTest.class.getDeclaredMethod("minus2", String.class, Object[].class), "test93");
+        Operand operand = Expression.parse("minus2(1,2)", "test93");
+        assertEquals(-1, operand.calculate());
+        assertEquals(-1, operand.calculate());
+        operand = Expression.parse("minus2('a','b')", "test93");
+        assertEquals("a", operand.calculate());
+        assertEquals("a", operand.calculate());
     }
 }

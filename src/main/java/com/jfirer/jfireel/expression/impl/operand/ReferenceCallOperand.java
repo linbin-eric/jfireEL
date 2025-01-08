@@ -16,6 +16,9 @@ import java.util.Map;
 @Data
 public abstract class ReferenceCallOperand extends CallOperand
 {
+    private Method  method;
+    private boolean supportVariableParams;
+
     @SneakyThrows
     public static ReferenceCallOperand make(Method method, Operand[] args)
     {
@@ -90,11 +93,34 @@ public abstract class ReferenceCallOperand extends CallOperand
         Constructor<ReferenceCallOperand> constructor = compile.getConstructor();
         try
         {
-            return constructor.newInstance();
+            ReferenceCallOperand referenceCallOperand = constructor.newInstance();
+            referenceCallOperand.setArgs(args);
+            method.setAccessible(true);
+            referenceCallOperand.setMethod(method);
+            referenceCallOperand.setSupportVariableParams(method.getParameterTypes()[method.getParameterCount() - 1].isArray());
+            return referenceCallOperand;
         }
         catch (InstantiationException | IllegalAccessException | InvocationTargetException e)
         {
             throw new RuntimeException(e);
+        }
+    }
+
+    @SneakyThrows
+    public Object calculate(Object[] args)
+    {
+        if (supportVariableParams)
+        {
+            Object[] args2 = new Object[method.getParameterCount()];
+            System.arraycopy(args, 0, args2, 0, method.getParameterCount() - 1);
+            Object[] left = new Object[args.length - method.getParameterCount() + 1];
+            System.arraycopy(args, method.getParameterCount() - 1, left, 0, left.length);
+            args2[method.getParameterCount() - 1] = left;
+            return method.invoke(null, args2);
+        }
+        else
+        {
+            return method.invoke(null, args);
         }
     }
 }

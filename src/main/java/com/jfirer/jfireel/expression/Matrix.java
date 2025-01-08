@@ -40,25 +40,58 @@ public class Matrix
         className.put(name, clazz);
     }
 
-    public void registerReferenceCall(String name, Method method)
+    static boolean matchType(Object[] argValues, Class[] parameterTypes)
     {
-        int modifiers = method.getModifiers();
-        if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
+        for (int i = 0; i < parameterTypes.length; i++)
         {
-            List<CallOperand.CallOperandData> list = callMap.computeIfAbsent(name, k -> new LinkedList<>());
-            if (method.getParameterCount() > 0)
+            if (parameterTypes[i].isPrimitive())
             {
-                list.add(new CallOperand.CallOperandData().setName(name).setParamCount(method.getParameterCount()).setSupportVariableParams(method.getParameterTypes()[method.getParameterCount() - 1].isArray()).setConstructor(args -> ReferenceCallOperand.make(method, args)));
+                if (argValues[i] == null)
+                {
+                    return false;
+                }
+                if ((argValues[i].getClass() == Integer.class && parameterTypes[i] == int.class)//
+                    || (argValues[i].getClass() == Long.class && parameterTypes[i] == long.class)//
+                    || (argValues[i].getClass() == Double.class && parameterTypes[i] == double.class)//
+                    || (argValues[i].getClass() == Float.class && parameterTypes[i] == float.class)//
+                    || (argValues[i].getClass() == Short.class && parameterTypes[i] == short.class)//
+                    || (argValues[i].getClass() == Byte.class && parameterTypes[i] == byte.class)//
+                    || (argValues[i].getClass() == Character.class && parameterTypes[i] == char.class)//
+                    || (argValues[i].getClass() == Boolean.class && parameterTypes[i] == boolean.class)//
+                )
+                {
+                    ;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
-                list.add(new CallOperand.CallOperandData().setName(name).setParamCount(0).setSupportVariableParams(false).setConstructor(args -> ReferenceCallOperand.make(method, args)));
+                if (argValues[i] == null)
+                {
+                    ;
+                }
+                else if ((argValues[i].getClass() == Integer.class && (parameterTypes[i] == int.class || parameterTypes[i] == Integer.class))//
+                         || (argValues[i].getClass() == Long.class && (parameterTypes[i] == long.class || parameterTypes[i] == Long.class))//
+                         || (argValues[i].getClass() == Double.class && (parameterTypes[i] == double.class || parameterTypes[i] == Double.class))//
+                         || (argValues[i].getClass() == Float.class && (parameterTypes[i] == float.class || parameterTypes[i] == Float.class))//
+                         || (argValues[i].getClass() == Short.class && (parameterTypes[i] == short.class || parameterTypes[i] == Short.class))//
+                         || (argValues[i].getClass() == Byte.class && (parameterTypes[i] == byte.class || parameterTypes[i] == Byte.class))//
+                         || (argValues[i].getClass() == Character.class && (parameterTypes[i] == char.class || parameterTypes[i] == Character.class))//
+                         || (argValues[i].getClass() == Boolean.class && (parameterTypes[i] == boolean.class || parameterTypes[i] == Boolean.class))//
+                         || parameterTypes[i].isAssignableFrom(argValues[i].getClass()))
+                {
+                    ;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
-        else
-        {
-            throw new IllegalArgumentException("方法" + name + "不是静态的，或者不是public的");
-        }
+        return true;
     }
 
     public void registerAcceleratorForPropertyRead(Field field, Function<Object, Object> accelerator)
@@ -71,45 +104,28 @@ public class Matrix
         acceleratorForMethodInvoke.put(executable, methodInvoker);
     }
 
-    public void registerFunctionCall(String content)
+    public void registerReferenceCall(String name, Method method)
     {
-        content = content.trim();
-        while (content.charAt(0) == '#')
+        int modifiers = method.getModifiers();
+        if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
         {
-            int i = content.indexOf("\n");
-            if (i == -1)
+            List<CallOperand.CallOperandData> list = callMap.computeIfAbsent(name, k -> new LinkedList<>());
+            if (method.getParameterCount() > 0)
             {
-                throw new IllegalArgumentException("#符号并未单独占据一行，错误");
+                list.add(new CallOperand.CallOperandData().setName(name).setParamCount(method.getParameterCount())//
+                                                          .setParameterTypes(method.getParameterTypes())//
+                                                          .setSupportVariableParams(method.getParameterTypes()[method.getParameterCount() - 1].isArray()).setConstructor(args -> ReferenceCallOperand.make(method, args)));
             }
-            content = content.substring(i + 1);
-        }
-        if (!content.startsWith("function "))
-        {
-            throw new IllegalArgumentException("function 函数定义错误");
-        }
-        content = content.substring(9);
-        int      index             = content.indexOf("(");
-        String   functionName      = content.substring(0, index).trim();
-        int      index2            = content.indexOf(")");
-        String   paramNameContents = content.substring(index + 1, index2);
-        String[] paramNames        = Arrays.stream(paramNameContents.split(",")).map(String::trim).toArray(String[]::new);
-        content = content.substring(index2 + 1).trim();
-        if (content.charAt(0) != '{' || content.charAt(content.length() - 1) != '}')
-        {
-            throw new IllegalArgumentException("function 函数定义错误");
-        }
-        content = content.substring(1, content.length() - 1);
-        Operand                           operand = Expression.parse(content, this);
-        List<CallOperand.CallOperandData> list    = callMap.computeIfAbsent(functionName, k -> new LinkedList<>());
-        if (paramNames.length != 0 && paramNames[paramNames.length - 1].startsWith("..."))
-        {
-            String paramName = paramNames[paramNames.length - 1];
-            paramNames[paramNames.length - 1] = paramName.substring(3, paramName.length());
-            list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(true).setParamCount(paramNames.length).setConstructor(args -> new FunctionCallOperand(paramNames, operand, true)));
+            else
+            {
+                list.add(new CallOperand.CallOperandData().setName(name).setParamCount(0)//
+                                                          .setParameterTypes(method.getParameterTypes())//
+                                                          .setSupportVariableParams(false).setConstructor(args -> ReferenceCallOperand.make(method, args)));
+            }
         }
         else
         {
-            list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(false).setParamCount(paramNames.length).setConstructor(args -> new FunctionCallOperand(paramNames, operand, false)));
+            throw new IllegalArgumentException("方法" + name + "不是静态的，或者不是public的");
         }
     }
 
@@ -148,13 +164,81 @@ public class Matrix
         return callMap.containsKey(name);
     }
 
-    public CallOperand findCallOperand(String name, Operand[] args)
+    public void registerFunctionCall(String content)
+    {
+        content = content.trim();
+        while (content.charAt(0) == '#')
+        {
+            int i = content.indexOf("\n");
+            if (i == -1)
+            {
+                throw new IllegalArgumentException("#符号并未单独占据一行，错误");
+            }
+            content = content.substring(i + 1);
+        }
+        if (!content.startsWith("function "))
+        {
+            throw new IllegalArgumentException("function 函数定义错误");
+        }
+        content = content.substring(9);
+        int    index             = content.indexOf("(");
+        String functionName      = content.substring(0, index).trim();
+        int    index2            = content.indexOf(")");
+        String paramNameContents = content.substring(index + 1, index2);
+        record ParamEntry(String name, Class type)
+        {
+        }
+        ;
+        ParamEntry[] paramEntries = Arrays.stream(paramNameContents.split(",")).map(String::trim)//
+                                          .map(split -> {
+                                              String[] s = split.split(" ");
+                                              if (s[0].equals("Object..."))
+                                              {
+                                                  ParamEntry entry = new ParamEntry(s[1], Object[].class);
+                                                  return entry;
+                                              }
+                                              else
+                                              {
+                                                  Class classByName = findClassByName(s[0]);
+                                                  if (classByName == null)
+                                                  {
+                                                      throw new NullPointerException("类型名称:" + s[0] + "没有注册，无法在注册方法：" + functionName + "引用");
+                                                  }
+                                                  ParamEntry entry = new ParamEntry(s[1], classByName);
+                                                  return entry;
+                                              }
+                                          })//
+                                          .toArray(ParamEntry[]::new);
+        content = content.substring(index2 + 1).trim();
+        if (content.charAt(0) != '{' || content.charAt(content.length() - 1) != '}')
+        {
+            throw new IllegalArgumentException("function 函数定义错误");
+        }
+        content = content.substring(1, content.length() - 1);
+        Operand                           operand = Expression.parse(content, this);
+        List<CallOperand.CallOperandData> list    = callMap.computeIfAbsent(functionName, k -> new LinkedList<>());
+        if (paramEntries.length != 0 && paramEntries[paramEntries.length - 1].type == Object[].class)
+        {
+            list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(true).setParamCount(paramEntries.length)//
+                                                      .setParameterTypes(Arrays.stream(paramEntries).map(ParamEntry::type).toArray(Class[]::new))//
+                                                      .setConstructor(args -> new FunctionCallOperand(Arrays.stream(paramEntries).map(ParamEntry::name).toArray(String[]::new), operand, true).setArgs(args)));
+        }
+        else
+        {
+            list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(false).setParamCount(paramEntries.length)//
+                                                      .setParameterTypes(Arrays.stream(paramEntries).map(ParamEntry::type).toArray(Class[]::new))//
+                                                      .setConstructor(args -> new FunctionCallOperand(Arrays.stream(paramEntries).map(ParamEntry::name).toArray(String[]::new), operand, false).setArgs(args)));
+        }
+    }
+
+    public CallOperand findCallOperand(String name, Operand[] args, Object[] argValues)
     {
         List<CallOperand.CallOperandData> list = callMap.get(name);
         if (list != null)
         {
             List<CallOperand.CallOperandData> result = list.stream().filter(c -> c.isSupportVariableParams() == false)//
                                                            .filter(c -> c.getParamCount() == args.length)//
+                                                           .filter(c -> matchType(argValues, c.getParameterTypes()))//
                                                            .toList();
             if (result.size() > 1)
             {
@@ -166,6 +250,7 @@ public class Matrix
             }
             result = list.stream().filter(c -> c.isSupportVariableParams())//
                          .filter(c -> c.getParamCount() <= args.length)//
+                         .filter(c -> matchType(Arrays.copyOf(argValues, c.getParamCount() - 1), Arrays.copyOf(c.getParameterTypes(), c.getParamCount() - 1)))//
                          .toList();
             if (result.size() > 1)
             {
@@ -176,6 +261,6 @@ public class Matrix
                 return result.get(0).getConstructor().apply(args);
             }
         }
-        return parent != null ? parent.findCallOperand(name, args) : null;
+        return parent != null ? parent.findCallOperand(name, args, argValues) : null;
     }
 }
