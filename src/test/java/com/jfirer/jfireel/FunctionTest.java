@@ -977,7 +977,7 @@ public class FunctionTest extends TestSupport
                    return a+b;
                 }""";
         Expression.registerFunctionCall(function, "test87");
-        Operand operand = Expression.parse("plus(1,2)", "test87");
+        Operand operand   = Expression.parse("plus(1,2)", "test87");
         Integer calculate = (Integer) operand.calculate();
         assertEquals(3, calculate.intValue());
     }
@@ -993,5 +993,24 @@ public class FunctionTest extends TestSupport
         operand = Expression.parse("""
                                            print('linbin',1)""", "test89");
         assertEquals("linbin1", operand.calculate());
+    }
+
+    @Test
+    public void test90()
+    {
+        Expression.registerFunctionCall("""
+                                                function plus(name,...nums)
+                                                {
+                                                   var re = name;
+                                                   for(each in nums)
+                                                   {
+                                                      re = re+each;
+                                                   }
+                                                   return re; 
+                                                }""", "test90");
+        Operand test90 = Expression.parse("plus('lin',1,2)", "test90");
+        assertEquals("lin12", test90.calculate());
+        test90 = Expression.parse("plus('lin',1,2,3)", "test90");
+        assertEquals("lin123", test90.calculate());
     }
 }

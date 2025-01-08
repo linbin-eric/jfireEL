@@ -108,7 +108,16 @@ public class Matrix
         content = content.substring(1, content.length() - 1);
         Operand                           operand = Expression.parse(content, this);
         List<CallOperand.CallOperandData> list    = callMap.computeIfAbsent(functionName, k -> new LinkedList<>());
-        list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(false).setParamCount(paramNames.length).setConstructor(args -> new FunctionCallOperand(paramNames, operand)));
+        if (paramNames.length != 0 && paramNames[paramNames.length - 1].startsWith("..."))
+        {
+            String paramName = paramNames[paramNames.length - 1];
+            paramNames[paramNames.length - 1] = paramName.substring(3, paramName.length());
+            list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(true).setParamCount(paramNames.length).setConstructor(args -> new FunctionCallOperand(paramNames, operand, true)));
+        }
+        else
+        {
+            list.add(new CallOperand.CallOperandData().setName(functionName).setSupportVariableParams(false).setParamCount(paramNames.length).setConstructor(args -> new FunctionCallOperand(paramNames, operand, false)));
+        }
     }
 
     public MethodInvoker findAcceleratorForMethodInvoke(Executable executable)

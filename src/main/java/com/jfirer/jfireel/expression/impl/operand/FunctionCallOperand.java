@@ -13,15 +13,33 @@ public class FunctionCallOperand extends CallOperand
 {
     private final String[] paramNames;
     private final Operand  function;
+    private final boolean  supportVariableParams;
     private       String   functionName;
 
     @Override
     public Object calculate(Map<String, Object> contextParam)
     {
         Map<String, Object> functionParam = new HashMap<>();
-        for (int i = 0; i < paramNames.length; i++)
+        if (supportVariableParams)
         {
-            functionParam.put(paramNames[i], args[i].calculate(contextParam));
+            int len = paramNames.length - 1;
+            for (int i = 0; i < len; i++)
+            {
+                functionParam.put(paramNames[i], args[i].calculate(contextParam));
+            }
+            Object[] array = new Object[args.length - len];
+            for (int i = len; i < args.length; i++)
+            {
+                array[i - len] = args[i].calculate(contextParam);
+            }
+            functionParam.put(paramNames[len], array);
+        }
+        else
+        {
+            for (int i = 0; i < paramNames.length; i++)
+            {
+                functionParam.put(paramNames[i], args[i].calculate(contextParam));
+            }
         }
         return function.calculate(functionParam);
     }
