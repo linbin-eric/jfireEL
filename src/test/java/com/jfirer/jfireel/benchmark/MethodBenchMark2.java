@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class MethodBenchMark2
 {
-    private Operand innerCall;
     private Operand referenceCall;
     private Operand staticCall;
     private Map     map = Map.of();
@@ -46,18 +45,10 @@ public class MethodBenchMark2
     @Setup(Level.Trial)
     public void before()
     {
-        Expression.registerInnerCall("plus", MethodBenchMark2::plus);
         Expression.scanForReferenceCall(MethodBenchMark2.class);
         Expression.registerClass("MethodBenchMark2", MethodBenchMark2.class);
-        innerCall     = Expression.parse("plus(1,2)");
         referenceCall = Expression.parse("plus2(1,2)");
         staticCall    = Expression.parse("MethodBenchMark2.plus2(1,2)", new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
-    }
-
-    @Benchmark
-    public void testInnerCall()
-    {
-        innerCall.calculate(map);
     }
 
     @Benchmark

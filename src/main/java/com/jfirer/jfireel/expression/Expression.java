@@ -39,17 +39,6 @@ public class Expression
         matrix.registerClassName(className, ckass);
     }
 
-    public static void registerInnerCall(String name, MethodInvoker function)
-    {
-        MATRIX.registerInnerCall(name, function);
-    }
-
-    public static void registerInnerCall(String name, MethodInvoker function, String matrixName)
-    {
-        Matrix matrix = NAME_SPACE.computeIfAbsent(matrixName, k -> new Matrix(k, MATRIX));
-        matrix.registerInnerCall(name, function);
-    }
-
     public static void registerAcceleratorForPropertyRead(Field field, Function<Object, Object> accelerator)
     {
         MATRIX.registerAcceleratorForPropertyRead(field, accelerator);

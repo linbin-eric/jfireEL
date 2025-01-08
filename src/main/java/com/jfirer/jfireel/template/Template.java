@@ -9,11 +9,19 @@ public class Template
 {
     static
     {
-        Expression.registerInnerCall("out", (obj, array, map) -> {
-            StringBuilder out = (StringBuilder) map.get("outputStr");
-            out.append(array[0].calculate(map));
-            return null;
-        });
+        try
+        {
+            Expression.registerReferenceCall("out", Template.class.getDeclaredMethod("out", StringBuilder.class, Object.class));
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void out(StringBuilder builder, Object content)
+    {
+        builder.append(content);
     }
 
     private static final int     IN_CODE_AREA = 1;
@@ -57,7 +65,7 @@ public class Template
                     {
                         if (mark != index)
                         {
-                            builder.append("out('").append(content.substring(mark, index)).append("');\r\n");
+                            builder.append("out(builder,'").append(content.substring(mark, index)).append("');\r\n");
                         }
                         mark = index += 2;
                         type = IN_VARIABLE;
@@ -66,7 +74,7 @@ public class Template
                     {
                         if (mark != index)
                         {
-                            builder.append("out('").append(content.substring(mark, index)).append("');\r\n");
+                            builder.append("out(builder,'").append(content.substring(mark, index)).append("');\r\n");
                         }
                         mark = index += 2;
                         type = IN_CODE_AREA;
@@ -80,7 +88,7 @@ public class Template
                 {
                     if (c == '}')
                     {
-                        builder.append("out(").append(content.substring(mark, index)).append(");\r\n");
+                        builder.append("out(builder,").append(content.substring(mark, index)).append(");\r\n");
                         mark = index += 1;
                         type = IN_TEXT;
                     }
@@ -97,7 +105,7 @@ public class Template
         }
         if (mark != index)
         {
-            builder.append("out('").append(content.substring(mark, index)).append("');\r\n");
+            builder.append("out(builder,'").append(content.substring(mark, index)).append("');\r\n");
         }
         return new Template(Expression.parse(builder.toString()));
     }
@@ -105,14 +113,14 @@ public class Template
     public String render(Map<String, Object> params)
     {
         StringBuilder stringBuilder = new StringBuilder();
-        params.put("outputStr", stringBuilder);
+        params.put("builder", stringBuilder);
         operand.calculate(params);
         return stringBuilder.toString();
     }
 
     public void render(Map<String, Object> params, StringBuilder builder)
     {
-        params.put("outputStr", builder);
+        params.put("builder", builder);
         operand.calculate(params);
     }
 }

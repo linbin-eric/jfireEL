@@ -2,7 +2,6 @@ package com.jfirer.jfireel.expression;
 
 import com.jfirer.jfireel.expression.impl.operand.CallOperand;
 import com.jfirer.jfireel.expression.impl.operand.FunctionCallOperand;
-import com.jfirer.jfireel.expression.impl.operand.InnerCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.ReferenceCallOperand;
 import com.jfirer.jfireel.expression.impl.operand.method.MethodInvoker;
 import lombok.AccessLevel;
@@ -39,12 +38,6 @@ public class Matrix
     public void registerClassName(String name, Class clazz)
     {
         className.put(name, clazz);
-    }
-
-    public void registerInnerCall(String name, MethodInvoker function)
-    {
-        List<CallOperand.CallOperandData> list = callMap.computeIfAbsent(name, k -> new LinkedList<>());
-        list.add(new CallOperand.CallOperandData().setName(name).setParamCount(0).setSupportVariableParams(true).setConstructor(args -> new InnerCallOperand(function)));
     }
 
     public void registerReferenceCall(String name, Method method)

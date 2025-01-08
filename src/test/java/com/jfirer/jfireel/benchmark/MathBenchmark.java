@@ -30,7 +30,7 @@ public class MathBenchmark
     }
 
     @Benchmark
-    public void compile()
+    public void mathUseCompile()
     {
         operand2.calculate(contextParam);
     }
