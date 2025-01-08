@@ -11,8 +11,7 @@ import lombok.SneakyThrows;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -26,6 +25,28 @@ public class Expression
     static
     {
         NAME_SPACE.put(MATRIX.getName(), MATRIX);
+        MATRIX.registerClassName(String.class.getSimpleName(), String.class);
+        MATRIX.registerClassName(Integer.class.getSimpleName(), Integer.class);
+        MATRIX.registerClassName(Long.class.getSimpleName(), Long.class);
+        MATRIX.registerClassName(Float.class.getSimpleName(), Float.class);
+        MATRIX.registerClassName(Double.class.getSimpleName(), Double.class);
+        MATRIX.registerClassName(Boolean.class.getSimpleName(), Boolean.class);
+        MATRIX.registerClassName(Character.class.getSimpleName(), Character.class);
+        MATRIX.registerClassName(Byte.class.getSimpleName(), Byte.class);
+        MATRIX.registerClassName(Short.class.getSimpleName(), Short.class);
+        MATRIX.registerClassName("int", int.class);
+        MATRIX.registerClassName("byte", byte.class);
+        MATRIX.registerClassName("long", long.class);
+        MATRIX.registerClassName("float", float.class);
+        MATRIX.registerClassName("double", double.class);
+        MATRIX.registerClassName("boolean", boolean.class);
+        MATRIX.registerClassName("char", char.class);
+        MATRIX.registerClassName("short", short.class);
+        MATRIX.registerClassName(HashMap.class.getSimpleName(), HashMap.class);
+        MATRIX.registerClassName(HashSet.class.getSimpleName(), HashSet.class);
+        MATRIX.registerClassName(List.class.getSimpleName(), List.class);
+        MATRIX.registerClassName(Map.class.getSimpleName(), Map.class);
+        MATRIX.registerClassName(Set.class.getSimpleName(), Set.class);
     }
 
     public static void registerClass(String name, Class<?> ckass)

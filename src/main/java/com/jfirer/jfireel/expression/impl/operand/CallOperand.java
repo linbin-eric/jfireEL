@@ -17,8 +17,9 @@ public abstract class CallOperand implements Operand
     @Accessors(chain = true)
     public static class CallOperandPlaceHolder implements Operand
     {
-        private String name;
-        private Matrix matrix;
+        private String    name;
+        private Matrix    matrix;
+        private Operand[] args;
 
         @Override
         public Object calculate(Map<String, Object> contextParam)
@@ -34,6 +35,7 @@ public abstract class CallOperand implements Operand
         String                           name;
         int                              paramCount;
         boolean                          supportVariableParams;
+        Class[] parameterTypes;
         Function<Operand[], CallOperand> constructor;
     }
 }
