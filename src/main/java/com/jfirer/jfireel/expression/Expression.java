@@ -17,10 +17,11 @@ import java.util.function.Function;
 
 public class Expression
 {
-    public static final Matrix                         MATRIX                    = new Matrix("default", null);
-    public static final Map<String, Matrix>            NAME_SPACE                = new ConcurrentHashMap<>();
-    public static final Map<Field, ValueAccessor>      SHARE_VALUEACCESSOR_CACHE = new ConcurrentHashMap<>();
-    public static final Map<Executable, MethodInvoker> SHARE_METHODINVOKER       = new ConcurrentHashMap<>();
+    public static final  Matrix                         MATRIX                    = new Matrix("default", null);
+    public static final  Map<String, Matrix>            NAME_SPACE                = new ConcurrentHashMap<>();
+    public static final  Map<Field, ValueAccessor>      SHARE_VALUEACCESSOR_CACHE = new ConcurrentHashMap<>();
+    public static final  Map<Executable, MethodInvoker> SHARE_METHODINVOKER       = new ConcurrentHashMap<>();
+    private static final Set<Class>                     SCANED                    = new HashSet<>();
 
     static
     {
@@ -137,6 +138,10 @@ public class Expression
     @SneakyThrows
     public static void scanForReferenceCall(Class ckass)
     {
+        if (SCANED.add(ckass) == false)
+        {
+            return;
+        }
         for (Method method : ckass.getMethods())
         {
             if (method.isAnnotationPresent(ReferenceCall.class))
