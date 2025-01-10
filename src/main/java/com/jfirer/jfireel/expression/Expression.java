@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -48,6 +49,8 @@ public class Expression
         MATRIX.registerClassName(List.class.getSimpleName(), List.class);
         MATRIX.registerClassName(Map.class.getSimpleName(), Map.class);
         MATRIX.registerClassName(Set.class.getSimpleName(), Set.class);
+        MATRIX.registerClassName(StringBuilder.class.getSimpleName(), StringBuilder.class);
+        MATRIX.registerClassName(BigDecimal.class.getSimpleName(), BigDecimal.class);
     }
 
     public static void registerClass(String name, Class<?> ckass)
