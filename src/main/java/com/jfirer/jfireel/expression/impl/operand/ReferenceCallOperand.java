@@ -114,7 +114,7 @@ public abstract class ReferenceCallOperand extends CallOperand
             referenceCallOperand.setArgs(args);
             method.setAccessible(true);
             referenceCallOperand.setMethod(method);
-            referenceCallOperand.setSupportVariableParams(method.getParameterTypes()[method.getParameterCount() - 1].isArray());
+            referenceCallOperand.setSupportVariableParams(method.getParameterCount() != 0 && method.getParameterTypes()[method.getParameterCount() - 1].isArray());
             return referenceCallOperand;
         }
         catch (InstantiationException | IllegalAccessException | InvocationTargetException e)
