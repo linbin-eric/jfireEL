@@ -18,6 +18,18 @@ public class VariableOperand implements Operand
     @Override
     public Object calculate(Map<String, Object> contextParam)
     {
-        return contextParam.get(variable);
+        Object value = contextParam.get(variable);
+        if (value == null)
+        {
+            if (contextParam.containsKey(variable))
+            {
+                return null;
+            }
+            else
+            {
+                throw new IllegalArgumentException("变量名:" + variable + "不存在上下文中，请检查");
+            }
+        }
+        return value;
     }
 }
