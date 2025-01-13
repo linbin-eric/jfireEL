@@ -161,7 +161,11 @@ public class Matrix
 
     public boolean existCallOperand(String name)
     {
-        return callMap.containsKey(name);
+        if (callMap.containsKey(name))
+        {
+            return true;
+        }
+        return parent == null ? false : parent.existCallOperand(name);
     }
 
     public void registerFunctionCall(String content)
