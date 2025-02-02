@@ -1082,17 +1082,19 @@ public class FunctionTest extends TestSupport
     public void test94()
     {
         Expression.registerFunctionCall("""
-                                                function vre(int a,int b)
+                                                function vre(int a,int b,boolean c)
                                                 {
-                                                    return a+b>2;
+                                                    return a+b>2 && c;
                                                 }""");
-        Operand             operand = Expression.parse("vre(a,b)");
+        Operand operand = Expression.parse("vre(a,b,c)");
         Map<String, Object> param   = new HashMap<>();
         param.put("a", 1);
         param.put("b", 3);
+        param.put("c", true);
         Boolean calculate = (Boolean) operand.calculate(param);
         assertTrue(calculate);
         param.put("b", 1);
+        param.put("c", false);
         assertFalse((Boolean) operand.calculate(param));
     }
 }
