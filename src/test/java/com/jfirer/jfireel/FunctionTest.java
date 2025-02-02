@@ -1077,4 +1077,22 @@ public class FunctionTest extends TestSupport
         assertEquals("a", operand.calculate());
         assertEquals("a", operand.calculate());
     }
+
+    @Test
+    public void test94()
+    {
+        Expression.registerFunctionCall("""
+                                                function vre(int a,int b)
+                                                {
+                                                    return a+b>2;
+                                                }""");
+        Operand             operand = Expression.parse("vre(a,b)");
+        Map<String, Object> param   = new HashMap<>();
+        param.put("a", 1);
+        param.put("b", 3);
+        Boolean calculate = (Boolean) operand.calculate(param);
+        assertTrue(calculate);
+        param.put("b", 1);
+        assertFalse((Boolean) operand.calculate(param));
+    }
 }
