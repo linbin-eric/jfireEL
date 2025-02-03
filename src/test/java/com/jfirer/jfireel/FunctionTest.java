@@ -1084,6 +1084,7 @@ public class FunctionTest extends TestSupport
         Expression.registerFunctionCall("""
                                                 function vre(int a,int b,boolean c)
                                                 {
+                                                    # 测试注释是否可以在这个位置生效
                                                     return a+b>2 && c;
                                                 }""");
         Operand operand = Expression.parse("vre(a,b,c)");

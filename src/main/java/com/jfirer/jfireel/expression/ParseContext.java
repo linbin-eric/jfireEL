@@ -20,6 +20,7 @@ public class ParseContext
 {
     private static TokenParser[]     parsers        = new TokenParser[]{//
             new SkipIgnoreToken(),//
+            new DocTokenParser(),//
             new NumberParser(),//
             new BooleanParser(),//
             new NullParser(),//
