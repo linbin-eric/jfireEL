@@ -60,7 +60,7 @@ public abstract class ReferenceCallOperand extends CallOperand
                     builder.append("return ");
                 }
                 builder.append(SmcHelper.getReferenceName(method.getDeclaringClass(), classModel)).append(".").append(method.getName()).append("(");
-                if (method.getParameterTypes()[method.getParameterCount() - 1].isArray() && method.getParameterCount() <= args.length)
+                if (method.getParameters()[method.getParameterCount() - 1].isVarArgs())
                 {
                     for (int i = 0; i < method.getParameterCount() - 1; i++)
                     {
