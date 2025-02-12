@@ -10,9 +10,10 @@ import lombok.Data;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class ReferenceCallOperand extends CallOperand
 {
     private        Method                                                   method;
+    private        Class<?>                                                 varArgType;
     private        boolean                                                  supportVariableParams;
     private static ConcurrentMap<String, Constructor<ReferenceCallOperand>> MAKED = new ConcurrentHashMap<>();
 
@@ -66,10 +68,12 @@ public abstract class ReferenceCallOperand extends CallOperand
                     {
                         builder.append("(").append(SmcHelper.getReferenceName(method.getParameterTypes()[i], classModel)).append(")args[").append(i).append("].calculate(contextMap),");
                     }
-                    builder.append("new Object[]{");
+                    Class<?> parameterType = method.getParameterTypes()[method.getParameterCount() - 1];
+                    builder.append("new ").append(SmcHelper.getReferenceName(parameterType, classModel)).append("{");
+                    Class<?> componentType = parameterType.getComponentType();
                     for (int i = method.getParameterCount() - 1; i < args.length; i++)
                     {
-                        builder.append("args[").append(i).append("].calculate(contextMap)");
+                        builder.append("(").append(SmcHelper.getReferenceName(componentType, classModel)).append(")args[").append(i).append("].calculate(contextMap)");
                         if (i != args.length - 1)
                         {
                             builder.append(",");
@@ -113,13 +117,27 @@ public abstract class ReferenceCallOperand extends CallOperand
             ReferenceCallOperand referenceCallOperand = referenceCallOperandConstructor.newInstance();
             referenceCallOperand.setArgs(args);
             method.setAccessible(true);
-            referenceCallOperand.setMethod(method);
-            referenceCallOperand.setSupportVariableParams(method.getParameterCount() != 0 && method.getParameterTypes()[method.getParameterCount() - 1].isArray());
+            referenceCallOperand.parse(method);
+            referenceCallOperand.setSupportVariableParams(method.getParameterCount() >= 1 && method.getParameters()[method.getParameterCount() - 1].isVarArgs());
             return referenceCallOperand;
         }
-        catch (InstantiationException | IllegalAccessException | InvocationTargetException e)
+        catch (Throwable e)
         {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void parse(Method method)
+    {
+        this.method = method;
+        if (method.getParameterCount() > 0)
+        {
+            Parameter parameter = method.getParameters()[method.getParameterCount() - 1];
+            if (parameter.isVarArgs())
+            {
+                supportVariableParams = true;
+                varArgType            = parameter.getType().getComponentType();
+            }
         }
     }
 
@@ -130,7 +148,7 @@ public abstract class ReferenceCallOperand extends CallOperand
         {
             Object[] args2 = new Object[method.getParameterCount()];
             System.arraycopy(args, 0, args2, 0, method.getParameterCount() - 1);
-            Object[] left = new Object[args.length - method.getParameterCount() + 1];
+            Object[] left = (Object[]) Array.newInstance(varArgType, args.length - method.getParameterCount() + 1);
             System.arraycopy(args, method.getParameterCount() - 1, left, 0, left.length);
             args2[method.getParameterCount() - 1] = left;
             return method.invoke(null, args2);
