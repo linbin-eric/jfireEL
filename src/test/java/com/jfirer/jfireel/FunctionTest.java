@@ -917,7 +917,7 @@ public class FunctionTest extends TestSupport
         assertNull(operand.getFragment());
     }
 
-    public static String print(String name, Object[] array)
+    public static String print(String name, Object... array)
     {
         StringBuilder builder = new StringBuilder();
         builder.append(name);
@@ -1097,5 +1097,20 @@ public class FunctionTest extends TestSupport
         param.put("b", 1);
         param.put("c", false);
         assertFalse((Boolean) operand.calculate(param));
+    }
+
+    @Test
+    public void test95()
+    {
+        Expression.registerClass(System.class.getSimpleName(), System.class);
+        Expression.registerFunctionCall("""
+                                                function vre2(Object...args)
+                                                {
+                                                return args[0]+args[1];
+                                                }
+                                                """);
+        Operand operand   = Expression.parse("vre2('a','b')");
+        Object  calculate = operand.calculate();
+        assertEquals("ab", calculate);
     }
 }

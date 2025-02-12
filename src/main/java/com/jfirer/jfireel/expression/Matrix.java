@@ -196,9 +196,9 @@ public class Matrix
         ParamEntry[] paramEntries = Arrays.stream(paramNameContents.split(",")).map(String::trim)//
                                           .map(split -> {
                                               String[] s = split.split(" ");
-                                              if (s[0].equals("Object..."))
+                                              if (s[0].startsWith("Object..."))
                                               {
-                                                  ParamEntry entry = new ParamEntry(s[1], Object[].class);
+                                                  ParamEntry entry = new ParamEntry(split.substring(9).trim(), Object[].class);
                                                   return entry;
                                               }
                                               else
