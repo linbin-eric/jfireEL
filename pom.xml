@@ -2,15 +2,24 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.jfirer</groupId>
+    <groupId>cc.jfire</groupId>
     <artifactId>jfireEL</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <name>jfireEL</name>
     <description>
         a high speed Expression Language
     </description>
-    <url>https://gitee.com/eric_ds/jfireEL</url>
+    <url>https://github.com/linbin-eric/jfireEL</url>
+    <scm>
+        <url>https://github.com/linbin-eric/jfireEL</url>
+    </scm>
+    <developers>
+        <developer>
+            <name>jfirer</name>
+            <email>495561397@qq.com</email>
+        </developer>
+    </developers>
     <licenses>
         <license>
             <name>GNU Affero General Public License v3.0</name>
@@ -22,17 +31,6 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
-    <scm>
-        <connection>scm:git:https://gitee.com/eric_ds/jfireEL.git</connection>
-        <developerConnection>scm:git:http://git.oschina.net/eric_ds</developerConnection>
-        <url>http://jfirer.com/</url>
-    </scm>
-    <developers>
-        <developer>
-            <name>linbin</name>
-            <email>eric@jfire.cn</email>
-        </developer>
-    </developers>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -41,9 +39,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.jfirer</groupId>
+            <groupId>cc.jfire</groupId>
             <artifactId>baseutil</artifactId>
-            <version>1.1.12-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>com.ibeetl</groupId>
@@ -122,6 +120,48 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.4</version>   <!-- 2025年最新版 -->
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <gpgArguments>
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
+                    </gpgArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

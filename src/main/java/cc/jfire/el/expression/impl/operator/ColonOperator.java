@@ -1,0 +1,65 @@
+package cc.jfire.el.expression.impl.operator;
+
+import cc.jfire.el.expression.Operand;
+import cc.jfire.el.expression.Operator;
+import cc.jfire.el.expression.ParseContext;
+import lombok.Data;
+
+import java.util.Deque;
+
+@Data
+public class ColonOperator implements Operator
+{
+    private final String fragment;
+
+    @Override
+    public int priority()
+    {
+        return 10;
+    }
+
+    @Override
+    public boolean isBoundary()
+    {
+        return true;
+    }
+
+    @Override
+    public void push(ParseContext parseContext)
+    {
+        Deque<Operator> operatorStack = parseContext.getOperatorStack();
+        do
+        {
+            Operator peek = operatorStack.peek();
+            if (peek instanceof QuestionOperator)
+            {
+                break;
+            }
+            else
+            {
+                Operator pop = operatorStack.pop();
+                pop.onPop(parseContext);
+            }
+        } while (true);
+        parseContext.getOperatorStack().push(this);
+    }
+
+    @Override
+    public void onPop(ParseContext parseContext)
+    {
+        Deque<Operand> processStack = parseContext.getProcessStack();
+        Deque<Operand> operandStack = parseContext.getOperandStack();
+        processStack.push(operandStack.pop());
+        processStack.push(operandStack.pop());
+        Deque<Operator> operatorStack = parseContext.getOperatorStack();
+        Operator        pop           = operatorStack.pop();
+        if (pop instanceof QuestionOperator question)
+        {
+            question.onPop(parseContext);
+        }
+        else
+        {
+            throw new IllegalStateException("表达式存在异常，异常位置为" + fragment);
+        }
+    }
+}

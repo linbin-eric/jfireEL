@@ -1,0 +1,1116 @@
+package cc.jfire.el;
+
+import cc.jfire.el.expression.*;
+import cc.jfire.el.expression.impl.operand.basic.BasicOperandImpl;
+import cc.jfire.el.template.Template;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.*;
+
+public class FunctionTest extends TestSupport
+{
+    @Test
+    public void test1()
+    {
+        int[]               array = new int[]{1, 2, 3, 4};
+        Map<String, Object> vars  = new HashMap<String, Object>();
+        vars.put("array", array);
+        Operand lexer = Expression.parse("array[2]");
+        assertEquals(3, ((Integer) lexer.calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test2()
+    {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("1", "12");
+        Map<String, Object> vars = new HashMap<String, Object>();
+        vars.put("map", map);
+        vars.put("age", "1");
+        Operand lexer = Expression.parse("map['1']");
+        assertEquals("12", lexer.calculate(vars));
+        Operand lexer2 = Expression.parse("map[age]");
+        assertEquals("12", lexer2.calculate(vars));
+    }
+
+    @Test
+    public void test3()
+    {
+        List<String> list = new ArrayList<String>();
+        list.add("1212");
+        list.add("13");
+        Map<String, Object> vars = new HashMap<String, Object>();
+        vars.put("list", list);
+        Operand lexer = Expression.parse("list[1]");
+        assertEquals("13", lexer.calculate(vars));
+    }
+
+    @Test
+    public void test4()
+    {
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("list", list);
+        assertEquals("2", Expression.parse("list[3-2]").calculate(vars));
+    }
+
+    @Test
+    public void test5()
+    {
+        boolean result = (boolean) Expression.parse("2>1").calculate(null);
+        assertTrue(result);
+        result = (boolean) Expression.parse("2>1.0").calculate(null);
+        assertTrue(result);
+    }
+
+    @Test
+    public void test6()
+    {
+        boolean result = (boolean) Expression.parse("1<2").calculate(null);
+        assertTrue(result);
+        result = (boolean) Expression.parse("1.0<2").calculate(null);
+        assertTrue(result);
+    }
+
+    @Test
+    public void test7()
+    {
+        assertFalse((Boolean) Expression.parse("1>2*2-3").calculate(null));
+    }
+
+    @Test
+    public void test8()
+    {
+        assertEquals(2, ((Number) Expression.parse("4/2").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test9()
+    {
+        float f = 5 / 2f;
+        assertEquals(f, ((Number) Expression.parse("5.0/2").calculate(null)).floatValue(), 0.00000000001);
+    }
+
+    @Test
+    public void test10()
+    {
+        assertEquals(3, ((Number) Expression.parse("1+4/2").calculate()).intValue());
+    }
+
+    @ReferenceCall(matrixName = "test92")
+    public static int minus(int a, int b)
+    {
+        return a - b;
+    }
+
+    @ReferenceCall(matrixName = "test92")
+    public static String minus(String a, String b)
+    {
+        return a;
+    }
+
+    @ReferenceCall(matrixName = "test93")
+    public static int minus2(int a, Object... b)
+    {
+        return a - ((Integer) b[0]);
+    }
+
+    enum Name
+    {
+        dd
+    }
+
+    @ReferenceCall(matrixName = "test93")
+    public static String minus2(String a, Object... b)
+    {
+        return a;
+    }
+
+    @Test
+    public void test15()
+    {
+        assertEquals(person.age, ((Number) Expression.parse("home.person.getAge()").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test16()
+    {
+        assertEquals(person.age, ((Number) Expression.parse("home.getPerson().getAge()").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test17()
+    {
+        assertEquals(person.age + 3, ((Number) Expression.parse("home.getPerson().getAge()+3").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test18()
+    {
+        assertEquals(person.age + 3 + "abc", Expression.parse("home.getPerson().getAge()+3+'abc'").calculate(vars));
+    }
+
+    @Test
+    public void test19()
+    {
+        assertEquals(person.age + 3 * 2 + "abc", Expression.parse("home.getPerson().getAge()+3*2+'abc'").calculate(vars));
+    }
+
+    @Test
+    public void test20()
+    {
+        String value = person.age + 3 * 2 + "abc";
+        vars.put("value", value);
+        assertTrue((Boolean) Expression.parse("home.getPerson().getAge()+3*2+'abc' == value").calculate(vars));
+    }
+
+    @Test
+    public void test21()
+    {
+        String value = person.age + 3 * 2 + "abced";
+        vars.put("value", value);
+        assertTrue((Boolean) Expression.parse("home.getPerson().getAge()+3*2+'abc' != value").calculate(vars));
+    }
+
+    @Test
+    public void test22()
+    {
+        assertEquals(person.getAge(), ((Number) Expression.parse("home.personAge(person)").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test23()
+    {
+        assertEquals(person.getAge(), ((Number) Expression.parse("home.personAge2(person.getAge())").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test24()
+    {
+        assertEquals(person.getAge() + 2, ((Number) Expression.parse("home.personAge2(person.getAge()+2)").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test25()
+    {
+        assertEquals(person.age + "12", Expression.parse("home.name(person.getAge() + '12')").calculate(vars));
+    }
+
+    @Test
+    public void test26()
+    {
+        String value = person.age + "12";
+        vars.put("value", value);
+        assertFalse((Boolean) Expression.parse("home.bool(person.getAge() + '12' != value)").calculate(vars));
+    }
+
+    @Test
+    public void test27()
+    {
+        String value = person.age + "12";
+        vars.put("value", value);
+        assertFalse((Boolean) Expression.parse("home.bool(person.getAge() + '12' != value)").calculate(vars));
+    }
+
+    @Test
+    public void test28()
+    {
+        int result = ((Number) Expression.parse("home.plus(3,4)").calculate(vars)).intValue();
+        assertEquals(7, result);
+    }
+
+    // 测试静态方法
+    @Test
+    public void test29()
+    {
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("String.valueOf('ab')", matrix);
+        matrix.registerClassName("String", String.class);
+        Operand operand = parseContext.parse();
+        String  result  = (String) operand.calculate();
+        assertEquals("ab", result);
+    }
+
+    @Test
+    public void test30()
+    {
+        assertEquals(1, ((Number) Expression.parse("3-1-1").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test31()
+    {
+        assertEquals(2, ((Number) Expression.parse("5-(4-1)").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test32()
+    {
+        assertEquals(1, ((Number) Expression.parse("1*2-1").calculate(null)).intValue());
+    }
+
+    /**
+     * 测试加法
+     */
+    @Test
+    public void test33()
+    {
+        Operand lexer = Expression.parse("1+2");
+        assertEquals(3, ((Number) lexer.calculate(new HashMap<>())).intValue());
+        assertEquals(3, ((Number) lexer.calculate(null)).intValue());
+    }
+
+    /**
+     * 测试加法中出现字符串的类型转化
+     */
+    @Test
+    public void test34()
+    {
+        assertEquals("11", Expression.parse("'1'+1").calculate(null));
+    }
+
+    /**
+     * 测试多个运算符
+     */
+    @Test
+    public void test35()
+    {
+        assertEquals(12, ((Number) Expression.parse("1+2+3+6").calculate(null)).intValue());
+    }
+
+    /**
+     * 测试乘法
+     */
+    @Test
+    public void test36()
+    {
+        assertEquals(5, ((Number) Expression.parse("1*5").calculate(null)).intValue());
+    }
+
+    /**
+     * 测试运算符优先级
+     */
+    @Test
+    public void test37()
+    {
+        assertEquals(7, ((Number) Expression.parse("3+2*2").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test38()
+    {
+        assertEquals(10, ((Number) Expression.parse("2*(3+2)").calculate(null)).intValue());
+    }
+
+    @Test
+    public void test39()
+    {
+        assertTrue(((Boolean) Expression.parse("(2+1!=2)==true").calculate()));
+    }
+
+    public static int age = 12;
+
+    @Test
+    public void test40()
+    {
+        Operand lexer = Expression.parse("home.person.age");
+        //home 是一个对象，包含一个对象属性 person，age是person中的一个数字属性
+        assertEquals(person.age, ((Number) lexer.calculate(vars)).intValue());
+        lexer = Expression.parse("home.person.age");
+        assertEquals(person.age, ((Number) lexer.calculate(vars)).intValue());
+    }
+
+    // 测试静态属性获取
+    @Test
+    public void test41()
+    {
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("FunctionTest.age", matrix);
+        matrix.registerClassName(FunctionTest.class.getSimpleName(), FunctionTest.class);
+        Operand operand = parseContext.parse();
+        int     result  = ((Number) operand.calculate()).intValue();
+        assertEquals(age, result);
+    }
+
+    @Test
+    public void test42()
+    {
+        assertEquals(1, ((Number) Expression.parse("2>1?1:2").calculate()).intValue());
+        assertEquals(1, ((Number) Expression.parse("3-2+1>1?1:2").calculate()).intValue());
+        assertEquals(1, ((Number) Expression.parse("3-2+1>1?2-1:2").calculate()).intValue());
+        assertEquals(2, ((Number) Expression.parse("3-2+1<1?2:1+1").calculate()).intValue());
+        Map<String, Object> vars  = new HashMap<>();
+        Map<String, Object> param = new HashMap<>();
+        param.put("b", false);
+        vars.put("map", param);
+        assertEquals(2, ((Number) Expression.parse("map['b']?3:1*2").calculate(vars)).intValue());
+        assertEquals(4, ((Number) Expression.parse("(map['b']?3:2)*2").calculate(vars)).intValue());
+    }
+
+    @Test
+    public void test43()
+    {
+        assertEquals(-2, ((Number) Expression.parse("2>1?1-2>0?-1:-2:3").calculate()).intValue());
+    }
+
+    @Test
+    public void test44()
+    {
+        assertEquals(age, ((Number) Expression.parse("@(com.jfirer.jfireel.FunctionTest).age").calculate()).intValue());
+    }
+
+    @Test
+    public void test45()
+    {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "test");
+        Expression.parse("var l=name").calculate(params);
+        assertEquals("test", params.get("l"));
+        Expression.parse("var l=name;").calculate(params);
+        assertEquals("test", params.get("l"));
+    }
+
+    @Test
+    public void test46()
+    {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "test");
+        Operand operand = Expression.parse("l=name");
+        try
+        {
+            operand.calculate(params);
+        }
+        catch (IllegalArgumentException e)
+        {
+            e.printStackTrace();
+            assertTrue(true);
+            return;
+        }
+        assertTrue(false);
+    }
+
+    @Test
+    public void test47()
+    {
+        Operand operand = Expression.parse("""
+                                                   if(1+age>5)
+                                                   {
+                                                      var name ='f1';
+                                                      return name;
+                                                   }
+                                                   else
+                                                   { 
+                                                      var name = 'f2';
+                                                      return name;
+                                                   }
+                                                   """);
+        Map<String, Object> param = new HashMap<>();
+        param.put("age", 3);
+        assertEquals("f2", operand.calculate(param));
+        param.put("age", 5);
+        assertEquals("f1", operand.calculate(param));
+    }
+
+    @Test
+    public void test48()
+    {
+        Operand operand = Expression.parse("""
+                                                        var value;
+                                                        for(i in array)
+                                                        {
+                                                   if(i<5)
+                                                           {
+                                                               value = i;
+                                                           }
+                                                           else
+                                                           {
+                                                               break;
+                                                           }
+                                                        }
+                                                        var result;
+                                                        if(value==4)
+                                                        {
+                                                           result = true;
+                                                        }
+                                                        else
+                                                        {
+                                                           result=false;
+                                                        }
+                                                        return result;
+                                                   """);
+        Map<String, Object> param = new HashMap<>();
+        param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
+        assertTrue((Boolean) operand.calculate(param));
+    }
+
+    @Test
+    public void test49()
+    {
+        Operand operand = Expression.parse("""
+                                                   var value;
+                                                   for(i in array)
+                                                   {
+                                                      if(i<5)
+                                                      {
+                                                          value = i;
+                                                          return;
+                                                      }
+                                                      else
+                                                      {
+                                                          break;
+                                                      }
+                                                   }
+                                                   var result;
+                                                   if(value==4)
+                                                   {
+                                                      result = true;
+                                                   }
+                                                   else
+                                                   {
+                                                      result=false;
+                                                   }
+                                                   """);
+        Map<String, Object> param = new HashMap<>();
+        param.put("array", new int[]{1, 2, 3, 4, 5, 6, 7, 8});
+        operand.calculate(param);
+        assertFalse(param.containsKey("result"));
+    }
+
+    @Test
+    public void test50()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 10);
+        assertEquals("hello ll,my age is 12", Template.parse("hello ${name},my age is ${age+2}").render(params));
+    }
+
+    @Test
+    public void test51()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        assertEquals("hello ll", Template.parse("hello ${name}").render(params));
+    }
+
+    @Test
+    public void test52()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 10);
+        assertEquals("hello, my name is ll  ", Template.parse("hello,<%if(age>2){%> my name is ${name}<%}%>  ").render(params));
+    }
+
+    @Test
+    public void test53()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 10);
+        assertEquals("hello, my name is ll", Template.parse("hello,<%if(age>2){%> my name is <%if(name=='ll'){%>${name}<%}%><%}%>").render(params));
+    }
+
+    @Test
+    public void test54()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 1);
+        assertEquals("hello, ll", Template.parse("hello,<%if(age>2){%> ${name} <%}%><%else{%> ll<%}%>").render(params));
+    }
+
+    @Test
+    public void test55()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 1);
+        assertEquals("hello, ll", Template.parse("hello,<%if(age>2){%> ${name} <% } else {%> ll<%}%>").render(params));
+    }
+
+    @Test
+    public void test56()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 1);
+        assertEquals("hello, age<5", Template.parse("hello,<%if(age>10){%> ${name} <%} else if(age>5){%> age >5 <%} else {%> age<5<%}%>").render(params));
+    }
+
+    @Test
+    public void test57()
+    {
+        List<String> list = new LinkedList<String>();
+        list.add("name1");
+        list.add("name2");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+        assertEquals("hello, name1 name2", Template.parse("hello,<% for (name in list) {%> ${name}<%}%>").render(params));
+    }
+
+    @Test
+    public void test58()
+    {
+        List<String> list = new LinkedList<String>();
+        list.add("name1");
+        list.add("name2");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+        assertEquals("hello, name1", Template.parse("hello,<% for (name in list) {%><% if(name=='name1'){%> ${name}<%}%><%}%>").render(params));
+    }
+
+    @Test
+    public void test59()
+    {
+        List<String> list = new LinkedList<String>();
+        list.add("name1");
+        list.add("name2");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+        params.put("age", 11);
+        assertEquals(" name1  name2 ", Template.parse("<% if(age>10){ for(name in list){ %> ${name} <%}}%>").render(params));
+    }
+
+    @Test
+    public void test60()
+    {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "ll");
+        params.put("age", 10);
+        assertEquals("hello ll,my age is 12", Template.parse("hello ${name},my age is ${age+2}").render(params));
+    }
+
+    @Test
+    public void test61()
+    {
+        assertEquals(FunctionTest.class, Expression.parse("@(com.jfirer.jfireel.FunctionTest)").calculate());
+    }
+
+    @Test
+    public void test62()
+    {
+        String content = """
+                if(i<5){
+                var name =5;
+                return name;
+                }""";
+        Operand             operand = Expression.parse(content);
+        Map<String, Object> map     = new HashMap<>();
+        map.put("i", 3);
+        assertEquals(5, ((Integer) operand.calculate(map)).intValue());
+    }
+
+    @Test
+    public void test63()
+    {
+        String content = """
+                var name='yl';
+                return name;""";
+        Map<String, Object> map     = new HashMap<>();
+        Operand             operand = Expression.parse(content);
+        assertEquals("yl", ((String) operand.calculate(map)));
+    }
+
+    @Test
+    public void test64()
+    {
+        String content = """
+                @(java.lang.String).valueOf('ni /'ss/'') """;
+        Operand operand = Expression.parse(content);
+        String  value   = (String) operand.calculate();
+        assertEquals("ni 'ss'", value);
+        content = """
+                @(java.lang.String).valueOf("ni 'ss'") """;
+        operand = Expression.parse(content);
+        value   = (String) operand.calculate();
+        assertEquals("ni 'ss'", value);
+        content = """
+                @(java.lang.String).valueOf("ni /"ss/"") """;
+        operand = Expression.parse(content);
+        value   = (String) operand.calculate();
+        assertEquals("ni \"ss\"", value);
+        content = """
+                @(java.lang.String).valueOf(`ni /`ss/``) """;
+        operand = Expression.parse(content);
+        value   = (String) operand.calculate();
+        assertEquals("ni `ss`", value);
+    }
+
+    @Test
+    public void test65()
+    {
+        String content = """
+                @(java.lang.String).valueOf('ni \\') """;
+        Operand operand = Expression.parse(content);
+        String  value   = (String) operand.calculate();
+        assertEquals("ni \\", value);
+    }
+
+    @Data
+    public static class Person
+    {
+        int age;
+
+        public Person(int age)
+        {
+            this.age = age;
+        }
+    }
+
+    @Data
+    public class Home2
+    {
+        Person[] persons;
+    }
+
+    @Test
+    public void test66()
+    {
+        String content = """
+                var sum=0;
+                
+                for(each in home.persons)
+                {
+                sum=sum+each.age;
+                }
+                return sum;""";
+        Operand             operand = Expression.parse(content);
+        Map<String, Object> param   = new HashMap<>();
+        Person[]            persons = new Person[]{new Person(1), new Person(2)};
+        Home2               home    = new Home2();
+        home.persons = persons;
+        param.put("home", home);
+        int i = ((Number) operand.calculate(param)).intValue();
+        assertEquals(3, i);
+    }
+
+    @Test
+    public void test67()
+    {
+        String content = """
+                ((C09C.startsWith("M918")||C09C.startsWith("M919")||C09C.startsWith("M920")||C09C.startsWith("M921")||C09C.startsWith("M922")||C09C.startsWith("M923")||C09C.startsWith("M924")||C09C.startsWith("M925")||C09C.startsWith("M926")||C09C.startsWith("M927")||C09C.startsWith("M928")||C09C.startsWith("M929")||C09C.startsWith("M930")||C09C.startsWith("M931")||C09C.startsWith("M932")||C09C.startsWith("M933")||C09C.startsWith("M934")||C09C.startsWith("M8812"))&&C09C.endsWith("3"))==false""";
+        Operand             operand = Expression.parse(content);
+        Map<String, Object> param   = new HashMap<>();
+        param.put("C09C", "M91900/2");
+        assertTrue((Boolean) operand.calculate(param));
+    }
+
+    @Test
+    public void test68() throws NoSuchMethodException
+    {
+        String value = person.age + "12";
+        vars.put("value", value);
+        Matrix        matrix       = new Matrix("", null);
+        ParseContext  parseContext = new ParseContext("home.bool(person.getAge() + '12' != value)", matrix, new ELConfig().setMethodInvokeUseCompile(false));
+        Method        bool         = Home.class.getDeclaredMethod("bool", boolean.class);
+        AtomicBoolean called       = new AtomicBoolean(false);
+        matrix.registerAcceleratorForMethodInvoke(bool, (instance, operands, map) -> {
+            called.set(true);
+            return ((Home) instance).bool((Boolean) operands[0].calculate(map));
+        });
+        Operand operand = parseContext.parse();
+        assertFalse((Boolean) operand.calculate(vars));
+        assertFalse((Boolean) operand.calculate(vars));
+        assertTrue(called.get());
+    }
+
+    @Test
+    public void test69()
+    {
+        String content = """
+                var array=['1','2'];
+                return array[1];""";
+        assertEquals("2", Expression.parse(content).calculate());
+    }
+
+    @Test
+    public void test70()
+    {
+        String content = """
+                if(1>0){return true;}
+                return false;""";
+        Boolean calculate = (Boolean) Expression.parse(content).calculate();
+        assertTrue(calculate);
+    }
+
+    @Test
+    public void test71()
+    {
+        String content = """
+                if(1<2){;}else{return 2;}""";
+        Object calculate = Expression.parse(content).calculate();
+        assertNull(calculate);
+    }
+
+    @Test
+    public void test72()
+    {
+        String content = """
+                if(1<2){if(2>1){var i = 1  +2  ;}}else{return 2;}""";
+        String format = Expression.format(content);
+        System.out.print(format);
+    }
+
+    @Test
+    public void test73()
+    {
+        String              content = "a*2==2.24";
+        Map<String, Object> param   = new HashMap<>();
+        param.put("a", new BigDecimal("1.12"));
+        Operand operand   = Expression.parse(content);
+        Boolean calculate = (Boolean) operand.calculate(param);
+        assertTrue(calculate);
+    }
+
+    @Accessors(chain = true)
+    @Data
+    public static class TestData
+    {
+        private Integer i;
+        private String  name;
+    }
+
+    /**
+     * 测试入参是非 Map 的形式
+     */
+    @Test
+    public void test75()
+    {
+        TestSupport.Person  person  = new TestSupport.Person();
+        Operand             operand = Expression.parse("person.reFirst('a','b')");
+        Map<String, Object> map     = new HashMap<>();
+        map.put("person", person);
+        assertEquals("a", operand.calculate(map));
+    }
+
+    /**
+     * 测试在方法体中返回变量的值，是否正确获取
+     */
+    public void test77()
+    {
+        Operand operand = Expression.parse("""
+                                                   var name = 'abc';
+                                                   if(i>5){return name;}
+                                                   else{return 'h';}""");
+        Map<String, Object> param = new HashMap<>();
+        param.put("i", 10);
+        Object result = operand.calculate(param);
+        assertEquals("abc", result);
+        assertTrue(param.containsKey("name") == false);
+    }
+
+    /**
+     * 测试 new 操作符
+     */
+    @Test
+    public void test78()
+    {
+        Expression.registerClass(LinkedList.class.getSimpleName(), LinkedList.class);
+        Expression.registerClass("Person", TestSupport.Person.class);
+        Operand operand = Expression.parse("""
+                                                   var list = new LinkedList();
+                                                   list.add('a');
+                                                   return list;""");
+        List<?> result = (List<?>) operand.calculate();
+        assertEquals("a", result.get(0));
+        operand = Expression.parse("""
+                                           var person = new Person(5);
+                                           return person;""");
+        TestSupport.Person person = (TestSupport.Person) operand.calculate();
+        assertEquals(5, person.getAge());
+    }
+
+    @Test
+    public void test79()
+    {
+        Operand operand = Expression.parse("1+2>4;");
+        assertFalse(((Boolean) operand.calculate()));
+        operand = Expression.parse("1+2>4");
+        assertFalse(((Boolean) operand.calculate()));
+    }
+
+    /**
+     * 测试数组的新建和下标的获取
+     */
+    @Test
+    public void test80()
+    {
+        Operand parse = Expression.parse("""
+                                                 var array = [1,2,3];
+                                                 var a = array[0];
+                                                 return a""");
+        Object result = parse.calculate();
+        assertEquals(1, result);
+    }
+
+    /**
+     * 测试下数组的常量优化结果
+     */
+    @Test
+    public void test81()
+    {
+        Operand operand = Expression.parse("['a','b','c']");
+        Object  result  = operand.calculate();
+        assertTrue(result instanceof String[]);
+        Object result2 = operand.calculate();
+        assertTrue(result == result2);
+        assertEquals(result, result2);
+        Operand operand1 = Expression.parse("['a',null,'c']");
+        result = operand1.calculate();
+        assertTrue(result instanceof String[]);
+        result2 = operand1.calculate();
+        assertTrue(result == result2);
+        assertEquals(result, result2);
+    }
+
+    @Test
+    public void test82()
+    {
+        Operand parse = Expression.parse("home.personAge2(l)", new ELConfig().setMethodInvokeUseCompile(true));
+        assertEquals(Integer.valueOf(5), parse.calculate(vars));
+        Operand parse1 = Expression.parse("home.person.age", new ELConfig().setPropertyReadUseCompile(true));
+        assertEquals(Integer.valueOf(14), parse1.calculate(vars));
+        Operand parse2    = Expression.parse("new @(com.jfirer.jfireel.TestSupport$Home)()", new ELConfig().setMethodInvokeUseCompile(true));
+        Object  calculate = parse2.calculate();
+        assertTrue(calculate instanceof Home);
+    }
+
+    @Test
+    public void test83()
+    {
+        String content = "3*5-2+16/4";
+        assertEquals(Expression.parse(content).calculate(), Expression.parse(content, new ELConfig().setMathUseCompile(true)).calculate());
+    }
+
+    @Test
+    public void test11()
+    {
+        assertFalse((Boolean) Expression.parse("true && 1-2>0").calculate());
+    }
+
+    @Test
+    public void test85()
+    {
+        Operand     parse     = Expression.parse("<<'12','222'>>");
+        Set<String> calculate = (Set<String>) parse.calculate();
+        assertTrue(calculate.contains("12"));
+        assertTrue(calculate.contains("222"));
+        assertTrue(calculate.size() == 2);
+    }
+
+    @Test
+    public void test86()
+    {
+        BasicOperandImpl operand = (BasicOperandImpl) Expression.parse("1+2");
+        assertNotNull(operand.getFragment());
+        operand.clearFragment();
+        assertNull(operand.getFragment());
+    }
+
+    public static String print(String name, Object... array)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append(name);
+        for (Object o : array)
+        {
+            builder.append(o);
+        }
+        return builder.toString();
+    }
+
+    public static int plus(int a, int b)
+    {
+        return a + b;
+    }
+
+    @Test
+    public void test88() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("plus", FunctionTest.class.getDeclaredMethod("plus", int.class, int.class));
+        Operand operand = Expression.parse("plus(1,2)");
+        Integer result  = (Integer) operand.calculate();
+        assertEquals(3, result.intValue());
+    }
+
+    public static String print(String name, int i)
+    {
+        return name + i;
+    }
+
+    @Test
+    public void test12()
+    {
+        assertTrue((Boolean) Expression.parse("false || 2-1>0").calculate());
+    }
+
+    @Test
+    public void test89() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("print", FunctionTest.class.getDeclaredMethod("print", String.class, Object[].class), "test89");
+        Expression.registerReferenceCall("print", FunctionTest.class.getDeclaredMethod("print", String.class, int.class), "test89");
+        Operand operand = Expression.parse("""
+                                                   print('linbin',1,3,4)""", "test89");
+        assertEquals("linbin134", operand.calculate());
+        operand = Expression.parse("""
+                                           print('linbin',1)""", "test89");
+        assertEquals("linbin1", operand.calculate());
+    }
+
+    @Test
+    public void test13()
+    {
+        Map<String, Object> m = new HashMap<>();
+        m.put("BLOODPRESSURE1", 100);
+        assertTrue((Boolean) Expression.parse("BLOODPRESSURE1<140&&BLOODPRESSURE1>90").calculate(m));
+    }
+
+    @Test
+    public void test14()
+    {
+        Matrix       matrix       = new Matrix("", null);
+        ParseContext parseContext = new ParseContext("EnumTest$Name.dd", matrix);
+        matrix.registerClassName("EnumTest$Name", Name.class);
+        assertEquals(Name.dd, parseContext.parse().calculate());
+    }
+
+    @Test
+    public void test84()
+    {
+        String                  content                                      = "person.setAge(p2.age+6);";
+        Operand                 stand                                        = Expression.parse(content);
+        Operand                 method                                       = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true));
+        Operand                 methodWithoutCompatibility                   = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true));
+        Operand                 methodWithoutCompatibilityAndProperty        = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(true).setDisableCompileMethodCompatibleValue(true).setPropertyReadUseCompile(true));
+        Operand                 methodWithoutCompatibilityAndPropertyAndMath = Expression.parse(content, new ELConfig().setMethodInvokeUseCompile(false).setDisableCompileMethodCompatibleValue(false).setPropertyReadUseCompile(false).setMathUseCompile(true));
+        HashMap<String, Object> map                                          = new HashMap<>();
+        Person person = new Person(1);
+        Person p2     = new Person(2);
+        map.put("person", person);
+        map.put("p2", p2);
+        Object a = stand.calculate(map);
+        Object b = methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+        methodWithoutCompatibilityAndPropertyAndMath.calculate(map);
+    }
+
+    @Test
+    public void test87()
+    {
+        String function = """
+                # 这是第一行注释
+                # 这是第二行注释
+                function plus(int a,int b)
+                {
+                   return a+b;
+                }""";
+        Expression.registerFunctionCall(function, "test87");
+        Operand operand   = Expression.parse("plus(1,2)", "test87");
+        Integer calculate = (Integer) operand.calculate();
+        assertEquals(3, calculate.intValue());
+    }
+
+    @Test
+    public void test90()
+    {
+        Expression.registerFunctionCall("""
+                                                function plus(String name,Object... nums)
+                                                {
+                                                   var re = name;
+                                                   for(each in nums)
+                                                   {
+                                                      re = re+each;
+                                                   }
+                                                   return re; 
+                                                }""", "test90");
+        Operand test90 = Expression.parse("plus('lin',1,2)", "test90");
+        assertEquals("lin12", test90.calculate());
+        test90 = Expression.parse("plus('lin',1,2,3)", "test90");
+        assertEquals("lin123", test90.calculate());
+    }
+
+    @Test
+    public void test91()
+    {
+        Expression.registerFunctionCall("""
+                                                function plus(String a,String b){return a;}""", "test91");
+        Expression.registerFunctionCall("""
+                                                function plus(String a,int b){return a+b;}""", "test91");
+        Operand operand = Expression.parse("plus('a',1)", "test91");
+        assertEquals("a1", operand.calculate());
+        assertEquals("a1", operand.calculate());
+        operand = Expression.parse("plus('a','b')", "test91");
+        assertEquals("a", operand.calculate());
+        assertEquals("a", operand.calculate());
+    }
+
+    @Test
+    public void test92() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("minus", FunctionTest.class.getDeclaredMethod("minus", int.class, int.class), "test92");
+        Expression.registerReferenceCall("minus", FunctionTest.class.getDeclaredMethod("minus", String.class, String.class), "test92");
+        Operand operand = Expression.parse("minus(1,2)", "test92");
+        assertEquals(-1, operand.calculate());
+        assertEquals(-1, operand.calculate());
+        operand = Expression.parse("minus('a','b')", "test92");
+        assertEquals("a", operand.calculate());
+        assertEquals("a", operand.calculate());
+    }
+
+    @Test
+    public void test93() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("minus2", FunctionTest.class.getDeclaredMethod("minus2", int.class, Object[].class), "test93");
+        Expression.registerReferenceCall("minus2", FunctionTest.class.getDeclaredMethod("minus2", String.class, Object[].class), "test93");
+        Operand operand = Expression.parse("minus2(1,2)", "test93");
+        assertEquals(-1, operand.calculate());
+        assertEquals(-1, operand.calculate());
+        operand = Expression.parse("minus2('a','b')", "test93");
+        assertEquals("a", operand.calculate());
+        assertEquals("a", operand.calculate());
+    }
+
+    @Test
+    public void test94()
+    {
+        Expression.registerFunctionCall("""
+                                                function vre(int a,int b,boolean c)
+                                                {
+                                                    # 测试注释是否可以在这个位置生效
+                                                    return a+b>2 && c;
+                                                }""");
+        Operand operand = Expression.parse("vre(a,b,c)");
+        Map<String, Object> param   = new HashMap<>();
+        param.put("a", 1);
+        param.put("b", 3);
+        param.put("c", true);
+        Boolean calculate = (Boolean) operand.calculate(param);
+        assertTrue(calculate);
+        param.put("b", 1);
+        param.put("c", false);
+        assertFalse((Boolean) operand.calculate(param));
+    }
+
+    @Test
+    public void test95()
+    {
+        Expression.registerClass(System.class.getSimpleName(), System.class);
+        Expression.registerFunctionCall("""
+                                                function vre2(Object...args)
+                                                {
+                                                return args[0]+args[1];
+                                                }
+                                                """);
+        Operand operand   = Expression.parse("vre2('a','b')");
+        Object  calculate = operand.calculate();
+        assertEquals("ab", calculate);
+    }
+}

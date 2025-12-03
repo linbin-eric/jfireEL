@@ -1,0 +1,126 @@
+package cc.jfire.el.template;
+
+import cc.jfire.el.expression.Expression;
+import cc.jfire.el.expression.Operand;
+
+import java.util.Map;
+
+public class Template
+{
+    static
+    {
+        try
+        {
+            Expression.registerReferenceCall("out", Template.class.getDeclaredMethod("out", StringBuilder.class, Object.class));
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void out(StringBuilder builder, Object content)
+    {
+        builder.append(content);
+    }
+
+    private static final int     IN_CODE_AREA = 1;
+    private static final int     IN_TEXT      = 2;
+    private static final int     IN_VARIABLE  = 3;
+    private final        Operand operand;
+
+    private Template(Operand operand)
+    {
+        this.operand = operand;
+    }
+
+    public static Template parse(String content)
+    {
+        StringBuilder builder = new StringBuilder();
+        int           type    = IN_TEXT;
+        int           length  = content.length();
+        int           index   = 0;
+        int           mark    = 0;
+        while (index < length)
+        {
+            char c = content.charAt(index);
+            switch (type)
+            {
+                case IN_CODE_AREA ->
+                {
+                    if (c == '%' && index + 1 < length && content.charAt(index + 1) == '>')
+                    {
+                        builder.append(content.substring(mark, index));
+                        mark = index += 2;
+                        type = IN_TEXT;
+                    }
+                    else
+                    {
+                        index += 1;
+                    }
+                }
+                case IN_TEXT ->
+                {
+                    if (c == '$' && index + 1 < length && content.charAt(index + 1) == '{')
+                    {
+                        if (mark != index)
+                        {
+                            builder.append("out(builder,'").append(content.substring(mark, index)).append("');\r\n");
+                        }
+                        mark = index += 2;
+                        type = IN_VARIABLE;
+                    }
+                    else if (c == '<' && index + 1 < length && content.charAt(index + 1) == '%')
+                    {
+                        if (mark != index)
+                        {
+                            builder.append("out(builder,'").append(content.substring(mark, index)).append("');\r\n");
+                        }
+                        mark = index += 2;
+                        type = IN_CODE_AREA;
+                    }
+                    else
+                    {
+                        index += 1;
+                    }
+                }
+                case IN_VARIABLE ->
+                {
+                    if (c == '}')
+                    {
+                        builder.append("out(builder,").append(content.substring(mark, index)).append(");\r\n");
+                        mark = index += 1;
+                        type = IN_TEXT;
+                    }
+                    else
+                    {
+                        index += 1;
+                    }
+                }
+            }
+        }
+        if (type != IN_TEXT)
+        {
+            throw new IllegalStateException("解析模板不正确，模板没有被正确结束");
+        }
+        if (mark != index)
+        {
+            builder.append("out(builder,'").append(content.substring(mark, index)).append("');\r\n");
+        }
+        return new Template(Expression.parse(builder.toString()));
+    }
+
+    public String render(Map<String, Object> params)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        params.put("builder", stringBuilder);
+        operand.calculate(params);
+        return stringBuilder.toString();
+    }
+
+    public void render(Map<String, Object> params, StringBuilder builder)
+    {
+        params.put("builder", builder);
+        operand.calculate(params);
+    }
+}
