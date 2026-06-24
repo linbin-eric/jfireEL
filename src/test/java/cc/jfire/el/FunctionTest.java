@@ -135,6 +135,16 @@ public class FunctionTest extends TestSupport
         return a;
     }
 
+    public static List<Object> referenceCallVarargsList(Object... values)
+    {
+        return new ArrayList<>(Arrays.asList(values));
+    }
+
+    public static String referenceCallVarargsPack(String name, Object... values)
+    {
+        return name + values.length;
+    }
+
     @Test
     public void test15()
     {
@@ -365,7 +375,7 @@ public class FunctionTest extends TestSupport
     @Test
     public void test44()
     {
-        assertEquals(age, ((Number) Expression.parse("@(com.jfirer.jfireel.FunctionTest).age").calculate()).intValue());
+        assertEquals(age, ((Number) Expression.parse("@(cc.jfire.el.FunctionTest).age").calculate()).intValue());
     }
 
     @Test
@@ -593,7 +603,7 @@ public class FunctionTest extends TestSupport
     @Test
     public void test61()
     {
-        assertEquals(FunctionTest.class, Expression.parse("@(com.jfirer.jfireel.FunctionTest)").calculate());
+        assertEquals(FunctionTest.class, Expression.parse("@(cc.jfire.el.FunctionTest)").calculate());
     }
 
     @Test
@@ -880,7 +890,7 @@ public class FunctionTest extends TestSupport
         assertEquals(Integer.valueOf(5), parse.calculate(vars));
         Operand parse1 = Expression.parse("home.person.age", new ELConfig().setPropertyReadUseCompile(true));
         assertEquals(Integer.valueOf(14), parse1.calculate(vars));
-        Operand parse2    = Expression.parse("new @(com.jfirer.jfireel.TestSupport$Home)()", new ELConfig().setMethodInvokeUseCompile(true));
+        Operand parse2    = Expression.parse("new @(cc.jfire.el.TestSupport$Home)()", new ELConfig().setMethodInvokeUseCompile(true));
         Object  calculate = parse2.calculate();
         assertTrue(calculate instanceof Home);
     }
@@ -1076,6 +1086,21 @@ public class FunctionTest extends TestSupport
         operand = Expression.parse("minus2('a','b')", "test93");
         assertEquals("a", operand.calculate());
         assertEquals("a", operand.calculate());
+    }
+
+    @Test
+    public void test96() throws NoSuchMethodException
+    {
+        Expression.registerReferenceCall("referenceCallVarargsList", FunctionTest.class.getDeclaredMethod("referenceCallVarargsList", Object[].class), "test96");
+        Expression.registerReferenceCall("referenceCallVarargsPack", FunctionTest.class.getDeclaredMethod("referenceCallVarargsPack", String.class, Object[].class), "test96");
+        Operand operand = Expression.parse("referenceCallVarargsList()", "test96");
+        assertEquals(Collections.emptyList(), operand.calculate());
+        operand = Expression.parse("referenceCallVarargsList('seed')", "test96");
+        assertEquals(Collections.singletonList("seed"), operand.calculate());
+        operand = Expression.parse("referenceCallVarargsPack('x')", "test96");
+        assertEquals("x0", operand.calculate());
+        operand = Expression.parse("referenceCallVarargsPack('x',1,2)", "test96");
+        assertEquals("x2", operand.calculate());
     }
 
     @Test

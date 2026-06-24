@@ -114,7 +114,7 @@ public class Matrix
             {
                 list.add(new CallOperand.CallOperandData().setName(name).setParamCount(method.getParameterCount())//
                                                           .setParameterTypes(method.getParameterTypes())//
-                                                          .setSupportVariableParams(method.getParameterTypes()[method.getParameterCount() - 1].isArray()).setConstructor(args -> ReferenceCallOperand.make(method, args)));
+                                                          .setSupportVariableParams(method.isVarArgs()).setConstructor(args -> ReferenceCallOperand.make(method, args)));
             }
             else
             {
@@ -253,7 +253,7 @@ public class Matrix
                 return result.get(0).getConstructor().apply(args);
             }
             result = list.stream().filter(c -> c.isSupportVariableParams())//
-                         .filter(c -> c.getParamCount() <= args.length)//
+                         .filter(c -> c.getParamCount() - 1 <= args.length)//
                          .filter(c -> matchType(Arrays.copyOf(argValues, c.getParamCount() - 1), Arrays.copyOf(c.getParameterTypes(), c.getParamCount() - 1)))//
                          .toList();
             if (result.size() > 1)
